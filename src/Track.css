@@ -1,0 +1,244 @@
+/* App Structure */
+  .body-h {
+    height: 90vh;
+  }
+
+  .nav-h {
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bottom-bar {
+    height: 6vh;
+  }
+
+  #image-track {
+    display: flex;
+    gap: 4vmin;
+    position: absolute;
+    width: max-content; /* Do not remove: Prevents wrapping of image-track */
+    top: 50%;
+    left: 50%;
+    transform: translate(0%, -50%);
+    user-select: none; /* Standard syntax */
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    align-items: center;
+    z-index: 10;
+  }
+
+  .image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+/* Images in track */
+  .image {
+    object-fit: cover;
+    object-position: 100% 50%;
+    transition: all 1s ease-in-out;
+  }
+  .img-md {
+    width: 40vmin;
+    height: 56vmin;
+  }
+  .img-wide {
+    width: 71vmin;  /* width set such that speed of parallax effect matches */
+    height: 56vmin;
+  }
+
+/* Standalone title for Track */
+  .title-panel {
+    width: 30vw;
+    height: 70vh;
+    user-select: none;
+    z-index: 0;
+    top: 0%;
+    transform: translateY(5%);
+  }
+
+/* Image Info */
+  .info-container-col {   /* Used for 16:9-selected-images and mobile resolutions */
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    width: 100vw;
+    height: 84vh;
+    top: 10%; /* top 10% is topbar */
+    user-select: none;
+  }
+  .img-panel-wide {
+    width: 100vw;
+    height: 50vh;
+    user-select: none;
+    z-index: 0;
+  }
+  .info-panel-wide {
+    display: flex;
+    width: 100vw;
+    height: 34vh;
+    user-select: none;
+    z-index: 11;
+    justify-content: center;
+    align-items: top;
+  }
+  .image-info-wide {
+    width: 80%;
+    height: min-content;
+    max-height: 95%;
+    opacity: 0;
+    z-index: 12;
+    user-select: none;
+  }
+  .info-text {
+    overflow-y: auto;
+  }
+
+/* Home Page */
+  .h-content {
+    height: 65vh;
+
+  }
+
+
+/* Image in Carousel */
+  .carousel-post {
+    object-fit: cover;
+    object-position: 50% 50%;
+    transition: all 1s ease-in-out;
+  }
+  .carousel-img {
+    width: min(44vh, 75vw);
+    height: min(44vh, 75vw);
+
+  }
+  .carousel-img-wide {
+    width: 78vh;
+    height: 44vh;
+  }
+
+  @media (max-width: 639px) {
+    .collections-btns-mobile {
+      width: min(44vh, 75vmin);
+      align-items: center;
+    }
+  }
+  @media (max-width: 1200px) {
+    .carousel-img-wide {
+      width: min(44vh, 75vmin);
+      height: min(44vh, 75vmin);
+    }
+  }
+  @media (min-width: 1000px) {
+    .slide-btn-left {
+      transform: translateX(-50px);
+    }
+  }
+  .collection-mini {
+    width: 22vh;
+    height: 22vh;
+  }
+  .create-collection-carousel {
+    width: 25vh;
+    height: 25vh;
+  }
+
+/* Media Queries */
+@media (min-width: 768px) {  /* Style not applied on smaller screens */
+  .info-container {   /* Used for 1:1 selected-images */
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    height: 90%;
+    user-select: none;
+  }
+  .img-panel {
+    width: 50vw;
+    height: 85vh;
+    user-select: none;
+    z-index: 0;
+  }
+  .info-panel {
+    width: 50vw;
+    height: 85vh;
+    align-items: center;
+    user-select: none;
+    z-index: 11;
+  }
+  .image-info {
+    width: 90%;
+    height: min-content;
+    opacity: 0;
+    user-select: none;
+    z-index: 12;
+  }
+  .breadcrumb-opacity {
+    opacity: 1;
+  }
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s;
+} @keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+.fade-out {
+  animation: fadeOut 1.2s forwards;
+} @keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+/* Scroll bar */
+/* width */
+/* set the width of the scrollbar */
+
+::-webkit-scrollbar {
+  width: 10px;
+  background: rgb(255, 255, 255);
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom-right-radius: 50px;
+  border-top-right-radius: 50px;
+}
+
+
+/* Handle */
+/* set the color of the scrollbar and the radius of its corners */
+
+::-webkit-scrollbar-thumb {
+  background: rgb(0, 0, 0);
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom-right-radius: 50px;
+  border-top-right-radius: 50px;
+}
+
+
+/* Handle on hover */
+/* set the color of the scrollbar when hovered over */
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(131, 131, 131);
+}
+
+
+/* Handle on active */
+/* set the color of the scrollbar when clicked */
+
+::-webkit-scrollbar-thumb:active {
+  background: rgb(255, 255, 255);
+}
