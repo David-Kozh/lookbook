@@ -1,15 +1,15 @@
 import { signInWithGoogle, signInWithGithub } from './services/authService';
 import { useNavigate } from 'react-router-dom';
 import Logo from './components/logo.png';
+import { useEffect } from 'react';
 
-export default function Login() {
+export default function Login({isLoggedIn}) {
     const navigate = useNavigate();
     
     const handleGoogleSignIn = async () => {
         try {
             const user = await signInWithGoogle();
             console.log('User signed in with Google:', user);
-            navigate('/home');
         } catch (error) {
             console.error(error.message);
         }
@@ -25,6 +25,12 @@ export default function Login() {
         }
     };
 
+    useEffect(() => {
+        if (isLoggedIn) {
+            console.log('Navigating to home...');
+            navigate('/home');
+        }
+    }, [isLoggedIn]);
 
     return (
     <div className='h-full '>

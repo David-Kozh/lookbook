@@ -81,7 +81,7 @@ function App() {
         setUserProfile(profile);
         console.log('User profile:', profile);
       } catch (error) {
-        console.error('Error fetching user profile:', error.message);
+        console.error('Unable to fetch user profile:', error.message);
       }
     };
     fetchProfile();
@@ -120,7 +120,7 @@ function App() {
     },
     {
       path: "/login",
-      element: <Login />,
+      element: <Login isLoggedIn={isLoggedIn} />,
     },
     {
       path: "/signup",
