@@ -9,10 +9,17 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
+import { deletePost } from "@/services/postService";
+import { deleteCollection } from "@/services/collectionService";
   
-  
-  export default function DeleteAlert({ itemName, itemType, handleClick, setSelectedIndex, selectedButton, deleteFunc, selectedIndex }) {
-
+  //* Pass a 'ref' which is composed of {user.uid, collection.id} or {user.uid, collection.id, post.id}. 
+  //* Then use the ref with the appropriate delete function, based on the 'itemType' prop
+  export default function DeleteAlert({ 
+    itemName, itemType, // for confirmation message
+    handleClick, setSelectedIndex, selectedButton, 
+    itemRef, // {loggedInUserId, collectionId, postId}
+  }) {
+    const { loggedInUserId, collectionId, postId } = itemRef;
     const handleCancel = () => {
       handleClick(null);
     }
@@ -22,8 +29,13 @@ import {
 
       window.location.hash = '#slide0';
       setSelectedIndex(0);
-
-      deleteFunc(selectedIndex); // TODO: should call backend to delete item
+      if(itemType === 'collection'){
+        //use collection delete function: user.uid and collection.id needed
+        deleteCollection(loggedInUserId, collectionId);
+      } else if(itemType === 'post'){
+        //use post delete function: user.uid, collection.id and post.id needed
+        deletePost(loggedInUserId, collectionId, postId);
+      };
     }
 
     return (
@@ -33,6 +45,7 @@ import {
               onClick={() => handleClick('delete')}
               className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-12
               ${selectedButton === 'delete' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+              disabled={itemName == ('No Collections Yet!' || 'No Posts Yet!')}
           >
               <svg
               xmlns="http://www.w3.org/2000/svg"

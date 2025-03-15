@@ -67,11 +67,12 @@ function ImageTrack({ posts }) {
       return;
     }
 
-    //  Update/Animate the track position; Store the animations in an array so they can be cancelled if an image is expanded
+    //  Update/Animate the track position;
+    //? Store the animations in an array so they can be cancelled if an image is expanded
     isAnimating.current = true;
     const track = document.getElementById("image-track");
     track.animate({
-      transform: `translate(${(deltaPercentageRef.current + percentageRef.current)}%, -50%)` // 
+      transform: `translate(${(deltaPercentageRef.current + percentageRef.current)}%, -50%)`
     }, {
       duration: 750, fill: "forwards"
     });
@@ -478,7 +479,6 @@ function ImageTrack({ posts }) {
     }
   };
 
-
   useEffect(() => {
     setCloseSelectedImage(() => closeSelectedImage);
   }, [selectedImage]);
@@ -488,7 +488,6 @@ function ImageTrack({ posts }) {
     
     // Attach the event listener when the component mounts
     track.addEventListener('mousedown', handleMouseDown);
-
     // Return a cleanup function that removes the event listener when the component unmounts
     return () => {
       track.removeEventListener('mousedown', handleMouseDown);
@@ -497,7 +496,6 @@ function ImageTrack({ posts }) {
 
   useEffect(() => {
     let resizeTimeout;
-
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
@@ -555,8 +553,8 @@ function ImageTrack({ posts }) {
           {/* Vertically Stacked Orientation */}
           {((posts[selectedImage].aspectRatio == '16:9') || (window.innerWidth < 768)) &&  
           (<>
-            <div className='image-info-wide font-sans px-6 py-4 mt-2 mx-3 text-xl xl:text-2xl rounded-xl bg-zinc-500 bg-opacity-40 '>
-              <h1 className='font-bold'>
+            <div className='image-info-wide px-6 py-4 mt-2 mx-3 text-xl xl:text-2xl rounded-xl bg-[#2d4f79] bg-opacity-40 '>
+              <h1 className='font-mono'>
                 {selectedImageInfo.title}
               </h1>
               <p className='info-text'>{selectedImageInfo.description}</p>
@@ -564,13 +562,13 @@ function ImageTrack({ posts }) {
           </>)}
 
           {/* Side by Side Orientation */}
-          {selectedImage !== null && ((posts[selectedImage].aspectRatio == '1:1') && (window.innerWidth >= 768)) &&  
+          {((posts[selectedImage].aspectRatio == '1:1') && (window.innerWidth >= 768)) &&  
           (<>
-            <div className='image-info-wide image-info font-sans pt-4 rounded-xl mb-20 text-xl lg:text-2xl xl:text-3xl bg-zinc-500 bg-opacity-40'>
-              <h1 className='lg:text-4xl h-[10%] ml-4 font-bold'>
+            <div className='image-info-wide image-info font-sans pt-4 rounded-xl mb-20 text-xl lg:text-2xl xl:text-3xl bg-[#2d4f79] bg-opacity-40'>
+              <h1 className='lg:text-4xl h-[10%] ml-4 font-mono font-bold'>
                 {selectedImageInfo.title}
               </h1>
-              <p className='info-text w-full h-[90%] break-words pl-4 pr-2'>{selectedImageInfo.description}</p>
+              <p className='info-text font-mono w-full h-[90%] break-words pl-6 pr-4'>{selectedImageInfo.description}</p>
             </div>
           </>)}
         </div>

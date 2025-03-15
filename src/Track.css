@@ -100,6 +100,21 @@
   .info-text {
     overflow-y: auto;
   }
+  /* Custom scrollbar styles */
+  .info-text::-webkit-scrollbar {
+    border-radius: 6px;
+  }
+  .info-text::-webkit-scrollbar-track {
+    background: #797e84f2; /* Background of the scrollbar track */
+    border-radius: 6px;
+  }
+  .info-text::-webkit-scrollbar-thumb {
+    background: #5c6064; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+  }
+  .info-text::-webkit-scrollbar-thumb:hover {
+    background: #546578db; /* Color of the scrollbar thumb when hovered */
+  }
 
 /* Home Page */
   .h-content {

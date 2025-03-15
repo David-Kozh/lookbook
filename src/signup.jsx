@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Logo from './components/logo.png'
 import BackgroundGradient from "./components/ui/background-gradient.jsx";
@@ -52,7 +51,7 @@ export default function SignUp() {
         <div className="relative -mt-16 block lg:hidden">
           <a
             className="inline-flex size-16 items-center justify-center rounded-full bg-white text-blue-600 sm:size-20"
-            href="#"
+            href="/home"
           >
             <span className="sr-only">Link to Home</span>
             <svg
@@ -172,7 +171,7 @@ export default function SignUp() {
 
             <p className="mt-4 text-sm text-gray-500 sm:mt-0">
               Already have an account?
-              <a href="#" className="ml-2 text-gray-700 underline">Log in</a>.
+              <a href="/login" className="ml-2 text-gray-700 underline">Log in</a>.
             </p>
           </div>
         </form>

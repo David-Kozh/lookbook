@@ -1,4 +1,3 @@
-"use client"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -21,7 +20,9 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select"
+} from "@/components/ui/select"   
+
+import { updateCollection } from "./services/collectionService"
 
 // ** Zod Schema for Form Validation
 const formSchema = z.object({
@@ -40,7 +41,7 @@ const formSchema = z.object({
 })
 
 // Completed component for editing collection settings
-export default function EditCollectionSettings({ collection, cancelEditSettings, updateCollection}) {
+export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings }) {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -57,17 +58,19 @@ export default function EditCollectionSettings({ collection, cancelEditSettings,
         
         var imageUrl = collection.thumbnail;
         if(values.thumbnail){
-          imageUrl = URL.createObjectURL(values.thumbnail);
+          imageUrl = '';//URL.createObjectURL(values.thumbnail);
           // TODO: Change to an update to the cloud storage
         }
         // TODO: Change to an update to the database
-        updateCollection({
-            title: values.title,
-            subtitle: values.subtitle,
-            thumbnail: imageUrl,
-            postsArray: collection.postsArray,
-            displaySettings: values.displaySettings,
-        })
+        updateCollection(
+            loggedInUserId,
+            collection.id,
+            {
+                title: values.title,
+                subtitle: values.subtitle,
+                thumbnail: imageUrl,
+                displaySettings: values.displaySettings,
+            })
         cancelEditSettings();
     }
 

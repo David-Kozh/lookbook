@@ -27,12 +27,12 @@ const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
+  description: z.string().optional(),
   image: z.any().refine(file => file instanceof File, {
     message: 'A file is required',
   }),
   aspectRatio: z.string(),
-  description: z.string().optional(),
-  contentType: z.string(),
+  postType: z.string(),
   content: z.any().refine(file => file instanceof File || file === undefined, {
     message: 'A file is required',
 }),
@@ -54,12 +54,12 @@ export default function CreatePostForm({ addPost, dismiss }) {
       description: '',
       image: null,
       aspectRatio: '1:1',
-      contentType: 'default',
+      postType: 'default',
       content: undefined,
     },
   });
 
-  const contentTypeWatch = form.watch('contentType');
+  const contentTypeWatch = form.watch('postType');
       
   // 2. Define a submit handler.
   function onSubmit(values) {
@@ -67,7 +67,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
     console.log(values);
 
     // TODO: Additionally make sure the file extensions match the content type 
-    if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
+    if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
       form.setError('content', {
           type: 'manual',
           message: 'A file is required',
@@ -85,7 +85,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
       description: values.description,
       image: imageUrl, //! passing src url for development to "simulate" cloud storage
       aspectRatio: values.aspectRatio,
-      contentType: values.contentType,
+      postType: values.postType,
       content: contentUrl,
     })
     dismiss('create');
@@ -183,7 +183,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         )}
         />
         <FormField 
-        name="contentType"
+        name="postType"
         control={form.control}
         render={({ field }) => (
             <FormItem className='w-[65%]'>

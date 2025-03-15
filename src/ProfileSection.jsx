@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { getUserCollections } from './services/collectionService';
+import { fetchUserData } from './services/userService';
 
 // Data required:
 //  - User image, name, bio, and links
@@ -8,53 +10,110 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // ? Should additional info section be associated with the collection?
 // TODO: More Collections Section
 // TODO: Display Profile and More Collections section in 2 columns on larger screens
+// TODO: Integrate with actual user data (pass a boolean isDemo)
 
-export default function ProfileSection({ userCollections }) {
+export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
     const location = useLocation(); // URL location
     const navigate = useNavigate();
-    // Grabs the first post from each collection as a default thumbnail
-    const posts = userCollections.map(collection => collection.postsArray[0]);
+    const { userId } = useParams();
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [collections, setCollections] = useState(exampleCollections);
+    const initialThumbnails = exampleCollections.map(collection => collection.postsArray[0]);
+    const [thumbnails, setThumbnails] = useState(initialThumbnails);
+    const [userProfile, setUserProfile] = useState(null);
+    const [mode, setMode] = useState('example');
 
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const defaultCollection = {
+        title: 'No Collections Yet!',
+        postsArray: [
+            {
+                aspectRatio: '1:1'
+            }
+        ]
+    };
 
+    //* Function to view a collection from profile
+    //TODO  Call firestore and pass :collectionId
     const viewCollection = (index) => {
         setTimeout(() => {
             navigate('/posts');
         }, 10);
     }
 
-    useEffect(() => {
-        // Get the current URL
-        const url = window.location.href;
-        
-        // Extract the index from the URL
-        const index = parseInt(url.split('#slide')[1], 10);
-    
-        // Update the current index
+    useEffect(() => {   //* Get the current URL, extract the index and update
+        const url = window.location.href; 
+        const index = parseInt(url.split('#slide')[1], 10); 
         if(isNaN(index)){
           window.location.hash = '#slide0';
-          setCurrentIndex(0);
+          setCurrentSlide(0);
           console.log("Index is NaN");
         }
         else{
-          setCurrentIndex(index);
+          setCurrentSlide(index);
         }
         console.log("selected carousel item changed to:", index);
     }, [location]);
 
     useEffect(() => { 
-    // Set the current index to 0 when the page loads
-    // This is necessary because the URL does not change when the page is refreshed
-    // but the selectedIndex state does change when the page is refreshed (to default state) causing error (displays )
-        
+    /*  
+        Sets the current index to 0 when the page loads
+        This is necessary because the URL does not change when the page is refreshed
+        but the selectedSlide state does change when the page is refreshed (to default state) causing error (displays )
+    */
         window.location.hash = '#slide0';
-        setCurrentIndex(0);
+        setCurrentSlide(0);
 
     }, []);
 
+    //* Get either the own user's collections, seperate user's collections, or example collections
+    //* Set the mode to 'self', 'user', or 'example' respectively
+    useEffect(() => {
+        const fetchCollections = async () => {
+          if (userId) { //* A userId is present in the URL
+            const profile = await fetchUserData(userId);
+            setUserProfile(profile);
+            setMode('user');
+            try {
+                const userCollections = await getUserCollections(userId);
+                setCollections(userCollections);
+            } catch (error) {
+                console.error('Error fetching user collections:', error);
+                setCollections([defaultCollection]);
+            }
+
+          } else if (isLoggedIn && loggedInUser) { //* The user is logged in, and there is no userId in the URL
+            const profile = await fetchUserData(loggedInUser.uid);
+            setUserProfile(profile);
+            setMode('self');
+            try {
+                const userCollections = await getUserCollections(loggedInUser.uid);
+                setCollections(userCollections);
+            } catch (error) {
+                console.error('Error fetching user collections:', error);
+                setCollections([defaultCollection]);
+            }
+
+          } else {  //* The user is not logged in, and there is no userId in the URL
+            setCollections(exampleCollections);
+          }
+        };
+
+        fetchCollections();
+    }, [isLoggedIn, loggedInUser, userId]);
+
+    useEffect(() => {
+        // Grabs the first post from each collection as a default thumbnail
+        // TODO  !!! Get the posts from firebase, not .postArray
+        // TODO  Change to check for an available thumbnail in each collection before defaulting to the first post
+        if (collections.length > 0) {
+            setThumbnails(collections.map(collection => collection.postsArray[0]));
+            console.log('thumbnails set');
+        }
+    }, [collections]);
+
     return(
         <div className="w-full body-h flex justify-center">
-            <div id="contact-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-slate-200 
+            <div id="contact-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-[#e8dada] 
             rounded-lg shadow-lg px-6 py-4 mt-8 bg-opacity-75 items-center'>
             
                 <div className="w-full h-min">
@@ -69,7 +128,7 @@ export default function ProfileSection({ userCollections }) {
                     <div className="flex flex-col w-full sm:hidden">
                         <div className='w-full h-min flex items-center justify-between'>
                             <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
-                            font-bold text-gray-900">Jane Doe</h3>
+                            font-bold text-gray-900">{(mode != 'example') ? userProfile.displayName : 'Jane Doe'}</h3>
                             {/* Links */}
                             <div id="contact-links" className="w-1/3 flex justify-center">
                                 {/* 
@@ -84,7 +143,7 @@ export default function ProfileSection({ userCollections }) {
                             </div>
                         </div>
                         <h4 className="text-xl/none xl:text-2xl/none 2xl:text-3xl/none 
-                        font-medium text-gray-800 mb-2">@user-handle</h4>
+                        font-medium text-gray-800 mb-2">{(mode != 'example') ? '@' + userProfile.handle : '@user-handle'} </h4>
                     </div>
 
                     {/* Main Section: Flex Row */}
@@ -92,17 +151,17 @@ export default function ProfileSection({ userCollections }) {
                         {/* Avatar */}
                         <div className="avatar">
                             <div className="w-28 rounded">
-                                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                {(mode != 'example') ? (<img src={userProfile.photoURL} />) :
+                                (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />)}
                             </div>
                         </div>
 
                         {/* User's Name and Bio */}
                         <div className="w-2/3 flex flex-col justify-between">
-
                             <div className="hidden sm:flex sm:flex-col">
                                 <div className='flex justify-between items-center'>
                                     <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
-                                    font-bold text-gray-900">Jane Doe</h3>
+                                    font-bold text-gray-900">{(mode != 'example') ? userProfile.displayName : 'Jane Doe'}</h3>
                                     {/* Links */}
                                     <div id="contact-links" className="w-1/3 flex justify-center">
                                         {/* 
@@ -118,35 +177,37 @@ export default function ProfileSection({ userCollections }) {
                                 </div>
 
                                 <h4 className="text-xl/none xl:text-2xl/none 2xl:text-3xl/none 
-                                font-medium text-gray-800 mb-2">@user-handle</h4>
+                                font-medium text-gray-800 mb-2">{(mode != 'example') ? '@' + userProfile.handle : '@user-handle'}</h4>
                             </div>
 
                             <p className="lg:text-lg xl:text-xl text-gray-700 text-justify mb-1">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi.
+                                {
+                                    (mode != 'example') ? userProfile.bio : 
+                                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi."
+                                }
                             </p>
                         
                         </div>
                     </div>
 
                     {/* Additional information */}
-                    <div className="w-full sm:w-5/6 lg:w-4/5 2xl:w-3/4 flex justify-center sm:pl-2">
+                    <div className="w-full lg:w-5/6 2xl:w-4/5 flex justify-center px-6 md:px-8 lg:px-0">
                         <div className="lg:text-lg xl:text-xl text-gray-700 text-justify">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi.
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distincti nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit.
                         </div>
                     </div>
                 </div>
 
                 <div id="more-collections" className="w-full h-full flex flex-col justify-center items-center">
-                    <h1 className="w-full text-xl font-bold">More Collections</h1>
+                    <h1 className="w-full text-xl font-bold">{(mode != 'example') ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections'}</h1>
                     <div className="min-h-0.5 w-full rounded-lg bg-zinc-700 my-1"></div>
 
                     <div className='w-full flex flex-col items-center'>
-                        
                         {/* Collection Name + ViewPosts button */}
                         <div className='flex w-full gap-2 items-center justify-between'>
                             <div className='w-[12%] sm:w-1/5'/> {/* Spacer for centering */}       
                             
-                            <div className='mt-2 text-lg lg:text-2xl font-mono font-bold underline underline-offset-4 text-zinc-900 select-none'>{userCollections[currentIndex].title}</div>
+                            <div className='mt-2 text-lg lg:text-2xl font-mono font-bold underline underline-offset-4 text-zinc-900 select-none'>{collections[currentSlide].title}</div>
                             
                             <div className='flex w-[12%] sm:w-1/5 justify-end'>
                                 <button
@@ -174,29 +235,37 @@ export default function ProfileSection({ userCollections }) {
                         </div>
 
                         <div className='flex justify-center gap-1 w-full items-center'>
-                            <a href={`#slide${currentIndex == 0 ? (posts.length - 1) : (currentIndex - 1)}`} className="btn border-none h-9 min-h-9 hover:bg-slate-700">❮</a> 
+                            <a href={`#slide${currentSlide == 0 ? (thumbnails.length - 1) : (currentSlide - 1)}`} className="btn border-none h-9 min-h-9 hover:bg-slate-700">❮</a> 
 
-                            <div className={`carousel shadow-lg shadow-black/40 ${posts[currentIndex].aspectRatio === '1:1' ? 'collection-mini' : 'carousel-img-wide'}`} 
+                            <div className={`carousel shadow-lg shadow-black/40 ${thumbnails[currentSlide].aspectRatio === '1:1' ? 'collection-mini' : 'carousel-img-wide'}`} 
                                 style={{transition: 'width 0.3s 0.01s'}}>
-                                {console.log(currentIndex)}
-                                {posts.map((post, index) => {
+                                {console.log(currentSlide)}
+                                {thumbnails.map((post, index) => {
                                     return (
                                         <div id={`slide${index}`} className="carousel-item relative" key={index}
-                                            style={{opacity: `${currentIndex == index ? '1' : '0'}`,
+                                            style={{opacity: `${currentSlide == index ? '1' : '0'}`,
                                                 transition: 'opacity 0.3s 0.01s'}}
                                         >    
+                                            {post.image ? (
                                             <img
                                                 className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
                                                     drop-shadow-2xl shadow-inner shadow-black`}
                                                 src={post.image}
                                                 draggable="false"
                                             />
+                                            ) : (
+                                            <div
+                                                className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
+                                                    drop-shadow-2xl shadow-black bg-gray-700`}
+                                                draggable="false"
+                                            />
+                                            )}
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <a href={`#slide${(currentIndex + 1) % (posts.length)}`} className="btn border-none h-9 min-h-9 hover:bg-slate-700">❯</a>
+                            <a href={`#slide${(currentSlide + 1) % (thumbnails.length)}`} className="btn border-none h-9 min-h-9 hover:bg-slate-700">❯</a>
                         </div>
                     </div>
                     

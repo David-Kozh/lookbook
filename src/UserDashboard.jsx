@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserCollections } from './services/collectionService';
 import CollectionsMenu from './CollectionsMenu.jsx';
 import CreateCollection from './CreateCollection.jsx';
 import EditCollection from './EditCollection.jsx';
@@ -6,20 +7,32 @@ import EditCollectionSettings from './EditCollectionSettings.jsx';
 import CreatePost from './CreatePostPage.jsx';
 import EditPost from './EditPost.jsx';
 
-import userCollectionsData from './data/userCollections.js';    // Initial state of userCollections
-
-// ? BreadCrumb for navigation through menu? Collections > Edit MyCollection > Edit Post
-// ? Should CollectionSettings be in a dialog box?
+//? BreadCrumb for navigation through menu? Collections > Edit MyCollection > Edit Post
+//? Should CollectionSettings be in a dialog box?
 
 // TODO: "No Collections" message & handling when userCollections is empty in CollectionsMenu
 // TODO: "No Posts" message & handling when postsArray is empty in EditCollection
 
-export default function UserDashboard() {
-    const [userCollections, setUserCollections] = useState(userCollectionsData);
+export default function UserDashboard({ loggedInUserId }) {
+    const [userCollections, setUserCollections] = useState([]);
 
     const [dashTab, setDashTab] = useState('menu');     // Show CollectionsMenu by default. Then change state based on button in CollectionsMenu
     const [collectionIndexToEdit, setCollectionIndexToEdit] = useState(0);
     const [postIndexToEdit, setPostIndexToEdit] = useState(0);
+    
+    useEffect(() => {
+        const fetchCollections = async () => {
+          try {
+            const collections = await getUserCollections(loggedInUserId);
+            setUserCollections(collections);
+          } catch (error) {
+            console.error('Error fetching user collections:', error.message);
+          }
+        };
+        if (loggedInUserId) {
+          fetchCollections();
+        }
+    }, [loggedInUserId]);
 
     // Create Collection Menu
     const showCreateCollection = () => { // Usage: Called from CollectionsMenu
@@ -40,6 +53,10 @@ export default function UserDashboard() {
 
     // Edit Collection Menu
     const showEditCollection = (index) => { // Usage: Called from CollectionsMenu
+        if (userCollections.length === 0) {
+            console.log('No collections to edit');
+            return;
+        }
         console.log("show edit-collection - from dashboard");
         setCollectionIndexToEdit(index);
         fadeOutComponent('collections-menu');
@@ -116,105 +133,78 @@ export default function UserDashboard() {
             fill: 'forwards'
         });
     }
-
-    //* Back End Function Calls
+ 
+    //* Dev functions that manipulate example data as if it were database data
+    //  TODO: Remove, and call firestore instead of these functions
     //*     Collections Functions
-    const addCollection = (newCollection) => { // Usage: Called from CreateCollection
-        setUserCollections(prevCollections => [...prevCollections, newCollection]);
-    };
-    const updateCollection = (updatedCollection) => { // Usage: Called from EditCollectionSettings
-        setUserCollections(prevCollections => 
-            prevCollections.map((collection, index) => 
-                index === collectionIndexToEdit ? updatedCollection : collection
-            )
-        );
-    };
-    const deleteCollection = (indexToDelete) => { // Usage: Called from delete button in CollectionsMenu
-        setUserCollections(prevCollections => 
-          prevCollections.filter((collection, index) => index !== indexToDelete)
-        );
-    };
 
-    //*     Posts Functions
-    const addPost = (newPost) => { // Usage: Called from CreatePost
-        setUserCollections(prevCollections => 
-        prevCollections.map((collection, index) => 
-            index === collectionIndexToEdit 
-            ? { ...collection, postsArray: [...collection.postsArray, newPost] } 
-            : collection
-        )
-        );
-    };
-    const updatePost = (updatedPost) => { // Usage: Called from EditPost
-        setUserCollections(prevCollections => 
+        const updateCollection = (updatedCollection) => { // Usage: Called from EditCollectionSettings
+            setUserCollections(prevCollections => 
+                prevCollections.map((collection, index) => 
+                    index === collectionIndexToEdit ? updatedCollection : collection
+                )
+            );
+        };
+
+        //*     Posts Functions
+        const addPost = (newPost) => { // Usage: Called from CreatePost
+            setUserCollections(prevCollections => 
             prevCollections.map((collection, index) => 
                 index === collectionIndexToEdit 
-                ?   { 
-                    ...collection, 
-                    postsArray: collection.postsArray.map((post, postIndex) => 
-                        postIndex === postIndexToEdit ? updatedPost : post) 
-                    } 
+                ? { ...collection, postsArray: [...collection.postsArray, newPost] } 
                 : collection
             )
-        );
-    };
-    const deletePost = (postIndexToDelete) => { // Usage: Called from delete button in EditCollection -> ButtonGroup -> DeleteAlert
-        setUserCollections(prevCollections => 
-            prevCollections.map((collection, index) => 
-                index === collectionIndexToEdit 
-                ?   { 
-                    ...collection, 
-                    postsArray: collection.postsArray.filter((post, postIndex) => postIndex !== postIndexToDelete) 
-                    } 
-                : collection
-            )
-        );
-    };
-
+            );
+        };
+        const updatePost = (updatedPost) => { // Usage: Called from EditPost
+            setUserCollections(prevCollections => 
+                prevCollections.map((collection, index) => 
+                    index === collectionIndexToEdit 
+                    ?   { 
+                        ...collection, 
+                        postsArray: collection.postsArray.map((post, postIndex) => 
+                            postIndex === postIndexToEdit ? updatedPost : post) 
+                        } 
+                    : collection
+                )
+            );
+        };
+    
     return (
         <div className='w-full body-h flex justify-center'>
-            
-            <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-slate-200 rounded-lg shadow-lg px-6 py-4 mt-8 bg-opacity-75 space-y-1'>
-                                   
+            <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-[#e8dada] rounded-lg shadow-lg px-6 py-4 mt-8 bg-opacity-75 space-y-1'>               
                     <div className='w-full h-min'>
                         <h1 className='text-3xl xl:text-4xl font-bold mb-1 select-none'>Dashboard</h1>
                         <div className="h-0.5 rounded-full bg-zinc-800 my-1"></div>
                     </div>
 
                     {dashTab === 'menu' && 
-                        <CollectionsMenu userCollections={userCollections} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} deleteCollection={deleteCollection}/>
+                        <CollectionsMenu loggedInUserId={loggedInUserId} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} />
                     }
-
                     {dashTab === 'create-collection' && 
-                        <CreateCollection cancelCreate={cancelCreateCollection} addCollection={addCollection}/>
+                        <CreateCollection loggedInUserId={loggedInUserId} cancelCreate={cancelCreateCollection} />
                     }
-
                     {dashTab === 'edit-collection' && 
-                        <EditCollection collection={userCollections[collectionIndexToEdit]} 
+                        <EditCollection loggedInUserId={loggedInUserId} collection={userCollections[collectionIndexToEdit]} 
                             showCreatePost={showCreatePost} showEditPost={showEditPost} showSettings={showEditCollectionSettings}
-                            deletePost={deletePost} 
                             cancelEdit={cancelEditCollection} 
                         />
                     }
-
                     {dashTab === 'edit-collection-settings' &&
-                        <EditCollectionSettings collection={userCollections[collectionIndexToEdit]}
-                            cancelEditSettings={cancelEditCollectionSettings} updateCollection={updateCollection} 
+                        <EditCollectionSettings loggedInUserId={loggedInUserId} collection={userCollections[collectionIndexToEdit]}
+                            cancelEditSettings={cancelEditCollectionSettings} 
+                            updateCollection={updateCollection} //TODO replace with firestore call in EditCollectionSettings component
                         />
                     }
-
                     {dashTab === 'create-post' && 
-                        <CreatePost cancelCreate={cancelCreatePost} addPost={addPost}/>
+                        <CreatePost loggedInUserId={loggedInUserId} cancelCreate={cancelCreatePost} addPost={addPost}/> //TODO replace addPost with firestore call in CreatePost component
                     }
-
                     {dashTab === 'edit-post' && 
-                        <EditPost cancelEdit={cancelEditPost} post={userCollections[collectionIndexToEdit].postsArray[postIndexToEdit]} updatePost={updatePost}/>
+                        <EditPost loggedInUserId={loggedInUserId} cancelEdit={cancelEditPost} post={userCollections[collectionIndexToEdit].postsArray[postIndexToEdit]} 
+                        updatePost={updatePost} //TODO replace updatePost with firestore call in EditPost component
+                        />
                     }
-
             </div>
-            
         </div>
-
-        
     );
 }

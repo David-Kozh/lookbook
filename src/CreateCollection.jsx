@@ -11,8 +11,10 @@ import { useState, useEffect } from 'react';
 import CreatePostForm from './components/CreatePostForm';
 import EditPostForm from './components/EditPostForm';
 import CreateCollectionForm from "./components/CreateCollectionForm";
+import { createCollection } from "./services/collectionService";
+import { createPost } from './services/postService';
 
-export default function CreateCollection({ cancelCreate, addCollection }) {
+export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setEditDialogOpen] = useState(false);
     const [posts, setPosts] = useState([]);
@@ -44,22 +46,29 @@ export default function CreateCollection({ cancelCreate, addCollection }) {
         setPosts([...posts, post]);
         console.log('post added (CreateCollection)');
     };
-
     const updatePost = (post) => {
         const newPosts = [...posts];
         newPosts[currentIndex] = post;
         setPosts(newPosts);
     };
-
     const removePost = () => {
         const newPosts = [...posts];
         newPosts.splice(currentIndex, 1);
         setPosts(newPosts);
     }
 
-    //* Submit the local collection to the database
-    const submitCollection = (collection) => {
-        addCollection({ ...collection, postsArray: posts });
+    //* Submit the local collection to the database, with its postsArray
+    const submitCollection = async (collection, postsArray) => {
+        //* Replacing with firestore
+        ////addCollection({ ...collection, postsArray: posts });
+        const collectionId = await createCollection(loggedInUserId, collection);
+        
+        //TODO  Iterate over the posts array and upload videos and images to storage
+
+        // Iterate over the posts array and create each post
+        for (const el of postsArray) {
+            await createPost(loggedInUserId, collectionId, el);
+        }
     };
 
     useEffect(() => {   //* Reset selected button when the dialogs are closed

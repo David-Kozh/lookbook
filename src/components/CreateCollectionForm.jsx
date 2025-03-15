@@ -1,4 +1,3 @@
-"use client"
 import { useState, useEffect } from "react"
 import { useLocation } from 'react-router-dom';
 import { z } from "zod"
@@ -71,19 +70,19 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         
         var imgUrl = undefined;
         if(values.thumbnail){
-            imgUrl = URL.createObjectURL(values.thumbnail);
+            imgUrl = URL.createObjectURL(values.thumbnail); //TODO Replace with call to cloud storage
         }
 
-        // TODO: Must check that the posts array is not empty
         //* Submit the collection
-        submitCollection({
-            title: values.title,
-            subtitle: values.subtitle,
-            thumbnail: imgUrl,
-            displaySettings: values.displaySettings,
-            posts: posts,
-        });
-        cancelCreate();
+        if(posts.length > 0){
+            submitCollection({
+                title: values.title,
+                subtitle: values.subtitle,
+                thumbnail: imgUrl,
+                displaySettings: values.displaySettings,
+            }, posts);
+            cancelCreate();
+        }
     }
 
     useEffect(() => {
@@ -191,7 +190,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 </div>
                 ) : (
                     <div className="create-collection-carousel mx-6 bg-gray-800 text-white flex justify-center items-center">
-                        <h1 className="mb-2 w-full text-center">No posts yet!</h1>
+                        <h1 className="mb-2 w-full text-center">No Posts Yet!</h1>
                     </div>
                 )
                 }

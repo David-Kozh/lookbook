@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import DeleteAlert from './DeleteAlert';
 
-// TODO: Delete btn should bring up a modal to confirm deletion
-// TODO:      - Should dynamically obtain/display the name of collection/post to be deleted 
-
-const ButtonGroup = ({ onButtonClick, selectedIndex, setSelectedIndex, postsLength, selectedItemName, itemType, deleteFunc }) => {
+const ButtonGroup = ({ 
+  onButtonClick, selectedIndex, setSelectedIndex, numSlides, selectedItemName, itemType, itemRef
+}) => {
   const [selectedButton, setSelectedButton] = useState(null);
 
   const handleClick = (buttonName) => {
+    if (selectedItemName == ('No Collections Yet!' || 'No Posts Yet!') && buttonName !== 'create') {
+      //* Prevent buttons from changing state when they can't be used (can't edit or delete the blank items)
+      //* Keeps the buttons from getting stuck in a highlighted state after they fail to do anything
+      //? Could maybe alterenatively check for .id == 'default' instead of name? (ids are in itemRef)
+      console.log('No item selected');  
+      return;
+    }
     setSelectedButton(buttonName);
+    console.log('numslides', numSlides);
     if (onButtonClick) {
       onButtonClick(buttonName);
     }
@@ -66,8 +73,8 @@ const ButtonGroup = ({ onButtonClick, selectedIndex, setSelectedIndex, postsLeng
       </button>
 
       {<div className="flex justify-between items-center rounded-r-lg rounded-l-lg bg-slate-700 gap-0.5 h-12">
-        <a href={`#slide${selectedIndex == 0 ? (postsLength - 1) : (selectedIndex - 1)}`} className="btn border-none h-12 min-h-10 rounded-none rounded-l-lg hover:bg-slate-700">❮</a> 
-        <a href={`#slide${(selectedIndex + 1) % (postsLength)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg hover:bg-slate-700">❯</a>
+        <a href={`#slide${selectedIndex == 0 ? (numSlides - 1) : (selectedIndex - 1)}`} className="btn border-none h-12 min-h-10 rounded-none rounded-l-lg hover:bg-slate-700">❮</a> 
+        <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg hover:bg-slate-700">❯</a>
       </div>}
 
       <button
@@ -92,7 +99,7 @@ const ButtonGroup = ({ onButtonClick, selectedIndex, setSelectedIndex, postsLeng
       </button>
 
       {/* Delete Modal */}
-      <DeleteAlert itemName={selectedItemName} handleClick={handleClick} selectedButton={selectedButton} setSelectedIndex={setSelectedIndex} itemType={itemType} deleteFunc={deleteFunc} selectedIndex={selectedIndex} />
+      <DeleteAlert itemName={selectedItemName} handleClick={handleClick} selectedButton={selectedButton} setSelectedIndex={setSelectedIndex} itemType={itemType} itemRef={itemRef} />
 
 
       

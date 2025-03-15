@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
 import ButtonGroup from './components/CollectionsButtons.jsx';
+import posts from './data/posts.js';
+import { getPosts } from './services/postService.js';
 
 //  If the selected button is null, display default view of posts carousel
 //  Once a button is selected, display the corresponding element from below:
@@ -11,16 +13,38 @@ import ButtonGroup from './components/CollectionsButtons.jsx';
 //      - ViewPost: animates to the selected post in the image track
 //      - DeletePost (modal)
 
-export default function EditCollection({ collection, showCreatePost, showEditPost, cancelEdit, showSettings, deletePost }) {
+export default function EditCollection({ loggedInUserId, collection, showCreatePost, showEditPost, cancelEdit, showSettings }) {
     const location = useLocation(); // URL location
-    const posts = collection.postsArray;
     const [currentIndex, setCurrentIndex] = useState(0);
+    const defaultPost = {
+        id: 'default',  //* Unique id for default objects
+        title: 'No Collections Yet!',
+        aspectRatio: '1:1',
+    };
+    const [posts, setPosts] = useState([defaultPost]);
+    
+    //TODO Test getPosts from firebase. 
+    //* Get posts for loggedInUserId, collection.id. If no posts exist, posts == [defaultPost]
+    useEffect(() => {
+        const fetchCollections = async () => {
+            try {
+            const collectionPosts = await getPosts(loggedInUserId, collection.id);
+            setPosts(collectionPosts);
+            } catch (error) {
+            console.error('Error fetching user collections:', error.message);
+            }
+        };
+        if (loggedInUserId && (collection.id !== 'default')) {
+            fetchCollections();
+        }
+    }, [loggedInUserId, collection]);
+
 
     /* Button Group State */
-    const [selectedButton, setSelectedButton] = useState(null);
+    const [selectedButton, setSelectedButton] = useState(null); //? why not referenced & in CollectionsMenu
     
     const handleButtonClick = (buttonName) => {
-        setSelectedButton(buttonName);
+        setSelectedButton(buttonName); //? why not referenced
         if(buttonName === 'create'){
             console.log("Create Button Clicked");
             // TODO: Animate in the CreatePost form/modal (undecided)
@@ -108,18 +132,21 @@ export default function EditCollection({ collection, showCreatePost, showEditPos
                     style={{transition: 'width 0.3s 0.01s'}}>
                     
                     {posts.map((post, index) => {
-                        const paddingTop = (1 / post.aspectRatio) * 100;
+                        const paddingTop = (1 / post.aspectRatio) * 100; //?
                         return (
                             <div id={`slide${index}`} className="carousel-item relative" key={index}
                                 style={{opacity: `${currentIndex == index ? '1' : '0'}`,
                                     transition: 'opacity 0.3s 0.01s'}}
                             >    
-                                <img
-                                    className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
-                                        drop-shadow-2xl shadow-inner shadow-black object-cover`}
-                                    src={post.image}
-                                    draggable="false"
-                                />
+                                {post.image ? (
+                                    <img className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
+                                            drop-shadow-2xl shadow-inner shadow-black object-cover`}
+                                        src={post.image} draggable="false" />
+                                )   :   (
+                                    <div className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
+                                            drop-shadow-2xl shadow-inner shadow-black object-cover`}
+                                        draggable="false" />
+                                )}
                             </div>
                         )
                     })}
@@ -127,8 +154,12 @@ export default function EditCollection({ collection, showCreatePost, showEditPos
             </div>
 
             <div className="flex h-full justify-center items-center mb-2" style={{height: "15%"}}>
-                <ButtonGroup onButtonClick={handleButtonClick} selectedIndex={currentIndex} setSelectedIndex={setCurrentIndex} postsLength={posts.length} 
-                    selectedItemName={posts[currentIndex].title} itemType={'post'} deleteFunc={deletePost}/>
+                <ButtonGroup onButtonClick={handleButtonClick} selectedIndex={currentIndex} setSelectedIndex={setCurrentIndex} numSlides={posts.length} 
+                    selectedItemName={posts[currentIndex].title} itemType={'post'} itemRef={{
+                        loggedInUserId: loggedInUserId, 
+                        collectionId: collection.id,
+                        postId: null //TODO pass post id
+                    }}/>
             </div>
 
         </div>
