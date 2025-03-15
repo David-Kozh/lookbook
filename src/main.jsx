@@ -16,28 +16,29 @@ import Login from './login.jsx';
 import SignUp from './signup.jsx';
 import './App.css'
 /*
-  * Edit-Collection/Post Components:
-    TODO  Gray out the "Save Changes" button if no changes have been made
-    TODO  Gray out unchanged fields using Form API (touched fields)
-  * Firebase: 
+  * Firebase Tasks: 
     //✅ User Authentication
     //✅ Database for user collections and posts
-    TODO  Replace example data with Firestore function calls
+    TODO  Finish replacing example data with Firestore function calls
     TODO  Cloud Storage for images and videos
   * Functionalies to implement:
     TODO  Add "carousel" as a content type (daisyUI) just like mp4
     TODO  Add "like/save" functionality to posts
-    TODO  Profile Picture Functionality/User Settings (Change name, password, etc.)
+    TODO  Update user settings (name, image, password, etc.)
   * Priority Tasks:
+    ! Current Task: Implementing Cloud Storage for images and videos in CreateCollection.jsx, 
+    !     so Posts can be properly uploaded to DB with media content URLs
     TODO  Check that the post/collection object keys in form components match the firebase service files
-    TODO  Add a check to delete button for collections, so that the default/placeholder collection cannot be deleted
+    TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
     TODO  add a check for 'theme' of collection. If dark, use something like bg-[#546578db]
-    TODO  Bugtest resizing of expanded posts when window is resized
-    TODO  Handle overflow on image descriptions
   * Lower-priority:
+    TODO  Bugtest resizing of expanded posts when window is resized
     TODO  Apply resize() to mp4 content in track (check resize() in general)
     TODO  Review necessity of selectedImageContext
     TODO  In handleResize() -> Animate the image info so image info updates with image resize
+    * Edit-Collection/Post Components:
+      TODO  Gray out the "Save Changes" button if no changes have been made
+      TODO  Gray out unchanged fields using Form API (touched fields)
   ?  Questions:
   ?   How should the user's own profile be displayed? 
   ?     In theory:

@@ -40,10 +40,11 @@ const formSchema = z.object({
 })
 
 // ** Completed Form ✅ for Creating Post in a Dialog (with validation)
-// ** Next Stage : Backend Integration
-// TODO: Implement cloud storage for images and content
-// TODO: Implement database storage for collections
-
+// ** Currently working on: Firebase Integration
+////-TODO: Implement cloud storage for images and content
+////-TODO: Implement database storage for collections
+//!!! This component is used in CreateCollection.jsx but CreateCollection.jsx handles the database and cloud storage
+//TODO  Check handling of posts between components. Need to seperate the Posts document information, and the media content for cloud storage
 export default function CreatePostForm({ addPost, dismiss }) {
 
   const form = useForm({
@@ -75,7 +76,9 @@ export default function CreatePostForm({ addPost, dismiss }) {
       return;
     }
 
-    // TODO: Change to an upload to cloud storage
+    ////-TODO: Change to an upload to cloud storage
+    //! CreateCollection.jsx requires this component not handle cloud storage or database,
+    //! so that only the final collection is submitted, keeping the posts local until then
     const imageUrl = URL.createObjectURL(values.image);
     const contentUrl = values.content ? URL.createObjectURL(values.content) : undefined;
     

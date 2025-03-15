@@ -14,6 +14,7 @@ import CreateCollectionForm from "./components/CreateCollectionForm";
 import { createCollection } from "./services/collectionService";
 import { createPost } from './services/postService';
 
+//! TODO/Current task: Implementing Cloud Storage here, so that Posts can be properly uploaded to DB with media content URLs
 export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setEditDialogOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     const [selectedBtn, setSelectedBtn] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    //* Fucntions to hand opening/closing of the create and edit post modals
     const handleOpenDialog = (dialogName) => {
         if (dialogName === 'create') {
             setCreateDialogOpen(true);
@@ -31,7 +33,6 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
         }
         console.log('dialog open');
     };
-
     const handleCloseDialog = (dialogName) => {
         if (dialogName === 'create') {
             setCreateDialogOpen(false);
@@ -41,7 +42,7 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
         setSelectedBtn(null);
     };
 
-    //* Post Functions for the local collection.postsArray that is currently being created
+    //* Functions to manage local collection.postsArray that is currently being created
     const addPost = (post) => {
         setPosts([...posts, post]);
         console.log('post added (CreateCollection)');
@@ -64,9 +65,10 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
         const collectionId = await createCollection(loggedInUserId, collection);
         
         //TODO  Iterate over the posts array and upload videos and images to storage
-
+        //TODO  !Check that postsArray structure matches createPost function in postService.js
         // Iterate over the posts array and create each post
         for (const el of postsArray) {
+            //TODO  Use Cloud storage for post.image and optionally post.content
             await createPost(loggedInUserId, collectionId, el);
         }
     };

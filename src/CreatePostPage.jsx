@@ -44,10 +44,8 @@ const formSchema = z.object({
 })
 
 // ** Completed Form ✅ for Creating Post (with validation)
-// ** Next Stage : Backend Integration
-// TODO: Implement cloud storage for images and content
-// TODO: Implement database storage for collections
-
+// TODO Implement cloud storage for image (and content), and database storage for post document
+// TODO      > Model off of database/cloud storage of posts in CreateCollection.jsx, when completed
 export default function CreatePost({ cancelCreate, addPost }) {
   
     const form = useForm({
