@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
 import ButtonGroup from './components/CollectionsButtons.jsx';
-import posts from './data/posts.js';
 import { getPosts } from './services/postService.js';
 
 //  If the selected button is null, display default view of posts carousel
@@ -39,10 +38,10 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
         }
     }, [loggedInUserId, collection]);
 
-
     /* Button Group State */
     const [selectedButton, setSelectedButton] = useState(null); //? why not referenced & in CollectionsMenu
     
+    //* Change view based on the button clicked
     const handleButtonClick = (buttonName) => {
         setSelectedButton(buttonName); //? why not referenced
         if(buttonName === 'create'){
@@ -70,11 +69,8 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     };
 
     useEffect(() => {
-        // Get the current URL
-        const url = window.location.href;
-    
-        // Extract the index from the URL
-        const index = parseInt(url.split('#slide')[1], 10);
+        const url = window.location.href;   // Get the current URL
+        const index = parseInt(url.split('#slide')[1], 10); // Extract the index from the URL
     
         // Update the current index
         if(isNaN(index)){
@@ -98,9 +94,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     }, []);
 
     return (
-
     <div id="edit-collection-menu" className='w-full h-full flex flex-col gap-2'>
-
         <div className="flex mt-2 ml-2 justify-between" style={{height: "5%"}}>
             <div className=' text-2xl font-bold select-none italic text-zinc-900' >
                 '{collection.title}'
@@ -118,14 +112,11 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
                     </svg>
                     <div className='hidden text-xs md:inline'>Settings</div>
                 </Button>
-
             </div>
         </div>
         
         <div id="edit-collection" className='w-full mt-1 flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
-            
             <div className='w-full flex flex-col gap-6 sm:gap-4 items-center'>
-
                 <div className='text-2xl lg:text-3xl mt-2 font-mono font-bold underline underline-offset-4 text-zinc-900 select-none'>'{posts[currentIndex].title}'</div>
 
                 <div className={`carousel my-2 shadow-lg shadow-black/40 ${posts[currentIndex].aspectRatio === '1:1' ? 'carousel-img' : 'carousel-img-wide'}`} 
@@ -161,10 +152,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
                         postId: null //TODO pass post id
                     }}/>
             </div>
-
         </div>
-
     </div>
-
     )
 }

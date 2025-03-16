@@ -1,29 +1,27 @@
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { DialogFooter } from "@/components/ui/dialog"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 
 const formSchema = z.object({
-
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
@@ -35,18 +33,13 @@ const formSchema = z.object({
   postType: z.string(),
   content: z.any().refine(file => file instanceof File || file === undefined, {
     message: 'A file is required',
-}),
-
+  }),
 })
 
-// ** Completed Form ✅ for Creating Post in a Dialog (with validation)
-// ** Currently working on: Firebase Integration
-////-TODO: Implement cloud storage for images and content
-////-TODO: Implement database storage for collections
-//!!! This component is used in CreateCollection.jsx but CreateCollection.jsx handles the database and cloud storage
-//TODO  Check handling of posts between components. Need to seperate the Posts document information, and the media content for cloud storage
+//* This component is used in CreateCollection.jsx (parent component) 
+//* which handles the database and cloud storage for the post
+//TODO  Check handling of posts between components
 export default function CreatePostForm({ addPost, dismiss }) {
-
   const form = useForm({
     mode: 'onChange',
     resolver: zodResolver(formSchema),
@@ -62,12 +55,14 @@ export default function CreatePostForm({ addPost, dismiss }) {
 
   const contentTypeWatch = form.watch('postType');
       
-  // 2. Define a submit handler.
+  //* Submit handler passes the post to CreateCollection.jsx,
+  //* which will process the final set of posts when the collection is submitted.
+  //* This allows this post to be edited or deleted, before being uploaded, preserving resources
   function onSubmit(values) {
     console.log('submitting form');
     console.log(values);
 
-    // TODO: Additionally make sure the file extensions match the content type 
+    //TODO: Additionally make sure the file extensions match the content type 
     if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
       form.setError('content', {
           type: 'manual',
@@ -76,31 +71,27 @@ export default function CreatePostForm({ addPost, dismiss }) {
       return;
     }
 
-    ////-TODO: Change to an upload to cloud storage
-    //! CreateCollection.jsx requires this component not handle cloud storage or database,
-    //! so that only the final collection is submitted, keeping the posts local until then
-    const imageUrl = URL.createObjectURL(values.image);
-    const contentUrl = values.content ? URL.createObjectURL(values.content) : undefined;
-    
-    //* Create a new post with the form input data
-    addPost({
+    //* Create a new post object with the form input data
+    const newPost = {
       title: values.title,
       description: values.description,
-      image: imageUrl, //! passing src url for development to "simulate" cloud storage
+      imageFile: values.image,
       aspectRatio: values.aspectRatio,
       postType: values.postType,
-      content: contentUrl,
-    })
+    };
+    // Conditionally add contentFile if it exists
+    if (values.content) {
+      newPost.contentFile = values.content;
+    }
+    addPost(newPost);
     dismiss('create');
   }
 
   return(
   <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-col space-y-8 px-1"
-    >
-      <FormField
-        name="title"
+      className="flex flex-col space-y-8 px-1">
+      <FormField name="title"
         control={form.control}
         render={({ field }) => (
           <FormItem className="w-full mt-2">
@@ -118,8 +109,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         )}
       />
       
-      <FormField
-        name="description"
+      <FormField name="description"
         control={form.control}
         render={({ field }) => (
           <FormItem className="w-full">
@@ -137,8 +127,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         )}
       />
 
-      <Controller
-        name="image"
+      <Controller name="image"
         control={form.control}
         render={({ field: { onChange, ref } }) => (
           <FormItem>
@@ -164,8 +153,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
 
       {/* replace with radio group? */}
       <div className="flex w-full gap-4">
-        <FormField 
-        name="aspectRatio"
+        <FormField name="aspectRatio"
         control={form.control}
         render={({ field }) => (
           <FormItem className='w-[35%]'>
@@ -185,8 +173,8 @@ export default function CreatePostForm({ addPost, dismiss }) {
           </FormItem>
         )}
         />
-        <FormField 
-        name="postType"
+
+        <FormField  name="postType"
         control={form.control}
         render={({ field }) => (
             <FormItem className='w-[65%]'>
@@ -206,8 +194,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         />
       </div>
 
-      <Controller
-        name="content"
+      <Controller name="content"
         control={form.control}
         render={({ field: { onChange, ref } }) => (
           <FormItem>
@@ -235,7 +222,6 @@ export default function CreatePostForm({ addPost, dismiss }) {
       <DialogFooter>
         <Button type="submit" className="mt-8">Save Post</Button>
       </DialogFooter>
-
     </form>
   </Form>
   )

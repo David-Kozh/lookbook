@@ -1,17 +1,29 @@
-import { getFirestore, doc, addDoc, updateDoc, deleteDoc, collection } from "firebase/firestore";
+import { db } from '../config/firebaseConfig';
+import { doc, addDoc, updateDoc, deleteDoc, collection } from "firebase/firestore";
+import { uploadPostMedia } from "./storageService";
 
-const db = getFirestore();
-
+//* Anytime this function is called, the caller should first place any media in cloud storage
+//! Check usage across app
 export const createPost = async (uid, collectionId, post) => {
   const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
   
+  // Upload media files to Cloud Storage and get their URLs
+  const mediaFiles = {};
+  if (post.imageFile) {
+    mediaFiles.image = post.imageFile;
+  }
+  if (post.contentFile) {
+    mediaFiles.content = post.contentFile;
+  }
+  const mediaUrls = await uploadPostMedia(post.id, mediaFiles);
+
   const postData = {
     title: post.title || 'Untitled Post',
     description: post.description || '',
-    image: post.image || '',
+    image: mediaUrls.image || '',
     aspectRatio: post.aspectRatio || '1:1',
     postType: post.postType || 'default',
-    content: post.content || null,
+    content: mediaUrls.content || null,
     createdAt: new Date(),
   };
 

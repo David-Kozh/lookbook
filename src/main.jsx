@@ -30,7 +30,7 @@ import './App.css'
     !     so Posts can be properly uploaded to DB with media content URLs
     TODO  Check that the post/collection object keys in form components match the firebase service files
     TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
-    TODO  add a check for 'theme' of collection. If dark, use something like bg-[#546578db]
+    TODO  add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
   * Lower-priority:
     TODO  Bugtest resizing of expanded posts when window is resized
     TODO  Apply resize() to mp4 content in track (check resize() in general)
@@ -53,7 +53,6 @@ import './App.css'
   ?       - Would need to modify available space to maximize image size 
   ?   Should 1:1 images/description be row/col orientated
   ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll
-
   svgs: https://iconscout.com/icons/settings-icon?price=free
 */
 function App() {

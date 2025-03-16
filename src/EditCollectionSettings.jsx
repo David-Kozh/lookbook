@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
- 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -21,7 +20,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"   
-
 import { updateCollection } from "./services/collectionService"
 
 // ** Zod Schema for Form Validation
@@ -40,7 +38,8 @@ const formSchema = z.object({
     }),
 })
 
-// Completed component for editing collection settings
+//TODO Check use of image files in the thumbnail field
+//? Can/should we check for unchanged data to preserve resources by not updating those values?
 export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings }) {
 
     const form = useForm({
@@ -61,7 +60,6 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
           imageUrl = '';//URL.createObjectURL(values.thumbnail);
           // TODO: Change to an update to the cloud storage
         }
-        // TODO: Change to an update to the database
         updateCollection(
             loggedInUserId,
             collection.id,
@@ -80,8 +78,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center space-y-10">
                     
-                    <FormField
-                        name="title"
+                    <FormField name="title"
                         control={form.control}
                         render={({ field }) => (
                             <FormItem className="w-full">
@@ -99,8 +96,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                         )}
                     />
 
-                    <FormField
-                        name="subtitle"
+                    <FormField name="subtitle"
                         control={form.control}
                         render={({ field }) => (
                             <FormItem className="w-full">
@@ -119,8 +115,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                     />
 
                     <div className="flex justify-between items-end gap-2 w-full">
-                        <Controller
-                            name="thumbnail"
+                        <Controller name="thumbnail"
                             control={form.control}
                             render={({ field: { onChange, ref } }) => (
                                 <FormItem>

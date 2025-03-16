@@ -99,9 +99,9 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
     }, [location]);
 
     useEffect(() => { 
-    // Set the current index to 0 when the page loads
-    // This is necessary because the URL does not change when the page is refreshed
-    // but the selectedIndex state does change when the page is refreshed (to default state) causing error
+    //* Set current index to 0 when the page loads.
+    //  > Necessary since URL doesn't change when page is refreshed
+    //  but selectedIndex state returns to default state causing error
         window.location.hash = '#slide0';
         setCurrentIndex(0);
     }, []);

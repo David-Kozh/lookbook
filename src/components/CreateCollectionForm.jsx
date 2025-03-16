@@ -26,8 +26,6 @@ import {
 import LeftButtonGroup from "./LeftButtons";
 import RightButtonGroup from "./RightButtons";
 
-// ** Form for Creating Collection
-
 const formSchema = z.object({
     title: z.string().min(2, {
       message: "Title must be at least 2 characters.",
@@ -43,12 +41,12 @@ const formSchema = z.object({
     }),
 })
 
-// ** Completed Form ✅ for Creating Collection (with validation)
+//* Form rendered in Create Collection.jsx
 
 export default function CreateCollectionForm({ selectedButton, currentIndex, setCurrentIndex, cancelCreate, openDialog, submitCollection, posts, removePost }) {
     const location = useLocation(); // URL location
 
-    // 1. Define your form.
+    //* Collection Form
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -63,22 +61,19 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         }
     })
     
-    // 2. Define a submit handler.
+    //* Submit Handler takes the data for the Collection, and calls the submitCollection function,
+    //* which will process the final set of posts when the collection is submitted.
     function onSubmit(values) {
-        // Do something with the form values.
         console.log(values)
-        
-        var imgUrl = undefined;
-        if(values.thumbnail){
-            imgUrl = URL.createObjectURL(values.thumbnail); //TODO Replace with call to cloud storage
-        }
 
         //* Submit the collection
-        if(posts.length > 0){
+        if(posts.length > 0){ 
+        //! There is a 'default' post when the user has not added any posts
+        //! Better check may be (...&& posts[0].id !== 'default')
             submitCollection({
                 title: values.title,
                 subtitle: values.subtitle,
-                thumbnail: imgUrl,
+                thumbnail: values.thumbnail,
                 displaySettings: values.displaySettings,
             }, posts);
             cancelCreate();
@@ -86,13 +81,10 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
     }
 
     useEffect(() => {
-      // Get the current URL
-      const url = window.location.href;
+      const url = window.location.href;     // Get current URL
+      const index = parseInt(url.split('#slide')[1], 10);   // Extract index from URL
   
-      // Extract the index from the URL
-      const index = parseInt(url.split('#slide')[1], 10);
-  
-      // Update the current index
+      // Update current index
       if(isNaN(index)){
         window.location.hash = '#slide0';
         setCurrentIndex(0);
@@ -105,9 +97,9 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
     }, [location]);
 
     useEffect(() => { 
-    // Set the current index to 0 when the page loads
-    // This is necessary because the URL does not change when the page is refreshed
-    // but the selectedIndex state does change when the page is refreshed (to default state) causing error (displays )
+    //* Set current index to 0 when the page loads.
+    //  > Necessary since URL doesn't change when page is refreshed
+    //  but selectedIndex state returns to default state causing error
         window.onload = () => {
           window.location.hash = '#slide0';
           setCurrentIndex(0);

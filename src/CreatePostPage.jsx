@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
- 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -23,11 +22,10 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { createPost } from "./services/postService";
 
-
-// ** Zod Schema for Form Validation
+//* Zod Schema for Form Validation
 const formSchema = z.object({
-
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
     }),
@@ -43,11 +41,10 @@ const formSchema = z.object({
     
 })
 
-// ** Completed Form ✅ for Creating Post (with validation)
-// TODO Implement cloud storage for image (and content), and database storage for post document
-// TODO      > Model off of database/cloud storage of posts in CreateCollection.jsx, when completed
-export default function CreatePost({ cancelCreate, addPost }) {
-  
+//* This component is rendered in UserDashboard.jsx
+//* > Rendered when the user clicks the "Create" button in the EditCollection component
+//* > Used to create a new post in the collection, then return user to EditCollection
+export default function CreatePostPage({ cancelCreate, collectionId, loggedInUserId }) {
     const form = useForm({
         mode: 'onChange',
         resolver: zodResolver(formSchema),
@@ -63,11 +60,8 @@ export default function CreatePost({ cancelCreate, addPost }) {
 
     const contentTypeWatch = form.watch('contentType');
     
-    // 2. Define a submit handler.
+    //* Submit handler calls db and cloud storage
     function onSubmit(values) {
-        // Do something with the form values.
-        console.log(values)
-        
         // TODO: Additionally make sure the file extensions match the content type 
         if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
@@ -77,21 +71,17 @@ export default function CreatePost({ cancelCreate, addPost }) {
             return;
         }
 
-        //! Create url for image (so it can be displayed in development)
-        //! In production, urls will be created with cloud storage in the backend, and then stored in the database
-        const imageUrl = URL.createObjectURL(values.image);
-        const contentUrl = values.content ? URL.createObjectURL(values.content) : undefined;
-
-        // Create a new post with the form input data
-        addPost({
+        //* Create a new post with the form input data, through postService.js
+        createPost(loggedInUserId, collectionId, {
             title: values.title,
             description: values.description,
-            image: imageUrl, //! passing src url for development to "simulate" cloud storage
+            imageFile: values.image,
             aspectRatio: values.aspectRatio,
             contentType: values.contentType,
-            content: contentUrl,
+            contentFile: values.content,
         })
-        cancelCreate();
+
+        cancelCreate(); // Close the form (returns the user to EditCollection)
     }
     
     return (
@@ -164,7 +154,6 @@ export default function CreatePost({ cancelCreate, addPost }) {
                     </FormItem>
                 )}
                 />
-
                 {/* replace with radio group */}
                 <div className="flex w-full gap-4 my-4">
                 <FormField 
@@ -241,10 +230,8 @@ export default function CreatePost({ cancelCreate, addPost }) {
                     <Button type="button" className='mt-12 w-1/2 sm:w-min bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelCreate()}>Cancel</Button>
                     <Button type="submit" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
                 </div>
-
             </form>
         </Form>
-
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -7,7 +8,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { useState, useEffect } from 'react';
 import CreatePostForm from './components/CreatePostForm';
 import EditPostForm from './components/EditPostForm';
 import CreateCollectionForm from "./components/CreateCollectionForm";
@@ -59,16 +59,28 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     }
 
     //* Submit the local collection to the database, with its postsArray
+    //* Passed to CreateCollectionForm.jsx
     const submitCollection = async (collection, postsArray) => {
-        //* Replacing with firestore
-        ////addCollection({ ...collection, postsArray: posts });
+        // Create the collection and get its ID
         const collectionId = await createCollection(loggedInUserId, collection);
         
-        //TODO  Iterate over the posts array and upload videos and images to storage
-        //TODO  !Check that postsArray structure matches createPost function in postService.js
+        //TODO Check that structure matches createPost function in postService.js
         // Iterate over the posts array and create each post
         for (const el of postsArray) {
-            //TODO  Use Cloud storage for post.image and optionally post.content
+            // Prepare media files for upload
+            const mediaFiles = {};
+            if (post.imageFile) {
+                mediaFiles.image = post.imageFile;
+            }
+            if (post.contentFile) {
+                mediaFiles.content = post.contentFile;
+            }
+
+
+
+
+
+
             await createPost(loggedInUserId, collectionId, el);
         }
     };

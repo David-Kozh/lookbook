@@ -4,13 +4,12 @@ import CollectionsMenu from './CollectionsMenu.jsx';
 import CreateCollection from './CreateCollection.jsx';
 import EditCollection from './EditCollection.jsx';
 import EditCollectionSettings from './EditCollectionSettings.jsx';
-import CreatePost from './CreatePostPage.jsx';
+import CreatePostPage from './CreatePostPage.jsx';
 import EditPost from './EditPost.jsx';
 
 //? BreadCrumb for navigation through menu? Collections > Edit MyCollection > Edit Post
 //? Should CollectionSettings be in a dialog box?
 
-// TODO: "No Collections" message & handling when userCollections is empty in CollectionsMenu
 // TODO: "No Posts" message & handling when postsArray is empty in EditCollection
 
 export default function UserDashboard({ loggedInUserId }) {
@@ -105,6 +104,7 @@ export default function UserDashboard({ loggedInUserId }) {
     }
 
     // Edit Post Page
+    //* This function allows EditCollection to pass the index of the post to EditPost
     const showEditPost = ( index ) => {
         console.log("edit from dashboard (by EditCollection)");
         setPostIndexToEdit(index);
@@ -113,6 +113,7 @@ export default function UserDashboard({ loggedInUserId }) {
             setDashTab('edit-post');
         }, 150);
     };
+    //* Close the edit-post page and return to EditCollection
     const cancelEditPost = () => {
         console.log('cancel edit-post - from dashboard');
         fadeOutComponent('edit-post');
@@ -137,7 +138,6 @@ export default function UserDashboard({ loggedInUserId }) {
     //* Dev functions that manipulate example data as if it were database data
     //  TODO: Remove, and call firestore instead of these functions
     //*     Collections Functions
-
         const updateCollection = (updatedCollection) => { // Usage: Called from EditCollectionSettings
             setUserCollections(prevCollections => 
                 prevCollections.map((collection, index) => 
@@ -145,7 +145,6 @@ export default function UserDashboard({ loggedInUserId }) {
                 )
             );
         };
-
         //*     Posts Functions
         const addPost = (newPost) => { // Usage: Called from CreatePost
             setUserCollections(prevCollections => 
@@ -193,15 +192,21 @@ export default function UserDashboard({ loggedInUserId }) {
                     {dashTab === 'edit-collection-settings' &&
                         <EditCollectionSettings loggedInUserId={loggedInUserId} collection={userCollections[collectionIndexToEdit]}
                             cancelEditSettings={cancelEditCollectionSettings} 
-                            updateCollection={updateCollection} //TODO replace with firestore call in EditCollectionSettings component
+                            updateCollection={updateCollection} 
+                            //TODO Replace updateCollection with firestore call in EditCollectionSettings component
+                            //TODO   > Call updateCollection(loggedInUserId, collection.id, updatedCollection)
                         />
                     }
-                    {dashTab === 'create-post' && 
-                        <CreatePost loggedInUserId={loggedInUserId} cancelCreate={cancelCreatePost} addPost={addPost}/> //TODO replace addPost with firestore call in CreatePost component
+                    {dashTab === 'create-post' && //* Create a post while editing a collection
+                        <CreatePostPage loggedInUserId={loggedInUserId} cancelCreate={cancelCreatePost} 
+                        collectionId={userCollections[collectionIndexToEdit].id} />
                     }
                     {dashTab === 'edit-post' && 
                         <EditPost loggedInUserId={loggedInUserId} cancelEdit={cancelEditPost} post={userCollections[collectionIndexToEdit].postsArray[postIndexToEdit]} 
-                        updatePost={updatePost} //TODO replace updatePost with firestore call in EditPost component
+                        updatePost={updatePost} 
+                        //TODO Replace updatePost with firestore call in EditPost component
+                        //TODO   > Call updatePost(loggedInUserId, collection.id, post.id, updatedPost)
+                        //! post={...} is old usage of collection. Need to query the collection from firestore to get the posts, then pass the post to EditPost
                         />
                     }
             </div>
