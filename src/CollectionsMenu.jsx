@@ -31,8 +31,12 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
         const fetchCollections = async () => {
           try {
             const userCollections = await getUserCollections(loggedInUserId);
+            const userThumbnails = await getUserCollectionThumbnails(loggedInUserId);
             console.log('Setting user collections:', userCollections);
-            if (userCollections.length > 0) setCollections(userCollections);
+            if (userCollections.length > 0) {
+                setCollections(userCollections);
+                setThumbnails(userThumbnails);
+            }
           } catch (error) {
             console.error('Error fetching user collections:', error.message);
             setCollections([defaultCollection]);
@@ -133,19 +137,19 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                 <div className={`carousel my-2 shadow-lg shadow-black/40 ${thumbnails[currentIndex].aspectRatio === '1:1' ? 'carousel-img' : 'carousel-img-wide'}`} 
                     style={{transition: 'width 0.3s 0.01s'}}>
                     {console.log(currentIndex)}
-                    {thumbnails.map((post, index) => {
+                    {thumbnails.map((thumbnail, index) => {
                         return (
                             <div id={`slide${index}`} className="carousel-item relative" key={index}
                                 style={{opacity: `${currentIndex == index ? '1' : '0'}`,
                                     transition: 'opacity 0.3s 0.01s'}}
                             >   
                                  
-                                {post.image ? (
-                                    <img className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
+                                {thumbnail.thumbnailUrl ? (
+                                    <img className={`${(thumbnail.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
                                     drop-shadow-2xl shadow-inner shadow-black`}
-                                    src={post.image} draggable="false" />
+                                    src={thumbnail.thumbnailUrl} draggable="false" />
                                 ) : (
-                                    <div className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
+                                    <div className={`${(thumbnail.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
                                     drop-shadow-2xl bg-gray-700 shadow-black`} draggable="false"/>
                                 )}
                             </div>

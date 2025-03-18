@@ -45,7 +45,7 @@ const formSchema = z.object({
 //* ✅ Ready for testing with firebase db and storage
 export default function CreateCollectionForm({ selectedButton, currentIndex, setCurrentIndex, cancelCreate, openDialog, submitCollection, posts, removePost }) {
     const location = useLocation(); // URL location
-    const [imageUrls, setImageUrls] = useState([]);
+    const [imageUrls, setImageUrls] = useState([]); // URLs for images in the carousel
 
     //* Create a URL for each image file in the posts array, to be displayed in the carousel
     useEffect(() => {
@@ -191,7 +191,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                                 <img
                                     className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
                                         drop-shadow-2xl shadow-inner shadow-black create-collection-carousel`}
-                                    src={post.imageFile}
+                                    src={imageUrls[index]}
                                     draggable="false"
                                 />
                             </div>

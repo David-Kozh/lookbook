@@ -68,7 +68,12 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
             
             // Iterate over the posts array and create each post
             for (const post of postsArray) {
-                await createPost(loggedInUserId, collectionId, post);
+                if (post) { // Check if post is not null or undefined
+                    console.log('Relevant params:', loggedInUserId, collectionId, post);
+                    await createPost(loggedInUserId, collectionId, post);
+                } else {
+                    console.warn('Encountered null or undefined post:', post);
+                }
             }
             console.log('Collection and its posts created successfully');
         } catch (error) {

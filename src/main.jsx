@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import * as ReactDOM from "react-dom/client";
-import { createBrowserRouter,  Navigate,  RouterProvider } from "react-router-dom";
+import { createBrowserRouter,  useNavigate,  RouterProvider } from "react-router-dom";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebaseConfig';
 import { fetchUserData } from './services/userService';
@@ -29,7 +29,10 @@ import './App.css'
     TODO  Add "carousel" as a content type (daisyUI) just like mp4
   * Priority Tasks:
     ! Current Task: Testing Firebase and updating front end
-    TODO  Check that the post/collection object keys in form components match the firebase service files
+    ! Current Task: Implement/test other signup/signin methods
+    ! Update CollectionsMenu to properly display user's collections.thumbnail || first post image
+    TODO  Pass post id to ButtonGroup in CollectionsMenu so that posts can be deleted from DB
+    TODO  Delete Orphaned posts and storage data from testing
     TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
     TODO  Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
   * Lower-priority:
@@ -53,12 +56,14 @@ import './App.css'
   ?   Should 1:1 images/description be row/col orientated
   ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll
   svgs: https://iconscout.com/icons/settings-icon?price=free
+  tailwind gradients: https://tailscan.com/gradients
+  Alternate colors for App Title gradient (red/rose): from-rose-500 via-red-600 to-rose-700
 */
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -67,7 +72,6 @@ function App() {
       } else {
         setIsLoggedIn(false);
         setUser(null);
-        Navigate('/home');
       }
     });
     
@@ -84,8 +88,11 @@ function App() {
         console.error('Unable to fetch user profile:', error.message);
       }
     };
-    fetchProfile();
-  }, [isLoggedIn]);
+
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   const router = createBrowserRouter([
     {
@@ -94,14 +101,12 @@ function App() {
       errorElement: <ErrorPage />,
       children: [
         { //* Displays example collection for non-logged in users. Displays user's collections for logged in users.
-          //TODO  Implement loggedInUserId={user.uid}
-          //? For logged in users, how to decide which collection to show? Drawer/LeftSideBar to swap between available collections.
+          //? Drawer/LeftSideBar to swap between available collections.
           //?   > Viewing collections from bio page works for first iteration.
           path: "/posts", 
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
         },
         { //* Displays a collection from DB.
-          //TODO  Add collectionId to params in TrackPage, implement fetching collection from collectionService
           //TODO  Implement redirects to here, from View button (CollectionsMenu)
           path: "/posts/:userId/:collectionId",
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,

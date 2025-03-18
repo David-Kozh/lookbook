@@ -24,7 +24,7 @@ export const createCollection = async (uid, collectionData) => {
         
         //* Upload the thumbnail file to Cloud Storage and update the new Collection
         if (collectionData.thumbnailFile) {
-            const thumbnailURL = await uploadCollectionThumbnail(collectionId, collectionData.thumbnailFile);
+            const thumbnailURL = await uploadCollectionThumbnail(uid, collectionId, collectionData.thumbnailFile);
             await updateDoc(newCollectionRef, { thumbnail: thumbnailURL });
         }
         console.log('Collection created successfully');

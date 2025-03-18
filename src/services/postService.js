@@ -1,35 +1,45 @@
 import { db } from '../config/firebaseConfig';
-import { doc, addDoc, updateDoc, deleteDoc, collection } from "firebase/firestore";
+import { doc, addDoc, updateDoc, deleteDoc, getDocs, collection, orderBy, query } from "firebase/firestore";
 import { uploadPostMedia } from "./storageService";
 
-//! Check usage across app
 export const createPost = async (uid, collectionId, post) => {
+  console.log('Creating post:', post, 'in collection:', collectionId, 'for user:', uid);
   const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
-  
-  // Upload media files to Cloud Storage and get their URLs
-  const mediaFiles = {};
-  if (post.imageFile) {
-    mediaFiles.image = post.imageFile;
-  }
-  if (post.contentFile) {
-    mediaFiles.content = post.contentFile;
-  }
-  const mediaUrls = await uploadPostMedia(post.id, mediaFiles);
 
   const postData = {
     title: post.title || 'Untitled Post',
     description: post.description || '',
-    image: mediaUrls.image || '',
+    image: '',
     aspectRatio: post.aspectRatio || '1:1',
     postType: post.postType || 'default',
-    content: mediaUrls.content || null,
+    content: null,
     createdAt: new Date(),
   };
 
   try {
     const newPostRef = await addDoc(postsRef, postData);
+    const postId = newPostRef.id;
+    console.log('Post doc created, Uploading media files...');
+
+    // Upload media files to Cloud Storage and get their URLs
+    const mediaFiles = {};
+    if (post.imageFile) {
+      mediaFiles.image = post.imageFile;
+    }
+    if (post.contentFile) {
+      mediaFiles.content = post.contentFile;
+    }
+    const mediaUrls = await uploadPostMedia(uid, collectionId, postId, mediaFiles);
+
+    // Update the document with the actual URLs
+    await updateDoc(doc(db, 'users', uid, 'collections', collectionId, 'posts', postId), {
+      image: mediaUrls.image || '',
+      content: mediaUrls.content || null,
+    });
+
     console.log('Post created successfully');
-    return newPostRef.id; // Return the generated ID if needed
+    return newPostRef.id; // Return the generated ID if caller needs it
+
   } catch (error) {
     console.error('Error creating post:', error.message);
   }
@@ -84,7 +94,9 @@ export const deletePost = async (uid, collectionId, postId) => {
 
 export const getPosts = async (uid, collectionId) => {
   const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
-
+  // How to order posts?
+  // Firebase does not have a static order?
+  const postsQuery = query(postsRef, orderBy('createdAt'));
   try {
     const snapshot = await getDocs(postsRef);
     const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

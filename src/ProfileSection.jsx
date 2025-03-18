@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserCollections } from './services/collectionService';
 import { fetchUserData, getUserCollectionThumbnails } from './services/userService';
-
+import exampleThumbnails from './data/exampleThumbnails';
 // Data required:
 //  - User image, name, bio, and links
 //  - User's collections
@@ -16,8 +16,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     const { userId } = useParams();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [collections, setCollections] = useState(exampleCollections);
-    const initialThumbnails = exampleCollections.map(collection => collection.postsArray[0]);
-    const [thumbnails, setThumbnails] = useState(initialThumbnails);
+    const [thumbnails, setThumbnails] = useState(exampleThumbnails);
     const [userProfile, setUserProfile] = useState(null);
     const [mode, setMode] = useState('example');
 
@@ -33,8 +32,9 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     //* Function to view a collection from profile
     //TODO  Call firestore and pass :collectionId
     const viewCollection = (index) => {
+        console.log('Viewing collection:', collections[index].title);
         setTimeout(() => {
-            navigate('/posts');
+            navigate(`/posts?userId=${loggedInUser.uid}&collectionId=${collections[index].id}`);
         }, 10);
     }
 
@@ -215,7 +215,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             
                             <div className='flex w-[12%] sm:w-1/5 justify-end'>
                                 <button
-                                    onClick={() =>  viewCollection(0)}
+                                    onClick={() =>  viewCollection(currentSlide)}
                                     className='btn border-none h-min inline-flex items-center sm:gap-2 justify-around rounded-full px-2 min-h-7
                                     text-white hover:bg-slate-700'
                                 >

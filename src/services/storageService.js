@@ -27,6 +27,7 @@ export const deleteCollectionThumbnail = async (uid, collectionId) => {
 
 //* Post Media (Thumbnail and optional audio or video files)
 export const uploadPostMedia = async (uid, collectionId, postId, mediaFiles) => {
+    console.log('Uploading post media to storage');
     const urls = {};
 
     for (const [key, file] of Object.entries(mediaFiles)) {

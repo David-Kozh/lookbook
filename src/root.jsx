@@ -27,9 +27,11 @@ export default function Root({ isLoggedIn }) {
 
                     <Link 
                         reloadDocument to="/home" 
-                        className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold font-sans ml-4 mb-1 select-none"
+                        className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold font-sans ml-4 mb-1 select-none
+                        bg-clip-text text-transparent opacity-100 hover:opacity-85
+                        bg-gradient-to-r from-[#481a12] via-[#2961bc] to-[#6855f7] shadow-lg"
                     >
-                        LookBook
+                        LookBook {/* alternate gradient: red/orange from-[#ee3ae5c4] via-[#f75570d9] to-[#cf3a53d5] */}
                         <div className="h-0.5 2xl:h-1 w-[105%] rounded-lg bg-gray-800"></div>
                     </Link>
 
@@ -70,7 +72,7 @@ export default function Root({ isLoggedIn }) {
                 {   !isLoggedIn && (
                     <div className='flex mr-2 sm:mr-4 sm:gap-2'>
                         <a  href="/signup"
-                            className="inline-block rounded-l-lg sm:rounded-lg bg-[#7b76d2] px-2 py-2 md:px-3 sm:py-3 lg:px-5 
+                            className="inline-block rounded-l-lg sm:rounded-lg bg-[#6855f7] px-2 py-2 md:px-3 sm:py-3 lg:px-5 
                             text-xs sm:text-sm font-medium text-white text-center hover:bg-[#9E9BDE] 
                             sm:hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200 "
                         >

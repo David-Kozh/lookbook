@@ -4,14 +4,19 @@ import ImageTrack from "./Track.jsx";
 import posts from './data/posts.js';
 import { useParams } from 'react-router-dom';
 import { getPosts } from "./services/postService";
-import { getCollection } from "./services/collectionService";
+import { getCollection, getUserCollections } from "./services/collectionService";
 
+//* Component that fetches posts and pases them to the ImageTrack component
+//TODO  Implement collectionInfo in TrackPage
 function TrackPage({ isLoggedIn, loggedInUser}) {
   const { userId, collectionId } = useParams();
   // The collection of posts to display
   const [collection, setCollection] = useState([]);
   // Information about the collection (Title, description, etc.)
   const [collectionInfo, setCollectionInfo] = useState({});
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(false);
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -21,21 +26,46 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           const userCollectionInfo = await getCollection(userId, collectionId);
           setCollection(userCollection);
           setCollectionInfo(userCollectionInfo);
+
+          if(userCollection.length > 0){
+            setIsLoading(false);
+          } else {
+            setErrorMessage('No posts found');
+            setIsLoading(false);
+          }
+
         } catch (error) {
           console.error(error);
         }
+
       } else if (isLoggedIn && loggedInUser) {
         try {
-          const userCollection = await getPosts(userId, );
-          const userCollectionInfo = await getCollection(userId, collectionId);
-          setCollection(userCollection);
-          setCollectionInfo(userCollectionInfo);
+          const collections = await getUserCollections(loggedInUser.uid);
+          if (collections.length > 0) {
+            // Get the first collection by default
+            const userCollection = await getPosts(loggedInUser.uid, collections[1].id);
+            const userCollectionInfo = await getCollection(loggedInUser.uid, collections[1].id);
+            setCollection(userCollection);
+            setCollectionInfo(userCollectionInfo);
+            
+            if(userCollection.length > 0){
+              setIsLoading(false);
+            } else {
+              setErrorMessage('No posts found');
+              setIsLoading(false);
+            }
+          } else {
+            setErrorMessage('No collection found!');
+            setIsLoading(false);
+          }
+
         } catch (error) {
           console.error(error);
         }
       } else {
         console.log('Displaying Example Collection');
         setCollection(posts);
+        setIsLoading(false);
       }
     }
 
@@ -44,7 +74,20 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
 
   return (
     <>
-      <ImageTrack posts={collection} collectionInfo={collectionInfo} />
+      {isLoading ? (
+        <div className="w-full h-[60%] flex items-center justify-center text-mono text-2xl italic"> 
+          Loading... 
+        </div>
+
+      ) : (errorMessage ? (
+          <div className="w-full h-[60%] flex items-center justify-center text-mono text-2xl font-semibold text-[#5c1111]"> 
+            {errorMessage} 
+          </div>
+
+        ) : (
+          <ImageTrack posts={collection} collectionInfo={collectionInfo} />
+        ))
+      }
     </>
   )
 }
