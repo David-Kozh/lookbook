@@ -14,7 +14,8 @@ import CreateCollectionForm from "./components/CreateCollectionForm";
 import { createCollection } from "./services/collectionService";
 import { createPost } from './services/postService';
 
-//! TODO/Current task: Implementing Cloud Storage here, so that Posts can be properly uploaded to DB with media content URLs
+//* This component is rendered in UserDashboard.jsx
+//* ✅ Ready for testing with firebase db and storage
 export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setEditDialogOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     //* Functions to manage local collection.postsArray that is currently being created
     const addPost = (post) => {
         setPosts([...posts, post]);
-        console.log('post added (CreateCollection)');
+        console.log('post added locally (CreateCollection)');
     };
     const updatePost = (post) => {
         const newPosts = [...posts];
@@ -61,27 +62,17 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     //* Submit the local collection to the database, with its postsArray
     //* Passed to CreateCollectionForm.jsx
     const submitCollection = async (collection, postsArray) => {
-        // Create the collection and get its ID
-        const collectionId = await createCollection(loggedInUserId, collection);
-        
-        //TODO Check that structure matches createPost function in postService.js
-        // Iterate over the posts array and create each post
-        for (const el of postsArray) {
-            // Prepare media files for upload
-            const mediaFiles = {};
-            if (post.imageFile) {
-                mediaFiles.image = post.imageFile;
+        try {
+            // Create the collection and get its ID
+            const collectionId = await createCollection(loggedInUserId, collection);
+            
+            // Iterate over the posts array and create each post
+            for (const post of postsArray) {
+                await createPost(loggedInUserId, collectionId, post);
             }
-            if (post.contentFile) {
-                mediaFiles.content = post.contentFile;
-            }
-
-
-
-
-
-
-            await createPost(loggedInUserId, collectionId, el);
+            console.log('Collection and its posts created successfully');
+        } catch (error) {
+            console.error('Error creating collection or its posts:', error.message);
         }
     };
 
@@ -94,10 +85,13 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
     return (
         <div id='create-collection-menu' className="w-full h-full flex flex-col items-center">
             <div className="w-full mt-2 ml-2 text-2xl font-bold select-none text-zinc-800">New Collection</div>
+            
             <CreateCollectionForm cancelCreate={cancelCreate} openDialog={handleOpenDialog} submitCollection={submitCollection} posts={posts} 
                 selectedButton={selectedBtn} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} removePost={removePost}
             />
-            
+            {/* 
+                Dialogs for creating and editing posts are opened by the LeftButtonGroup in CreateCollectionForm.jsx (above)
+            */}
             <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogContent className="max-w-[425px] sm:max-w-lg lg:max-w-2xl">
                     <DialogHeader className="text-left">
@@ -129,9 +123,6 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
                 
                 </DialogContent>
             </Dialog>
-
-
-
         </div>
     )
 }

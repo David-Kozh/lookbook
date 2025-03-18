@@ -29,10 +29,10 @@ function Navbar( {selectedImage, setSelectedImage, posts, closeSelectedImage} ) 
         >
           Posts
           {/* Breadcrumb */}
-          {(selectedImage != null) && (window.innerWidth >= 1024) && (
-          <div className='absolute inline-flex align-middle opacity-0 breadcrumb-opacity'> 
+          {(false) && (selectedImage != null) && (window.innerWidth >= 1024) && (
+          <div className='absolute inline-flex align-middle breadcrumb-opacity'> 
             <svg
-              className="inline-block mx-5 h-5 w-5 mt-1"
+              className="inline-block ml-5 mr-3 h-5 w-5 mt-1 pt-1"
               viewBox="0 0 20 20"
             >
               <path
@@ -42,7 +42,7 @@ function Navbar( {selectedImage, setSelectedImage, posts, closeSelectedImage} ) 
                 clipRule="evenodd"
               />
             </svg>
-            <p className='inline-blow font-mono text-lg italic'>"{posts[selectedImage].title}"</p>
+            <p className='inline-block font-mono text-lg underline'>"{posts[selectedImage].title}"</p>
           </div>
         )}
         </Link>

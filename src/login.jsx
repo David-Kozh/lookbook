@@ -34,22 +34,21 @@ export default function Login({isLoggedIn}) {
 
     return (
     <div className='h-full '>
-        <div className="h-[1%] text-4xl 2xl:text-5xl font-bold font-sans ml-4 pt-4 select-none">
-            
+        {/* unused title */}
+        <div className="text-4xl 2xl:text-5xl font-bold font-sans ml-4 pt-4 select-none">
+        
         </div>
     <section className="relative flex flex-wrap h-[80%] items-center px-6 sm:px-8 lg:px-10 xl:px-28">
     
-    <a  href="/home"
-        className="relative flex items-center h-1/3 lg:h-[69%] w-full lg:w-1/2 py-4 lg:pr-4">
-            
-            <img
+    <a  href="/home" className="relative flex items-center h-1/3 lg:h-[69%] w-full lg:w-1/2 py-4 lg:pr-4">
+        <img
             alt="logo"
             src={Logo}
             className="h-full w-full object-cover rounded-lg"
-            />
+        />
     </a>
-    
-    <div className="bg-zinc-700 rounded-lg lg:h-[65%] w-full mb-8 lg:mb-0 px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:px-8 lg:py-24">
+    {/* add 'flex flex-col justify-evenly ' if removing the lower form */}
+    <div className="bg-zinc-700 rounded-lg lg:h-[65%] w-full mb-8 lg:mb-0 px-4 py-12 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-lg text-center">
             <h1 className="text-zinc-300 text-2xl font-bold sm:text-3xl">LookBook</h1>
 
@@ -76,7 +75,7 @@ export default function Login({isLoggedIn}) {
             </button>
         </div>
 
-        <form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+        {true ? (<form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
         {/* Email Input Box */}
         <div>
             <label htmlFor="email" className="sr-only">Email</label>
@@ -156,7 +155,7 @@ export default function Login({isLoggedIn}) {
             Sign in
             </button>
         </div>
-        </form>
+        </form>) : (<></>)}
     </div>
 
    

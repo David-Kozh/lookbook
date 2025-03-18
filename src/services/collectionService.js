@@ -37,9 +37,25 @@ export const createCollection = async (uid, collectionData) => {
 
 export const updateCollection = async (uid, collectionId, data) => {
     const collectionDocRef = doc(db, 'users', uid, 'collections', collectionId);
-
+    
     try {
-        await updateDoc(collectionDocRef, data);
+        if (data.thumbnailFile) {
+            // Upload the new thumbnail file to Cloud Storage, overwriting the old one
+            const thumbnailURL = await uploadCollectionThumbnail(uid, collectionId, data.thumbnailFile);
+
+            // Remove the thumbnailFile from the data object to avoid storing it in Firestore
+            delete data.thumbnailFile;
+
+            // Update the collection document with the new thumbnail URL
+            await updateDoc(collectionDocRef, {
+                ...data,
+                thumbnail: thumbnailURL,
+            });
+
+        } else {
+            await updateDoc(collectionDocRef, data);
+        }
+
         console.log('Collection updated successfully');
     } catch (error) {
         console.error('Error updating collection:', error.message);
@@ -66,5 +82,21 @@ export const getUserCollections = async (uid) => {
     } catch (error) {
         console.error('Error fetching collections:', error.message);
         throw new Error('Error fetching collections');
+    }
+};
+
+export const getCollection = async (uid, collectionId) => {
+    const collectionRef = doc(db, 'users', uid, 'collections', collectionId);
+
+    try {
+        const collectionDoc = await getDocs(collectionRef);
+        if (collectionDoc.exists()) {
+            return { id: collectionDoc.id, ...collectionDoc.data() };
+        } else {
+            console.error('No such collection document!');
+            throw new Error('Error fetching collection');
+        }
+    } catch (error) {
+        console.error('Error fetching collection:', error.message);
     }
 };

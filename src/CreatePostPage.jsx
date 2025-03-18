@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from 'react-router-dom';
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -41,6 +39,7 @@ const formSchema = z.object({
     
 })
 
+//* ✅ Ready for testing with firebase db and storage
 //* This component is rendered in UserDashboard.jsx
 //* > Rendered when the user clicks the "Create" button in the EditCollection component
 //* > Used to create a new post in the collection, then return user to EditCollection

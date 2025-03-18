@@ -36,9 +36,9 @@ const formSchema = z.object({
   }),
 })
 
+//* ✅ Ready for testing with firebase db and storage
 //* This component is used in CreateCollection.jsx (parent component) 
 //* which handles the database and cloud storage for the post
-//TODO  Check handling of posts between components
 export default function CreatePostForm({ addPost, dismiss }) {
   const form = useForm({
     mode: 'onChange',

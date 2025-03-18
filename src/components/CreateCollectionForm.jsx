@@ -41,10 +41,31 @@ const formSchema = z.object({
     }),
 })
 
-//* Form rendered in Create Collection.jsx
-
+//* Form rendered in CreateCollection.jsx
+//* ✅ Ready for testing with firebase db and storage
 export default function CreateCollectionForm({ selectedButton, currentIndex, setCurrentIndex, cancelCreate, openDialog, submitCollection, posts, removePost }) {
     const location = useLocation(); // URL location
+    const [imageUrls, setImageUrls] = useState([]);
+
+    //* Create a URL for each image file in the posts array, to be displayed in the carousel
+    useEffect(() => {
+        const urls = posts.map(post => {
+          if (post.imageFile) {
+            return URL.createObjectURL(post.imageFile);
+          }
+          return null;
+        });
+        setImageUrls(urls);
+    
+        // Clean up the URL objects when the component unmounts or posts change
+        return () => {
+          urls.forEach(url => {
+            if (url) {
+              URL.revokeObjectURL(url);
+            }
+          });
+        };
+      }, [posts]);
 
     //* Collection Form
     const form = useForm({
@@ -68,8 +89,6 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
 
         //* Submit the collection
         if(posts.length > 0){ 
-        //! There is a 'default' post when the user has not added any posts
-        //! Better check may be (...&& posts[0].id !== 'default')
             submitCollection({
                 title: values.title,
                 subtitle: values.subtitle,
@@ -84,8 +103,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
       const url = window.location.href;     // Get current URL
       const index = parseInt(url.split('#slide')[1], 10);   // Extract index from URL
   
-      // Update current index
-      if(isNaN(index)){
+      if(isNaN(index)){     // Update current index
         window.location.hash = '#slide0';
         setCurrentIndex(0);
         console.log("Index is NaN");
@@ -106,7 +124,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         };
     }, []);
     
-    //TODO: 'carousel-img' : 'carousel-img-wide' - replaced by create-collection-carousel
+    //? TODO: 'carousel-img' : 'carousel-img-wide' - replaced by create-collection-carousel
     return (
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-4 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between px-2 pb-2">
@@ -173,7 +191,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                                 <img
                                     className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('carousel-img')} 
                                         drop-shadow-2xl shadow-inner shadow-black create-collection-carousel`}
-                                    src={post.image}
+                                    src={post.imageFile}
                                     draggable="false"
                                 />
                             </div>

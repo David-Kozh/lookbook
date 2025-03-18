@@ -234,7 +234,7 @@ function ImageTrack({ posts }) {
       console.log('Cannot close post while animating open');
       return;
     }
-    console.log('Close post with index: ', index, selectedImage);
+    console.log('Closing selected post with index: ', index, selectedImage);
 
     // Fade out & remove image info
     var imageInfoElements = document.querySelectorAll('.image-info');

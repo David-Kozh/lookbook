@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ButtonGroup from './components/CollectionsButtons.jsx';
+import { getUserCollectionThumbnails } from './services/userService';
 import { getUserCollections } from './services/collectionService';
 
-//* The thumbnail displayed for each collection is the image of the first post in the collection
 //* If the selected button is null, display default view of collections carousel
 //* Displays corresponding view once a button is selected
-//? 'Selected dashboard tab' context? -- needed in Dashboard, CollectionsMenu and CollectionsButtons
-//? Should there be a defined thumbnail? Where else would it be used? On the users profile? 
-
+//* ✅ Ready for testing with firebase db and storage
 export default function CollectionsMenu({ loggedInUserId, showCreateCollection, showEditCollection }) {
     const location = useLocation(); // URL location
     const navigate = useNavigate();
@@ -33,7 +31,8 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
         const fetchCollections = async () => {
           try {
             const userCollections = await getUserCollections(loggedInUserId);
-            setCollections(userCollections);
+            console.log('Setting user collections:', userCollections);
+            if (userCollections.length > 0) setCollections(userCollections);
           } catch (error) {
             console.error('Error fetching user collections:', error.message);
             setCollections([defaultCollection]);
@@ -49,10 +48,28 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
         // TODO  !!! Update this to get the posts from firebase, not .postArray
         // TODO  Change to check for an available thumbnail in each collection before defaulting to the first post
         if (collections.length > 0) {
-            setThumbnails(collections.map(collection => collection.postsArray[0]));
-            console.log('thumbnails set');
+            const fetchThumbnails = async () => {
+                try {
+                    const thumbnails = await getUserCollectionThumbnails(loggedInUserId);
+                    setThumbnails(thumbnails);
+                } catch (error) {
+                    console.error(error.message);
+                    //TODO  More effective error handling
+                } finally {
+                    //TODO More effective loading handling. Create a loading state/components
+                    // setLoading(false);
+                }
+            };
+            
+            if(collections.length === 1 && collections[0].id === 'default'){
+                console.log('No collections to display');
+            }
+            else {
+                fetchThumbnails();
+                console.log('thumbnails set');
+            }
         }
-    }, [collections]);
+    }, [collections, loggedInUserId]);
 
     /* Button Group State */ //? why not referenced
     const [selectedButton, setSelectedButton] = useState(null); 
@@ -72,7 +89,6 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
             //? Animate to the selected Collection using a callback function to dashboard instead of redirect
             //?     - Animate dash-bg opacity and pos to take it out of view
             //?     - Animate a TrackPage component into view
-            //? Back Button? (to return to the same place in the dashboard?) Or BreadCrumbs?
             setTimeout(() => {
                 navigate('/posts');
             }, 10);

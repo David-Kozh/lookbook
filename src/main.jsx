@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import * as ReactDOM from "react-dom/client";
-import { createBrowserRouter,  RouterProvider } from "react-router-dom";
+import { createBrowserRouter,  Navigate,  RouterProvider } from "react-router-dom";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebaseConfig';
 import { fetchUserData } from './services/userService';
@@ -19,28 +19,27 @@ import './App.css'
   * Firebase Tasks: 
     //✅ User Authentication
     //✅ Database for user collections and posts
-    TODO  Finish replacing example data with Firestore function calls
-    TODO  Cloud Storage for images and videos
+    //✅  Finish replacing example data with Firestore function calls
+    //✅  Cloud Storage for images and videos
+    TODO  Testing and bugfixing
   * Functionalies to implement:
-    TODO  Add "carousel" as a content type (daisyUI) just like mp4
-    TODO  Add "like/save" functionality to posts
+    TODO  Grab userId from URL params from TrackPage for use in Bio page (to display that users bio)
     TODO  Update user settings (name, image, password, etc.)
+    TODO  Add "like" functionality to posts
+    TODO  Add "carousel" as a content type (daisyUI) just like mp4
   * Priority Tasks:
-    ! Current Task: Implementing Cloud Storage for images and videos in CreateCollection.jsx, 
-    !     so Posts can be properly uploaded to DB with media content URLs
+    ! Current Task: Testing Firebase and updating front end
     TODO  Check that the post/collection object keys in form components match the firebase service files
     TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
-    TODO  add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
+    TODO  Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
   * Lower-priority:
-    TODO  Bugtest resizing of expanded posts when window is resized
-    TODO  Apply resize() to mp4 content in track (check resize() in general)
-    TODO  Review necessity of selectedImageContext
-    TODO  In handleResize() -> Animate the image info so image info updates with image resize
+    TODO  Resize images/video does not work for 1:1 --> Transition between col/row orientation
     * Edit-Collection/Post Components:
       TODO  Gray out the "Save Changes" button if no changes have been made
       TODO  Gray out unchanged fields using Form API (touched fields)
   ?  Questions:
-  ?   How should the user's own profile be displayed? 
+  ?   How should the user's own profile be displayed?
+  ?   Limits on num collections/posts? File sizes?
   ?     In theory:
   ?       'Posts' tab are shared by link
   ?       Clicking 'Bio' tab from 'Posts' tab should display the collection owner's profile.
@@ -68,6 +67,7 @@ function App() {
       } else {
         setIsLoggedIn(false);
         setUser(null);
+        Navigate('/home');
       }
     });
     
@@ -93,15 +93,18 @@ function App() {
       element: <Root isLoggedIn={isLoggedIn}/>,
       errorElement: <ErrorPage />,
       children: [
-        { //* Displays example collections for non-logged in users. Displays user's collections for logged in users.
-          //? For logged in users, how to decide which collection to show? Drawer/LeftSideBar to swap between available collections?
+        { //* Displays example collection for non-logged in users. Displays user's collections for logged in users.
+          //TODO  Implement loggedInUserId={user.uid}
+          //? For logged in users, how to decide which collection to show? Drawer/LeftSideBar to swap between available collections.
+          //?   > Viewing collections from bio page works for first iteration.
           path: "/posts", 
-          element: <TrackPage />,
+          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
         },
         { //* Displays a collection from DB.
-          //? Drawer/LeftSideBar seems less necessary here. Focus is on collections as individually packaged units.
-          path: "/posts/:userId/:collectionId", //TODO: Add collectionId to params in TrackPage
-          element: <TrackPage />,
+          //TODO  Add collectionId to params in TrackPage, implement fetching collection from collectionService
+          //TODO  Implement redirects to here, from View button (CollectionsMenu)
+          path: "/posts/:userId/:collectionId",
+          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
         },
         { //* Landing page for non-logged in users. Displays UserDashboard for logged in users.
           path: "/home",
@@ -110,7 +113,6 @@ function App() {
         { //* Displays 1) example profile for non-logged in users, or, 2) The user's public facing profile for logged in users.
           path: "/bio",
           element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={user} exampleCollections={exampleCollections} />,
-          
         },
         { //* Displays profile of a seperate user
           path: "/bio/:userId",

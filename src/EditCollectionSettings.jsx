@@ -39,7 +39,7 @@ const formSchema = z.object({
 })
 
 //TODO Check use of image files in the thumbnail field
-//? Can/should we check for unchanged data to preserve resources by not updating those values?
+//* ✅ Ready for testing with firebase db and storage
 export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings }) {
 
     const form = useForm({
@@ -52,23 +52,19 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
         }
     })
     
-    function onSubmit(values) {
+    async function onSubmit(values) {
         console.log(values)
         
-        var imageUrl = collection.thumbnail;
-        if(values.thumbnail){
-          imageUrl = '';//URL.createObjectURL(values.thumbnail);
-          // TODO: Change to an update to the cloud storage
-        }
-        updateCollection(
+        await updateCollection(
             loggedInUserId,
             collection.id,
             {
                 title: values.title,
                 subtitle: values.subtitle,
-                thumbnail: imageUrl,
+                thumbnailFile: values.thumbnail,
                 displaySettings: values.displaySettings,
-            })
+            }
+        );
         cancelEditSettings();
     }
 

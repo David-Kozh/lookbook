@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
 import { Button } from "@/components/ui/button"
 import ButtonGroup from './components/CollectionsButtons.jsx';
 import { getPosts } from './services/postService.js';
@@ -22,7 +21,6 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     };
     const [posts, setPosts] = useState([defaultPost]);
     
-    //TODO Test getPosts from firebase. 
     //* Get posts for loggedInUserId, collection.id. If no posts exist, posts == [defaultPost]
     useEffect(() => {
         const fetchCollections = async () => {
@@ -90,7 +88,6 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     // but the selectedIndex state does change when the page is refreshed (to default state) causing error (displays )
         window.location.hash = '#slide0';
         setCurrentIndex(0);
-
     }, []);
 
     return (

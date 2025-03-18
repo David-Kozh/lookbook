@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserCollections } from './services/collectionService';
-import { fetchUserData } from './services/userService';
+import { fetchUserData, getUserCollectionThumbnails } from './services/userService';
 
 // Data required:
 //  - User image, name, bio, and links
 //  - User's collections
 //  - Currently open collection id (so it can be skipped in the MoreCollections section. Possibly for More Info header as well)
 // ? Should additional info section be associated with the collection?
-// TODO: More Collections Section
-// TODO: Display Profile and More Collections section in 2 columns on larger screens
-// TODO: Integrate with actual user data (pass a boolean isDemo)
+//? Display Profile and More Collections section in 2 columns on larger screens
 
 export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
     const location = useLocation(); // URL location
@@ -62,10 +60,10 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     */
         window.location.hash = '#slide0';
         setCurrentSlide(0);
-
     }, []);
 
     //* Get either the own user's collections, seperate user's collections, or example collections
+    //* For the collections retrieved, get the thumbnails (or first post if no thumbnail is available)
     //* Set the mode to 'self', 'user', or 'example' respectively
     useEffect(() => {
         const fetchCollections = async () => {
@@ -75,7 +73,14 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
             setMode('user');
             try {
                 const userCollections = await getUserCollections(userId);
-                setCollections(userCollections);
+                const userThumbnails = await getUserCollectionThumbnails(userId);
+                if(userCollections.length > 0) {
+                    setCollections(userCollections);
+                    setThumbnails(userThumbnails);
+                } else {
+                    setCollections([defaultCollection]);
+                    setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                }
             } catch (error) {
                 console.error('Error fetching user collections:', error);
                 setCollections([defaultCollection]);
@@ -87,7 +92,14 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
             setMode('self');
             try {
                 const userCollections = await getUserCollections(loggedInUser.uid);
-                setCollections(userCollections);
+                const userThumbnails = await getUserCollectionThumbnails(loggedInUser.uid);
+                if(userCollections.length > 0){
+                    setCollections(userCollections);
+                    setThumbnails(userThumbnails);
+                } else {
+                    setCollections([defaultCollection]);
+                    setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                }
             } catch (error) {
                 console.error('Error fetching user collections:', error);
                 setCollections([defaultCollection]);
@@ -95,21 +107,13 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
 
           } else {  //* The user is not logged in, and there is no userId in the URL
             setCollections(exampleCollections);
+            console.log('Displaying Example Collections');
           }
         };
 
         fetchCollections();
     }, [isLoggedIn, loggedInUser, userId]);
 
-    useEffect(() => {
-        // Grabs the first post from each collection as a default thumbnail
-        // TODO  !!! Get the posts from firebase, not .postArray
-        // TODO  Change to check for an available thumbnail in each collection before defaulting to the first post
-        if (collections.length > 0) {
-            setThumbnails(collections.map(collection => collection.postsArray[0]));
-            console.log('thumbnails set');
-        }
-    }, [collections]);
 
     return(
         <div className="w-full body-h flex justify-center">
@@ -117,7 +121,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
             rounded-lg shadow-lg px-6 py-4 mt-8 bg-opacity-75 items-center'>
             
                 <div className="w-full h-min">
-                    <h1 className='text-3xl xl:text-4xl 2xl:text-5xl font-bold'>User Bio</h1>
+                    <h1 className='text-3xl xl:text-4xl font-bold'>User Bio</h1>
                     <div className="h-0.5 rounded-lg bg-zinc-700 my-1"></div>
                 </div>
 
@@ -155,7 +159,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                                 (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />)}
                             </div>
                         </div>
-
+                        
                         {/* User's Name and Bio */}
                         <div className="w-2/3 flex flex-col justify-between">
                             <div className="hidden sm:flex sm:flex-col">
@@ -199,7 +203,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 </div>
 
                 <div id="more-collections" className="w-full h-full flex flex-col justify-center items-center">
-                    <h1 className="w-full text-xl font-bold">{(mode != 'example') ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections'}</h1>
+                    <h1 className="w-full text-xl xl:text-2xl font-bold">{(mode != 'example') ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections'}</h1>
                     <div className="min-h-0.5 w-full rounded-lg bg-zinc-700 my-1"></div>
 
                     <div className='w-full flex flex-col items-center'>
@@ -240,22 +244,22 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             <div className={`carousel shadow-lg shadow-black/40 ${thumbnails[currentSlide].aspectRatio === '1:1' ? 'collection-mini' : 'carousel-img-wide'}`} 
                                 style={{transition: 'width 0.3s 0.01s'}}>
                                 {console.log(currentSlide)}
-                                {thumbnails.map((post, index) => {
+                                {thumbnails.map((thumbnail, index) => {
                                     return (
                                         <div id={`slide${index}`} className="carousel-item relative" key={index}
                                             style={{opacity: `${currentSlide == index ? '1' : '0'}`,
                                                 transition: 'opacity 0.3s 0.01s'}}
                                         >    
-                                            {post.image ? (
+                                            {thumbnail.thumbnailUrl ? (
                                             <img
-                                                className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
+                                                className={`${(thumbnail.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
                                                     drop-shadow-2xl shadow-inner shadow-black`}
-                                                src={post.image}
+                                                src={thumbnail.thumbnailUrl}
                                                 draggable="false"
                                             />
                                             ) : (
                                             <div
-                                                className={`${(post.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
+                                                className={`${(thumbnail.aspectRatio == '16:9' && 'carousel-img-wide') || ('collection-mini')} 
                                                     drop-shadow-2xl shadow-black bg-gray-700`}
                                                 draggable="false"
                                             />

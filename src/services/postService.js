@@ -2,7 +2,6 @@ import { db } from '../config/firebaseConfig';
 import { doc, addDoc, updateDoc, deleteDoc, collection } from "firebase/firestore";
 import { uploadPostMedia } from "./storageService";
 
-//* Anytime this function is called, the caller should first place any media in cloud storage
 //! Check usage across app
 export const createPost = async (uid, collectionId, post) => {
   const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
@@ -40,7 +39,32 @@ export const updatePost = async (uid, collectionId, postId, data) => {
   const postDocRef = doc(db, 'users', uid, 'collections', collectionId, 'posts', postId);
 
   try {
-    await updateDoc(postDocRef, data);
+    const mediaFiles = {};
+    let mediaUrls = {};
+
+    // Check if there are new media files to upload
+    if (data.imageFile) {
+      mediaFiles.image = data.imageFile;
+    }
+    if (data.contentFile) {
+      mediaFiles.content = data.contentFile;
+    }
+
+    // If there are media files to upload, upload them and get their URLs
+    if (Object.keys(mediaFiles).length > 0) {
+      mediaUrls = await uploadPostMedia(uid, collectionId, postId, mediaFiles);
+
+      // Remove the media files from the data object to avoid storing them in Firestore
+      delete data.imageFile;
+      delete data.contentFile;
+    }
+
+    // Update the post document with the new media URLs and other data
+    await updateDoc(postDocRef, {
+      ...data,
+      ...mediaUrls,
+    });
+
     console.log('Post updated successfully');
   } catch (error) {
     console.error('Error updating post:', error.message);

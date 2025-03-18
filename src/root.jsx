@@ -62,9 +62,9 @@ export default function Root({ isLoggedIn }) {
                         TODO:  Consider using this shadcn 'Dropdown Menu' component 
                         https://ui.shadcn.com/docs/components/dropdown-menu
                     */}
-                {   // TODO: Dynamically pass userId
+                { 
                     isLoggedIn && (
-                        <LogoutButton userId={1} />
+                        <LogoutButton />
                     )  
                 }
                 {   !isLoggedIn && (

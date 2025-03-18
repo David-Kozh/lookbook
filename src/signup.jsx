@@ -4,11 +4,10 @@ import BackgroundGradient from "./components/ui/background-gradient.jsx";
 
 // TODO: Firebase integration
 // TODO: Update form fields and checkbox to look better
-// TODO: Draft a privacy policy and terms and conditions
+//? Draft a privacy policy and terms and conditions
 
 export default function SignUp() {
-    return (
-
+  return (
 <section className="bg-white">
   <div className="lg:grid min-h-screen lg:grid-cols-12">
     <section className="relative flex h-56 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
@@ -179,6 +178,5 @@ export default function SignUp() {
     </main>
   </div>
 </section>
-
-    );
+  );
 }

@@ -22,6 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { updatePost, getPosts } from "./services/postService";
 
 
 // ** Zod Schema for Form Validation
@@ -42,31 +43,39 @@ const formSchema = z.object({
 })
 
 // ** Form for Creating Post
-// TODO: UPDATE File handling (Controller, Schema, etc)
-// TODO: Implement updatePost() function from parent
-
-export default function EditPost({ cancelEdit, post, updatePost }) {
+//? Should the current image be rendered rather than just a file input?
+//? Completed? TODO: UPDATE File handling (Controller, Schema, etc)
+//* ✅ Ready for testing with firebase db and storage
+export default function EditPost({ loggedInUserId, collectionId, postIndex, cancelEdit }) {
     
+    const [post, setPost] = useState(null);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            const posts = await getPosts(loggedInUserId, collectionId);
+            setPost(posts[postIndex]);
+        };
+        fetchPost();
+    }, [loggedInUserId, collectionId, postIndex]);
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: post.title,
             description: post.description,
-            image: undefined,
+            image: undefined,       //! How should default file be handled?
             aspectRatio: post.aspectRatio,
             contentType: post.contentType,
-            content: undefined,
+            content: undefined,     //! How should default file be handled?
         }
     });
     const contentType = form.watch('contentType');
       
-    // 2. Define a submit handler.
-    function onSubmit(values) {
-        // Do something with the form values.
+
+    async function onSubmit(values) {
         console.log(values)
         
         // TODO: Additionally make sure the file extensions match the content type 
-        // TODO: Check post.content so that posts with non-updated content are not dis-allowed
         if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
                 type: 'manual',
@@ -74,26 +83,21 @@ export default function EditPost({ cancelEdit, post, updatePost }) {
             });
             return;
         }
-        var imageUrl = post.image;
-        if(values.image){
-          imageUrl = URL.createObjectURL(values.image);
-          // TODO: Change to an upload to cloud storage
-        }
-        var contentUrl = post.content;
-        if(values.content){
-          contentUrl = URL.createObjectURL(values.content);
-          // TODO: Change to an upload to cloud storage
-        }
         
         //* Update post with the form input data
-        updatePost({
-            title: values.title,
-            description: values.description,
-            image: imageUrl, //! passing src url for development to "simulate" cloud storage
-            aspectRatio: values.aspectRatio,
-            contentType: values.contentType,
-            content: contentUrl,
-        })
+        await updatePost(
+            loggedInUserId, 
+            collectionId, 
+            post.id, 
+            {
+                title: values.title,
+                description: values.description,
+                imageFile: values.image, 
+                aspectRatio: values.aspectRatio,
+                contentType: values.contentType,
+                contentFile: values.content,
+            }
+        );
         cancelEdit();
     }
       

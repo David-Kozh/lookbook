@@ -15,9 +15,9 @@ const createUserDocument = async (user) => {
   if (!userDoc.exists()) {
     const { 
       email = 'no-email@example.com', 
-      displayName = 'Jane Doe',
-      handle = 'janedoe',
-      photoURL = 'default-profile-pic-url' 
+      displayName = 'Display Name',
+      handle = 'your-handle',
+      photoURL = 'default' 
     } = user;
     const createdAt = new Date();
 
