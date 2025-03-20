@@ -29,10 +29,11 @@ import { deleteCollection } from "@/services/collectionService";
 
       window.location.hash = '#slide0';
       setSelectedIndex(0);
+
       if(itemType === 'collection'){
         //use collection delete function: user.uid and collection.id needed
         deleteCollection(loggedInUserId, collectionId);
-      } else if(itemType === 'post'){
+      } else if(itemType === 'post' && postId){
         //use post delete function: user.uid, collection.id and post.id needed
         deletePost(loggedInUserId, collectionId, postId);
       };

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 function Navbar( {selectedImage, setSelectedImage, posts, closeSelectedImage} ) { // Top bar to be rendered in any page
-
+  const { userId, collectionId } = useParams();
   return (
       <nav className="nav-h font-mono text-lg text-center w-3/5 select-none gap-12 md:gap-16 lg:gap-20">
         
@@ -15,7 +15,7 @@ function Navbar( {selectedImage, setSelectedImage, posts, closeSelectedImage} ) 
         </Link>
 
         <Link
-          to="/bio"
+          to={`/bio${userId ? `/${userId}` : ''}`}
           className="w-1/3 text-zinc-600 hover:text-black hover:underline underline-offset-8"
           onClick={() => closeSelectedImage(selectedImage)}
         >
@@ -23,7 +23,7 @@ function Navbar( {selectedImage, setSelectedImage, posts, closeSelectedImage} ) 
         </Link>
 
         <Link 
-          to="/posts" 
+          to={`/posts${userId ? `/${userId}` : ''}${collectionId ? `/${collectionId}` : ''}`} 
           className="w-1/3 text-zinc-600 hover:text-black hover:underline underline-offset-8"
           onClick={() => closeSelectedImage(selectedImage)}
         >
