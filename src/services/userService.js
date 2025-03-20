@@ -1,5 +1,7 @@
 import { db } from '../config/firebaseConfig';
 import { doc, getDoc, updateDoc, deleteDoc, getDocs, collection } from "firebase/firestore";
+import { deleteCollectionThumbnail } from './storageService';
+import { deleteAllPostMedia } from './storageService';
 
 export const fetchUserData = async (uid) => {
   console.log('Fetching user data...');
@@ -15,7 +17,7 @@ export const fetchUserData = async (uid) => {
   }
 };
 
-export const updateUserData = async (uid, data) => {
+export const updateUser = async (uid, data) => {
   const userDocRef = doc(db, 'users', uid);
 
   try {
@@ -26,15 +28,40 @@ export const updateUserData = async (uid, data) => {
   }
 };
 
-export const deleteUser = async (uid) => {
-    const userDocRef = doc(db, 'users', uid);
+export const deleteUserCollections = async (uid) => {
+  const collectionsRef = collection(db, 'users', uid, 'collections');
+  const collectionsSnapshot = await getDocs(collectionsRef);
 
-    try {
-        await deleteDoc(userDocRef);
-        console.log('User deleted successfully');
-    } catch (error) {
-        console.error('Error deleting user:', error.message);
+  for (const collectionDoc of collectionsSnapshot.docs) {
+    const collectionId = collectionDoc.id;
+    const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
+    const postsSnapshot = await getDocs(postsRef);
+
+    // Delete all posts in the collection
+    for (const postDoc of postsSnapshot.docs) {
+      const postId = postDoc.id;
+      await deleteAllPostMedia(uid, collectionId, postId);
+      await deleteDoc(postDoc.ref);
     }
+
+    // Delete the collection document
+    await deleteCollectionThumbnail(uid, collectionId);
+    await deleteDoc(collectionDoc.ref);
+  }
+};
+
+export const deleteUser = async (uid) => {
+  const userDocRef = doc(db, 'users', uid);
+
+  try {
+    //* Delete all collections and posts before deleting the user
+    await deleteUserCollections(uid);
+    await deleteDoc(userDocRef);
+    console.log('User deleted successfully');
+  } catch (error) {
+    console.error('Error deleting user:', error.message);
+  }
+
 };
 
 export const getUserCollectionThumbnails = async (uid) => {

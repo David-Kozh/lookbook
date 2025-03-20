@@ -1,6 +1,6 @@
 import { db } from '../config/firebaseConfig';
 import { doc, addDoc, updateDoc, deleteDoc, getDocs, collection, orderBy, query } from "firebase/firestore";
-import { uploadPostMedia } from "./storageService";
+import { deleteAllPostMedia, uploadPostMedia } from "./storageService";
 
 export const createPost = async (uid, collectionId, post) => {
   console.log('Creating post:', post, 'in collection:', collectionId, 'for user:', uid);
@@ -85,6 +85,9 @@ export const deletePost = async (uid, collectionId, postId) => {
   const postDocRef = doc(db, 'users', uid, 'collections', collectionId, 'posts', postId);
 
   try {
+    await deleteAllPostMedia(uid, collectionId, postId);
+    console.log('Post Media successfully');
+
     await deleteDoc(postDocRef);
     console.log('Post deleted successfully');
   } catch (error) {

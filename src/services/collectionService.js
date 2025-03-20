@@ -1,6 +1,6 @@
 import { db } from '../config/firebaseConfig';
-import { doc, addDoc, updateDoc, deleteDoc, getDocs, collection } from "firebase/firestore";
-import { uploadCollectionThumbnail } from './storageService';
+import { doc, addDoc, updateDoc, deleteDoc, getDoc, getDocs, collection } from "firebase/firestore";
+import { uploadCollectionThumbnail, deleteCollectionThumbnail } from './storageService';
 
 //* Returns the ID of the newly created collection
 export const createCollection = async (uid, collectionData) => {
@@ -66,6 +66,18 @@ export const deleteCollection = async (uid, collectionId) => {
     const collectionDocRef = doc(db, 'users', uid, 'collections', collectionId);
 
     try {
+        const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
+        const postsSnapshot = await getDocs(postsRef);
+    
+        // Delete all posts in the collection
+        for (const postDoc of postsSnapshot.docs) {
+            const postId = postDoc.id;
+            await deleteAllPostMedia(uid, collectionId, postId);
+            await deleteDoc(postDoc.ref);
+        }
+    
+        // Delete the collection document
+        await deleteCollectionThumbnail(uid, collectionId);
         await deleteDoc(collectionDocRef);
         console.log('Collection deleted successfully');
     } catch (error) {
@@ -89,7 +101,7 @@ export const getCollection = async (uid, collectionId) => {
     const collectionRef = doc(db, 'users', uid, 'collections', collectionId);
 
     try {
-        const collectionDoc = await getDocs(collectionRef);
+        const collectionDoc = await getDoc(collectionRef);
         if (collectionDoc.exists()) {
             return { id: collectionDoc.id, ...collectionDoc.data() };
         } else {

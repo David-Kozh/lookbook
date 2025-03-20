@@ -45,3 +45,13 @@ export const deletePostMedia = async (uid, collectionId, postId, mediaKeys) => {
         await deleteObject(storageRef);
     }
 };
+
+//* Delete all media for a post
+export const deleteAllPostMedia = async (uid, collectionId, postId) => {
+    const postRef = ref(storage, `users/${uid}/collections/${collectionId}/posts/${postId}`);
+    const listResult = await listAll(postRef);
+
+    for (const itemRef of listResult.items) {
+        await deleteObject(itemRef);
+    }
+};
