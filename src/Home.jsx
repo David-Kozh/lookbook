@@ -33,23 +33,23 @@ function Home() {
                     className="absolute rounded-l-full inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-white via-white to-transparent opacity-75"
                   ></div>
                 </span>
-                <p className="mt-6 text-gray-200 font-medium 2xl:text-lg font-mono">
+                <div className="mt-6 text-gray-200 font-medium 2xl:text-lg font-mono">
                   A simple and sleek platform for creatives to showcase their work to the world. Perfect for photographers, programmers, illustrators, designers, and musicians. 
-                  <p className='mt-6'>&nbsp;&nbsp;&nbsp;&nbsp;➣ Skip the sign up and log in instantly with Google or Github! </p>
-                </p>
+                  <div className='mt-6'>&nbsp;&nbsp;&nbsp;&nbsp;➣ Skip the sign up and log in instantly with Google or Github! </div>
+                </div>
                 
                 {/* Buttons for Sign Up and Log In (empty divs are for spacing) */}
                 <div className='w-full flex justify-between gap-6'>
                   <a
                     href="/signup"
-                    className="mt-14 inline-block rounded-md px-8 py-5 text-sm font-semibold text-white 
+                    className="hidden mt-14 rounded-md px-8 py-5 text-sm font-semibold text-white 
                     hover:bg-[#9E9BDE] focus:outline-none focus:ring bg-gradient-to-r from-[#6855f7] to-[#2950bcd8]
                     hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                   >
                     Sign Up
                   </a>
                   <a href="/login"
-                    className="mt-14 px-8 py-5 inline-block rounded-md bg-[#6855f7] focus:outline-none focus:ring 
+                    className="mt-14 px-8 py-5 inline-block rounded-lg bg-[#6855f7] focus:outline-none focus:ring 
                     text-sm font-semibold text-center text-white transition hover:shadow-[2px_3px_0px_0px_rgba(0,0,0)] 
                     duration-200 bg-gradient-to-r from-[#2950bcd8] to-[#984cdfc9]
                     hover:bg-[#ffffff]">

@@ -72,14 +72,14 @@ export default function Root({ isLoggedIn }) {
                 {   !isLoggedIn && (
                     <div className='flex mr-2 sm:mr-4 sm:gap-2'>
                         <a  href="/signup"
-                            className="inline-block rounded-l-lg sm:rounded-lg bg-[#6855f7] px-2 py-2 md:px-3 sm:py-3 lg:px-5 
+                            className="hidden rounded-l-lg sm:rounded-lg bg-[#6855f7] px-2 py-2 md:px-3 sm:py-3 lg:px-5 
                             text-xs sm:text-sm font-medium text-white text-center hover:bg-[#9E9BDE] 
                             sm:hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200 "
                         >
                             Sign Up
                         </a>
                         <a href="/login"
-                            className="inline-block rounded-r-lg sm:rounded-lg bg-slate-800/90 px-2 py-2 md:px-3 sm:py-3 lg:px-5 
+                            className="inline-block rounded-lg bg-slate-800/90 px-2 py-2 md:px-3 sm:py-3 lg:px-5 
                             text-xs sm:text-sm font-medium text-center text-white hover:text-slate-800
                             border border-slate-800/80 transition hover:bg-transparent
                             sm:hover:shadow-[2px_3px_0px_0px_rgba(0,0,0)] duration-200">

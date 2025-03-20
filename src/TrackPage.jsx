@@ -26,6 +26,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           const userCollectionInfo = await getCollection(userId, collectionId);
           setCollection(userCollection);
           setCollectionInfo(userCollectionInfo);
+          console.log('User Collection found in params');
 
           if(userCollection.length > 0){
             setIsLoading(false);
@@ -39,6 +40,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
         }
 
       } else if (isLoggedIn && loggedInUser) {
+        console.log('NO URL PARAMS FOUND');
         try {
           const collections = await getUserCollections(loggedInUser.uid);
           if (collections.length > 0) {

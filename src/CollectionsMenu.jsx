@@ -49,8 +49,6 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
 
     useEffect(() => {
         //* Grabs the first post from each collection as a default thumbnail
-        // TODO  !!! Update this to get the posts from firebase, not .postArray
-        // TODO  Change to check for an available thumbnail in each collection before defaulting to the first post
         if (collections.length > 0) {
             const fetchThumbnails = async () => {
                 try {
@@ -58,9 +56,9 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                     setThumbnails(thumbnails);
                 } catch (error) {
                     console.error(error.message);
-                    //TODO  More effective error handling
+                    //TODO  More effective error handling?
                 } finally {
-                    //TODO More effective loading handling. Create a loading state/components
+                    //TODO More effective loading handling. Create a loading state/components?
                     // setLoading(false);
                 }
             };
@@ -94,7 +92,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
             //?     - Animate dash-bg opacity and pos to take it out of view
             //?     - Animate a TrackPage component into view
             setTimeout(() => {
-                navigate('/posts');
+                navigate(`/posts/${loggedInUserId}/${collections[currentIndex].id}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
@@ -164,7 +162,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                     itemRef={{  
                         loggedInUserId: loggedInUserId, 
                         collectionId: collections[currentIndex].id,
-                        postId: null
+                        postId: false
                     }}
                 />
             </div>

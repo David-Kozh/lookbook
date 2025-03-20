@@ -1,6 +1,7 @@
 import { signInWithGoogle, signInWithGithub } from './services/authService';
 import { useNavigate } from 'react-router-dom';
-import Logo from './components/logo.png';
+//import Logo from './components/logo.png';
+import Logo from './components/Firefly lookbook logo 2.png';
 import { useEffect } from 'react';
 
 export default function Login({isLoggedIn}) {
@@ -33,32 +34,27 @@ export default function Login({isLoggedIn}) {
     }, [isLoggedIn]);
 
     return (
-    <div className='h-full '>
-        {/* unused title */}
-        <div className="text-4xl 2xl:text-5xl font-bold font-sans ml-4 pt-4 select-none">
-        
-        </div>
-    <section className="relative flex flex-wrap h-[80%] items-center px-6 sm:px-8 lg:px-10 xl:px-28">
+<section className="relative flex flex-wrap h-[100%] items-center px-6 py-6 sm:px-8 lg:px-10 xl:px-28">
     
-    <a  href="/home" className="relative flex items-center h-1/3 lg:h-[69%] w-full lg:w-1/2 py-4 lg:pr-4">
+    <a  href="/home" className="relative flex items-center h-[35%] lg:h-[65%] w-full lg:w-1/2 lg:pr-4">
         <img
             alt="logo"
             src={Logo}
             className="h-full w-full object-cover rounded-lg"
         />
     </a>
-    {/* add 'flex flex-col justify-evenly ' if removing the lower form */}
-    <div className="bg-zinc-700 rounded-lg lg:h-[65%] w-full mb-8 lg:mb-0 px-4 py-12 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
+    {/* remove 'flex flex-col justify-evenly ' if adding back the email/password form */}
+    <div className="flex flex-col justify-evenly bg-zinc-700 rounded-lg h-[60%] lg:h-[65%] w-full mb-8 lg:mb-0 px-4 py-12 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-lg text-center">
-            <h1 className="text-zinc-300 text-2xl font-bold sm:text-3xl">LookBook</h1>
+            <h1 className="text-zinc-300 text-3xl font-bold sm:text-4xl">LookBook</h1>
 
-            <p className="mt-4 text-zinc-300">
-                Aesthetic and professional portfolios. Login to share your wonderful creative works with the world!
+            <p className="my-3 text-lg text-zinc-300">
+                Aesthetic and professional portfolios, no sign up needed. Login to share your wonderful creative works with the world!
             </p>
         </div>
 
-        <div className='flex justify-evenly mt-6 gap-2'>
-            <button className="flex gap-2 items-center rounded-md bg-[#a4a0ee7a] px-4 py-2 text-sm font-medium text-white 
+        <div className='flex justify-evenly my-6 gap-2'>
+            <button className="flex gap-2 items-center rounded-md bg-[#a4a0ee7a] px-4 py-4 text-sm font-medium text-white 
                 hover:bg-[#9E9BDE] focus:outline-none focus:ring 
                 hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                 onClick={handleGoogleSignIn}>
@@ -66,7 +62,7 @@ export default function Login({isLoggedIn}) {
                     Sign in with Google
             </button>
             
-            <button className="flex gap-2 items-center rounded-md bg-[#a4a0ee7a] px-4 py-2 text-sm font-medium text-white 
+            <button className="flex gap-2 items-center rounded-md bg-[#a4a0ee7a] px-4 py-4 text-sm font-medium text-white 
                 hover:bg-[#9E9BDE] focus:outline-none focus:ring 
                 hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                 onClick={handleGithubSignIn}>
@@ -75,7 +71,7 @@ export default function Login({isLoggedIn}) {
             </button>
         </div>
 
-        {true ? (<form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+        {true ? (<form action="#" className="mx-auto mb-0 mt-8 w-full space-y-4">
         {/* Email Input Box */}
         <div>
             <label htmlFor="email" className="sr-only">Email</label>
@@ -158,8 +154,6 @@ export default function Login({isLoggedIn}) {
         </form>) : (<></>)}
     </div>
 
-   
-    </section>
-    </div>
+</section>
     );
 }

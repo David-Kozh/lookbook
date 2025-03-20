@@ -48,14 +48,26 @@ const formSchema = z.object({
 //* ✅ Ready for testing with firebase db and storage
 export default function EditPost({ loggedInUserId, collectionId, postIndex, cancelEdit }) {
     
-    const [post, setPost] = useState(null);
+    const [post, setPost] = useState({ 
+        title: 'Loading...',
+        description: '', 
+        image: '', 
+        aspectRatio: '', 
+        contentType: '', 
+        content: '' 
+    });
 
     useEffect(() => {
         const fetchPost = async () => {
-            const posts = await getPosts(loggedInUserId, collectionId);
-            setPost(posts[postIndex]);
+            try {    
+                const posts = await getPosts(loggedInUserId, collectionId);
+                setPost(posts[postIndex]);
+            } catch (error) {
+                console.error('Error fetching collection\'s posts:', error.message);
+            }
         };
         fetchPost();
+
     }, [loggedInUserId, collectionId, postIndex]);
 
     const form = useForm({
@@ -71,6 +83,17 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     });
     const contentType = form.watch('contentType');
       
+    useEffect(() => {
+        //* Reset form values when post state changes
+        form.reset({
+            title: post.title,
+            description: post.description,
+            image: undefined,               //?
+            aspectRatio: post.aspectRatio,
+            contentType: post.contentType,
+            content: undefined,             //?
+        });
+    }, [post, form]);
 
     async function onSubmit(values) {
         console.log(values)

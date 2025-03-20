@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import * as ReactDOM from "react-dom/client";
-import { createBrowserRouter,  useNavigate,  RouterProvider } from "react-router-dom";
+import { createBrowserRouter,  RouterProvider } from "react-router-dom";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebaseConfig';
 import { fetchUserData } from './services/userService';
@@ -22,6 +22,8 @@ import './App.css'
     //✅  Finish replacing example data with Firestore function calls
     //✅  Cloud Storage for images and videos
     TODO  Testing and bugfixing
+    TODO  Establish ordering for posts when creating a collection (is createdAt sufficient?)
+    TODO  Delete Orphaned posts and storage data from testing
   * Functionalies to implement:
     TODO  Grab userId from URL params from TrackPage for use in Bio page (to display that users bio)
     TODO  Update user settings (name, image, password, etc.)
@@ -29,10 +31,8 @@ import './App.css'
     TODO  Add "carousel" as a content type (daisyUI) just like mp4
   * Priority Tasks:
     ! Current Task: Testing Firebase and updating front end
-    ! Current Task: Implement/test other signup/signin methods
-    ! Update CollectionsMenu to properly display user's collections.thumbnail || first post image
-    TODO  Pass post id to ButtonGroup in CollectionsMenu so that posts can be deleted from DB
-    TODO  Delete Orphaned posts and storage data from testing
+    ! Current Task: Implement/test other signup/signin methods & redirect to posts using params
+    !  Pass post id to ButtonGroup in CollectionsMenu so that posts can be deleted from DB
     TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
     TODO  Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
   * Lower-priority:
@@ -72,6 +72,7 @@ function App() {
       } else {
         setIsLoggedIn(false);
         setUser(null);
+        setUserProfile(null);
       }
     });
     
@@ -107,7 +108,6 @@ function App() {
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
         },
         { //* Displays a collection from DB.
-          //TODO  Implement redirects to here, from View button (CollectionsMenu)
           path: "/posts/:userId/:collectionId",
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
         },

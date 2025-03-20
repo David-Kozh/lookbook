@@ -11,13 +11,13 @@ const ButtonGroup = ({
       //* Prevent buttons from changing state when they can't be used (can't edit or delete the blank items)
       //* Keeps the buttons from getting stuck in a highlighted state after they fail to do anything
       //? Could maybe alterenatively check for .id == 'default' instead of name? (ids are in itemRef)
-      console.log('No item selected');  
-      return;
-    }
-    setSelectedButton(buttonName);
-    console.log('numslides', numSlides);
-    if (onButtonClick) {
-      onButtonClick(buttonName);
+      console.log('No valid item selected');
+    } else {
+      setSelectedButton(buttonName);
+      console.log('numslides', numSlides);
+      if (onButtonClick) {
+        onButtonClick(buttonName);
+      }
     }
   };
 

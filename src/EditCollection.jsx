@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import ButtonGroup from './components/CollectionsButtons.jsx';
 import { getPosts } from './services/postService.js';
@@ -13,6 +13,8 @@ import { getPosts } from './services/postService.js';
 
 export default function EditCollection({ loggedInUserId, collection, showCreatePost, showEditPost, cancelEdit, showSettings }) {
     const location = useLocation(); // URL location
+    const navigate = useNavigate();
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const defaultPost = {
         id: 'default',  //* Unique id for default objects
@@ -50,14 +52,16 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
         else if(buttonName === 'edit'){
             console.log("Edit Button Clicked");
             // TODO: Animate in the EditPost form/modal (undecided)
+            //! Can pass actual post so that getPosts doesnt have to be called again in the EditPost component (reducing total requested num bytes from firestore)
             showEditPost(currentIndex); // pass current index
         }
         else if(buttonName === 'view'){
             console.log("View Button Clicked");
             // TODO: Animate to the selected post in the image track
             // ? Back Button? (to return to the same place in the dashboard?) Or BreadCrumbs?
+            //! TODO: pass params
             setTimeout(() => {
-                navigate('/posts');
+                navigate(`/posts/${loggedInUserId}/${collection.id}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
@@ -143,11 +147,13 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
 
             <div className="flex h-full justify-center items-center mb-2" style={{height: "15%"}}>
                 <ButtonGroup onButtonClick={handleButtonClick} selectedIndex={currentIndex} setSelectedIndex={setCurrentIndex} numSlides={posts.length} 
-                    selectedItemName={posts[currentIndex].title} itemType={'post'} itemRef={{
+                    selectedItemName={posts[currentIndex].title} itemType={'post'} 
+                    itemRef={{
                         loggedInUserId: loggedInUserId, 
                         collectionId: collection.id,
-                        postId: null //TODO pass post id
-                    }}/>
+                        postId: posts[currentIndex].id
+                    }}
+                />
             </div>
         </div>
     </div>
