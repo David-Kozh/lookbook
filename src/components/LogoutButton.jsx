@@ -7,6 +7,7 @@ const LogoutButton = () => {
       const message = await logout();
       console.log(message);
       // Perform any additional actions after logout, such as redirecting the user
+      window.location.reload();
     } catch (error) {
       console.error(error.message);
     }
