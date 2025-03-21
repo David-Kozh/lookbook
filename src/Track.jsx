@@ -6,18 +6,18 @@ function ImageTrack({ posts }) {
   const mouseDownAtRef = useRef(0); // x position of the mouse when it is/was clicked
   const percentageRef = useRef(0);  // Percentage track has been slid. Updated on mouseUp to include the last drag (+= deltaPercentageRef.current)
   const deltaPercentageRef = useRef(0); //  Value of current drag (for handleMouseMove). Reset to 0 on mouseDown
-  const isDraggingRef = useRef(false);
+  const isDraggingRef = useRef(false);  // Boolean Flag for whether the track is currently being dragged
   const [selectedImageInfo, setSelectedImageInfo] = useState({ title: '', description: '' }); // Image info to be displayed
-  const isAnimating = useRef(false);      // Flag for whether the track is currently animating
-  const isAnimatingOpen = useRef(false);  // Flag for whether a post is currently being opened
-  const isPostOpenRef = useRef(false);    // Flag for whether a post is currently open
-  
-  // ref to the selected image index
-  const selectedImageRef = useRef(null);
+  const isAnimating = useRef(false);      // Boolean Flag for whether the track is currently animating
+  const isAnimatingOpen = useRef(false);  // Boolean Flag for whether a post is currently being opened
+  const isPostOpenRef = useRef(false);    // Boolean Flag for whether a post is currently open
+  const selectedImageRef = useRef(null);  // ref to the selected image index
+  const handleResizeRef = useRef(null);   // ref to the handleResize function
 
-  // This is the index of the selected image. Null if no image is selected. Stored as a useState in the root component.
+  // Index of the selected image. Null if no image is selected. Stored as a useState in the root component.
   const { selectedImage, setSelectedImage, setCloseSelectedImage } = useContext(SelectedImgContext);  
 
+  //* Event Handling Functions
   const handleMouseDown = (e) => {  // Use this for closing posts and handleClick for opening posts
     if(selectedImage !== null){
       return; // Don't allow dragging when an image is expanded
@@ -120,6 +120,7 @@ function ImageTrack({ posts }) {
     }
   };
 
+  //* Animation Functions
   const expandSelectedImage = async (index) => {  // Usage: Expands Posts
     if(isAnimating.current){ // Prevent opening a post while sliding the track
       console.log("still animating - cant open post");
@@ -135,15 +136,14 @@ function ImageTrack({ posts }) {
     }
     console.log('Open post with index: ', index);
     
-    // Update the flags, as well as the selectedImage context & ref.
+    //* Update the flags, as well as the selectedImage context & ref.
     isAnimatingOpen.current = true;   
     isPostOpenRef.current = true; 
     setSelectedImage(index);          
     selectedImageRef.current = index;
-     
     updateTitleOpacity(0); // Hide the title           
 
-    // Expand selected images using index and hide others
+    //* Expand selected images using index and hide others
     const images = document.querySelectorAll('.image');
     var imageDimensions = { width: 0, height: 0 };
     images.forEach((image, i) => {
@@ -157,7 +157,7 @@ function ImageTrack({ posts }) {
             transform: ['translateX(500%)']
           }, {duration: 700, fill: 'forwards', easing: 'ease-in-out'});
         }
-      } else {                // Animate the selected image
+      } else {                //* Animate the selected image
         imageDimensions = selectedImageDimensions(index);
         setTimeout(() => {    // Reveal the whole image after other images are gone
           image.animate({
@@ -166,7 +166,7 @@ function ImageTrack({ posts }) {
           }, {duration: 500, fill: 'forwards', easing: 'ease-in-out'});
         }, 200);
 
-        setTimeout(() => {    // Wait for image to be revealed, then translate
+        setTimeout(() => {    //* Wait for image to be revealed, then translate
           if(posts[i].aspectRatio == '16:9'  || window.innerWidth < 768 ){
             let rect = image.getBoundingClientRect();
             let centerX = rect.left + rect.width / 2;
@@ -192,7 +192,7 @@ function ImageTrack({ posts }) {
       }
     });
     
-    // Animate the image info after other animations are complete
+    //* Animate the image info after other animations are complete
     setTimeout(() => {
       var imageInfoElements = document.querySelectorAll('.image-info');
       var verticalOrientationFlag = false;
@@ -208,7 +208,7 @@ function ImageTrack({ posts }) {
           else {
             element.style.height = `${imageDimensions.height}px`;
             const rect = element.getBoundingClientRect();
-            const currentCenterY = rect.top + rect.height / 2;
+            const currentCenterY = rect.top + rect.height / 2; //??
           }
           element.animate({
             opacity: "1",
@@ -220,9 +220,7 @@ function ImageTrack({ posts }) {
           console.log('animated image info')
         });
       }
-
       showMedia(index); // Show media if applicable
-
       isAnimatingOpen.current = false;  // Once last animation are complete, set isAnimatingOpen to false
 
     }, 1600);
@@ -305,6 +303,7 @@ function ImageTrack({ posts }) {
 
   };
 
+  //* Helper Functions
   const updateTitleOpacity = (manualOpacityPercent, durationOverride) => { // Usage: Updates the App Title opacity
     const title = document.querySelector('.title-panel');
     var  opacityPercent = 100 * ((10 + Math.trunc(deltaPercentageRef.current + percentageRef.current)) / 10);
@@ -375,12 +374,12 @@ function ImageTrack({ posts }) {
     return ImgDim;
   };
 
-  const showMedia = (index) => {  // Usage: Show media for expanded post if applicable
+  const showMedia = (index) => {  // Usage: Show media for post if applicable, called by expandSelectedImage()
     const images = document.querySelectorAll('.image');
-    if(posts[index].contentType == 'mp4'){ 
+    if(posts[index].contentType == 'mp4'){ //* Video
       console.log('mp4 element');
         const videoElement = document.createElement('video'); // Create a video element //** Caution: enclosing delay removed (400ms)
-        videoElement.src = posts[index].content;              // Use the imported mp4 file directly
+        videoElement.src = posts[index].content;              // Use posts content file
         videoElement.controls = true;                         // Add controls so the user can play the video
         videoElement.style.width = `${images[index].offsetWidth}px`;  // Set the dimensions of the video to match the image
         videoElement.style.height = `${images[index].offsetHeight}px`;
@@ -393,16 +392,16 @@ function ImageTrack({ posts }) {
         videoElement.classList.add('fade-in');    // Fade-in video element
         document.body.appendChild(videoElement);  // Append the video element to the body
     }
-    else if(posts[index].contentType == 'mp3'){
+    else if(posts[index].contentType == 'mp3'){ //* Audio
       console.log('mp3 element');
       const audioElement = document.createElement('audio'); // Create an audio element
-      audioElement.src = posts[index].content; // Use the imported mp3 file directly
-      audioElement.controls = true; // Add controls so the user can play the audio
+      audioElement.src = posts[index].content; // Use posts content file
+      audioElement.controls = true; // Audio controls
       audioElement.controlsList = 'nodownload';
       audioElement.style.width = '25vw';
       audioElement.classList.add('mt-8');
 
-      // Find the image info element and append the audio element to it
+      //* Find the image info element and append the audio element to it
       const imageInfoElement = document.querySelector('.info-panel');
       if (imageInfoElement) {
         console.log('Found image info element');
@@ -411,15 +410,11 @@ function ImageTrack({ posts }) {
       }
     }
   };
-
-  const handleResizeRef = useRef(null);
-
+  //* Resize Event Function
   handleResizeRef.current = async () => {  // WIP: Handle resizing of window while image is expanded
-    //! BUG: 
-    //!   Resize works going from col view -> row view but not the other way around (1:1 selected image)
+    //! BUG: Resize works going from col view -> row view but not the other way around (1:1 selected image)
     //!   Does not work at all for 1:1 images displayed in a column (but does work for 16:9 images in a column)
     // TODO: Apply to mp4 elements
-    
     if(selectedImageRef.current != null){
       const imageDimensions = selectedImageDimensions(selectedImageRef.current);
       const images = document.querySelectorAll('.image');
@@ -473,7 +468,6 @@ function ImageTrack({ posts }) {
           }, 200);
         
           // TODO: Animate the image info after other animations are complete, so that image info height or width matches with image
-
         }
       });
     }
@@ -492,18 +486,18 @@ function ImageTrack({ posts }) {
     return () => {
       track.removeEventListener('mousedown', handleMouseDown);
     };
-  }, []); // Pass an empty dependency array to run the effect only on mount and unmount
+  }, []); // Empty dependency array to run only on mount and unmount
 
   useEffect(() => {
     let resizeTimeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
+      resizeTimeout = setTimeout(() => { //? Dont remember why this timeout logic is needed
         if (handleResizeRef.current) {
           handleResizeRef.current();
         }
       }, 1000);
-    };
+    }; //? Is this an effective solution? Async function set to a ref then added to the event listener
 
     window.addEventListener('resize', handleResize);
     return () => {
@@ -524,8 +518,7 @@ function ImageTrack({ posts }) {
             draggable="false"
             onClick={() => handleClick(index)}
             />
-          ) :       
-          (post.aspectRatio == '1:1') && (
+          ) : (post.aspectRatio == '1:1') && (
             <img
             key={index}
             className='image img-md drop-shadow-2xl shadow-inner shadow-black'
@@ -572,9 +565,7 @@ function ImageTrack({ posts }) {
             </div>
           </>)}
         </div>
-
       </div>)}
-
     </>
   );
 }

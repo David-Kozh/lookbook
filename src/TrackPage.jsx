@@ -8,6 +8,14 @@ import { getCollection, getUserCollections } from "./services/collectionService"
 
 //* Component that fetches posts and pases them to the ImageTrack component
 //TODO  Implement collectionInfo in TrackPage
+/*
+  TODOs for <ImageTrack/>:
+  - Split down into some sub-components for readability
+  - Handle posts with no description (display title as a caption)
+    - Then use that structure to implement a way to hide the description (if present)
+    allowing for the image to be displayed in a larger space.
+    
+*/
 function TrackPage({ isLoggedIn, loggedInUser}) {
   const { userId, collectionId } = useParams();
   // The collection of posts to display

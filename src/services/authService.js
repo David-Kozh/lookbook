@@ -29,7 +29,7 @@ const createUserDocument = async (user) => {
         photoURL,
         createdAt,
         bio: 'This is your profile bio. Tell the world a little about what kind of works are in your LookBook!',
-        mediaLinks: [], // Array of social media links (e.g. LinkedIn, Personal website, etc.)
+        socialMediaLinks: {}, // Object of social media links (e.g. LinkedIn, Youtube, etc.)
       });
     } catch (error) {
       console.error('Error in createUserDocument:', error.message);

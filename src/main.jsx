@@ -16,44 +16,31 @@ import Login from './login.jsx';
 import SignUp from './signup.jsx';
 import './App.css'
 /*
-  * Firebase Tasks: 
+  * Firebase Tasks:
     //✅ User Authentication
     //✅ Database for user collections and posts
     //✅  Finish replacing example data with Firestore function calls
     //✅  Cloud Storage for images and videos
     TODO  Testing and bugfixing
     TODO  Establish ordering for posts when creating a collection (is createdAt sufficient?)
-    TODO  Delete Orphaned posts and storage data from testing
-  * Functionalies to implement:
-    TODO  Grab userId from URL params from TrackPage for use in Bio page (to display that users bio)
+  * Current Tasks:
+    ! Current Stage: Testing Firebase and updating front end
     TODO  Update user settings (name, image, password, etc.)
-    TODO  Add "like" functionality to posts
-    TODO  Add "carousel" as a content type (daisyUI) just like mp4
-  * Priority Tasks:
-    ! Current Task: Testing Firebase and updating front end
-    ! Current Task: Implement/test other signup/signin methods & redirect to posts using params
-    !  Pass post id to ButtonGroup in CollectionsMenu so that posts can be deleted from DB
-    TODO  Add a check to delete button for Posts in EditCollection, so that the default/placeholder post cannot be deleted
-    TODO  Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
+    TODO  Link to own profile page if signed in, and viewing other profile in /bio/:userId
+  * Functionalies to implement:
+    Posts with no descriptions and those with short captions
+    Add "like" functionality to posts
+    Add "carousel" as a content type (daisyUI) like other post.content
+    Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
   * Lower-priority:
-    TODO  Resize images/video does not work for 1:1 --> Transition between col/row orientation
+    TODO  Signup page form validation (using sign in with google for now)
+    TODO  Resize images/video does not work for 1:1 --> Transition between col/row orientation (issue with height of description not being set to image height)
     * Edit-Collection/Post Components:
       TODO  Gray out the "Save Changes" button if no changes have been made
       TODO  Gray out unchanged fields using Form API (touched fields)
   ?  Questions:
-  ?   How should the user's own profile be displayed?
   ?   Limits on num collections/posts? File sizes?
-  ?     In theory:
-  ?       'Posts' tab are shared by link
-  ?       Clicking 'Bio' tab from 'Posts' tab should display the collection owner's profile.
-  ?       Clicking 'Home' will displays the user's dashboard. --> Button to then navigate to profile?
-  ?       'Home' (dashboard) --> 'Bio' = your own profile?
-  ?   Animation from track to profile section
   ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections
-  ?   Should expanded images and their descriptions be displayed in a single card? 
-  ?   Images with no description? Should shorter descriptions be displayed as a caption
-  ?       - Would need to modify available space to maximize image size 
-  ?   Should 1:1 images/description be row/col orientated
   ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients

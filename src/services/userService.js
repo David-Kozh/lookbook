@@ -9,8 +9,10 @@ export const fetchUserData = async (uid) => {
   const userDoc = await getDoc(userDocRef);
 
   if (userDoc.exists()) {
-    console.log('User document data:', userDoc.data());
-    return userDoc.data();
+    const userData = userDoc.data();
+    userData.id = uid; // Add the user ID to the returned data
+    console.log('User document data:', userData);
+    return userData;
   } else {
     console.error('No such user document!');
     return null;
@@ -20,9 +22,20 @@ export const fetchUserData = async (uid) => {
 export const updateUser = async (uid, data) => {
   const userDocRef = doc(db, 'users', uid);
 
+  //? Can we check if the thumbnail is different from the current one?
+  // thumbnail file in data vs thumbnail url in userDoc
   try {
+    // Check if photo is present in data; Upload to storage
+    if (data.photo) {
+      const photoFile = data.photo;
+      const photoUrl = await uploadProfilePicture(uid, photoFile);
+      data.photoUrl = photoUrl;
+      delete data.photo; // Remove the photo file from data
+    }
+
     await updateDoc(userDocRef, data);
     console.log('User data updated successfully');
+
   } catch (error) {
     console.error('Error updating user data:', error.message);
   }

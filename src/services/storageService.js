@@ -11,6 +11,15 @@ import { storage } from '../config/firebaseConfig';
         Post Image: users/12345/collections/67890/posts/abcde/image
         Post Content: users/12345/collections/67890/posts/abcde/content
 */
+
+//* Profile Picture
+export const uploadProfilePicture = async (uid, file) => {
+    const storageRef = ref(storage, `users/${uid}/profilePhoto.jpg`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+};
+
 //* Collection Thumbnail
 export const uploadCollectionThumbnail = async (uid, collectionId, file) => {
     const storageRef = ref(storage, `users/${uid}/collections/${collectionId}/thumbnail.jpg`);

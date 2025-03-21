@@ -1,10 +1,10 @@
 /* App Structure */
   .body-h {
-    height: 90vh;
+    height: 92vh;
   }
 
   .nav-h {
-    height: 10vh;
+    height: 8vh;
     display: flex;
     align-items: center;
     justify-content: center;
