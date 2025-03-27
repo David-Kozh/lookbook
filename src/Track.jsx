@@ -14,7 +14,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
   const selectedImageRef = useRef(null);  // ref to the selected image index
   const handleResizeRef = useRef(null);   // ref to the handleResize function
   const [isVerticalOrientation, setIsVerticalOrientation] = useState(false); // Boolean Flag for whether the selected image is in vertical orientation
-  //! ^ Implement into the return statement
+
   // Index of the selected image. Null if no image is selected. Stored as a useState in the root component.
   const { selectedImage, setSelectedImage, setCloseSelectedImage } = useContext(SelectedImgContext);  
 
@@ -277,6 +277,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
     });
     
     // Post Closed - Bring back title
+    //? causing bug where title reappears
     isPostOpenRef.current = false;
     updateTitleOpacity(
       (100 * ((10 + (deltaPercentageRef.current + percentageRef.current)) / 10)),
@@ -515,6 +516,20 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
     };
   }, []); 
 
+  useEffect(() => { //* Cleanup lingering media elements when the component unmounts
+    return () => {
+      const videoElement = document.querySelector('video');
+      if (videoElement) {
+        videoElement.parentNode.removeChild(videoElement);
+      }
+  
+      const audioElement = document.querySelector('audio');
+      if (audioElement) {
+        audioElement.parentNode.removeChild(audioElement);
+      }
+    };
+  }, []);
+
   return (
     <div className='w-full h-full'>
       <div id="image-track">
@@ -539,8 +554,11 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       
       {/* App ProfileName and Subheading */}
       <div className='title-panel ml-5 md:ml-20 flex flex-col justify-center'>
-        <h1 style={{textDecoration: 'underline'}} className='text-3xl sm:text-4xl md:text-5xl lg:text-7xl ml-3 sm:ml-5 md:ml-10 font-mono my-2'> LookBook </h1>
-        <h2 className='text-lg sm:text-2xl lg:text-4xl font-mono ml-3 sm:ml-5 md:ml-10 md:my-2'> Aesthetic and Professional Portfolios </h2>
+        <h1 style={{textDecoration: 'underline'}} className='text-3xl sm:text-4xl md:text-5xl lg:text-7xl ml-3 sm:ml-5 md:ml-10 font-mono my-2'> {collectionInfo?.title || 'LookBook'} </h1>
+        <h2 className='text-lg sm:text-2xl lg:text-4xl font-mono ml-3 sm:ml-5 md:ml-10 md:my-2'>   {collectionInfo?.subtitle !== undefined && collectionInfo?.subtitle !== null
+          ? collectionInfo.subtitle
+          : 'Aesthetic and Professional Portfolios'} 
+        </h2>
       </div>
 
       {/* Image Info */}
@@ -559,36 +577,31 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
                 </h1>
                 {/* Like Button */}
                 {isLoggedIn && (
-                  <button
-                    className='like-button'
+                  <button className='like-button'
                     onClick={() => handleLike(posts[selectedImage].id)}
                   >
                     {posts[selectedImage].isLiked ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
+                      <svg xmlns="http://www.w3.org/2000/svg"
                         fill="pink"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
                         className="w-6 h-6"
                       >
-                        <path
-                          strokeLinecap="round"
+                        <path strokeLinecap="round"
                           strokeLinejoin="round"
                           d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                         />
                       </svg>
                     ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
+                      <svg xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
                         className="w-6 h-6"
                       >
-                        <path
-                          strokeLinecap="round"
+                        <path strokeLinecap="round"
                           strokeLinejoin="round"
                           d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                         />
