@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-// TODO: Replace SVGs (at least the one for Posts)
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 export default function BottomBar() {
     const [barTab, setBarTab] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const { userId, collectionId } = useParams();
 
     const handleClick = (tabName) => {
         setBarTab(tabName);
-        navigate(`/${tabName}`);
+        if(tabName === 'home'){
+            navigate('/home');
+        } else if(tabName === 'bio'){
+            navigate(`/bio${userId ? `/${userId}` : ''}`);
+        } else if(tabName === 'posts'){
+            navigate(`/posts${userId ? `/${userId}` : ''}${collectionId ? `/${collectionId}` : ''}`);
+        }
     };
 
     useEffect(() => {
@@ -24,7 +29,7 @@ export default function BottomBar() {
     return (
         <div className="btm-nav bottom-bar sm:hidden text-white bg-zinc-800 font-mono leading-none">
             <button 
-                className={`${barTab === 'home' ? 'active bg-zinc-600' : ''}`}
+                className={`${barTab === 'home' ? 'active border-[#ddbd96aa] bg-zinc-700' : ''}`}
                 onClick={() => handleClick('home')}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,7 +41,7 @@ export default function BottomBar() {
             </button>
             
             <button 
-                className={`${barTab === 'bio' ? 'active bg-zinc-700' : ''}`}
+                className={`${barTab === 'bio' ? 'active border-[#ddbd96aa] bg-zinc-700' : ''}`}
                 onClick={() => handleClick('bio')}    
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -48,7 +53,7 @@ export default function BottomBar() {
             </button>
             
             <button 
-                className={`${barTab === 'posts' ? 'active bg-zinc-600' : ''}`}
+                className={`${barTab === 'posts' ? 'active border-[#ddbd96aa] bg-zinc-700' : ''}`}
                 onClick={() => handleClick('posts')}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

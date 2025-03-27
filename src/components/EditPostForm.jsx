@@ -1,23 +1,22 @@
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { DialogFooter } from "@/components/ui/dialog"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -61,13 +60,12 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
 
   const contentTypeWatch = form.watch('contentType');
       
-  // 2. Define a submit handler.
   function onSubmit(values) {
     console.log('submitting form');
     console.log(values);
 
     // TODO: Additionally make sure the file extensions match the content type 
-    // TODO: Check post.content so that posts with non-updated content are not dis-allowed
+    // TODO: Check post.content so that posts with non-updated content aren't marked as invalid
     if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
       form.setError('content', {
         type: 'manual',
@@ -76,25 +74,14 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       return;
     }
 
-    var imageUrl = post.image;
-    if(values.image){
-      imageUrl = URL.createObjectURL(values.image);
-      // TODO: Change to an upload to cloud storage
-    }
-    var contentUrl = post.content;
-    if(values.content){
-      contentUrl = URL.createObjectURL(values.content);
-      // TODO: Change to an upload to cloud storage
-    }
-
     //* Update post with the form input data
     updatePost({
       title: values.title,
       description: values.description,
-      image: imageUrl, //! passing src url for development to "simulate" cloud storage
+      image: values.image, 
       aspectRatio: values.aspectRatio,
       contentType: values.contentType,
-      content: contentUrl,
+      content: values.content,
     })
     dismiss('edit');
   }
@@ -104,8 +91,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
     <form onSubmit={form.handleSubmit(onSubmit)}
       className="flex flex-col space-y-8 px-1"
     >
-      <FormField
-        name="title"
+      <FormField name="title"
         control={form.control}
         render={({ field }) => (
           <FormItem className="w-full mt-2">
@@ -123,8 +109,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         )}
       />
       
-      <FormField
-        name="description"
+      <FormField name="description"
         control={form.control}
         render={({ field }) => (
           <FormItem className="w-full">
@@ -142,8 +127,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         )}
       />
 
-      <Controller
-        name="image"
+      <Controller name="image"
         control={form.control}
         render={({ field: { onChange, ref } }) => (
           <FormItem>
@@ -152,8 +136,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                 Image
               </FormLabel>
               <FormControl>
-                <Input 
-                  type="file"
+                <Input type="file"
                   onChange={(e) => {
                     if (e.target.files.length > 0) {
                       onChange(e.target.files[0]); // store file
@@ -169,10 +152,8 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         )}
       />
 
-      {/* replace with radio group? */}
       <div className="flex w-full gap-4">
-        <FormField 
-        name="aspectRatio"
+        <FormField name="aspectRatio"
         control={form.control}
         render={({ field }) => (
           <FormItem className='w-[35%]'>
@@ -192,8 +173,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
           </FormItem>
         )}
         />
-        <FormField 
-        name="contentType"
+        <FormField name="contentType"
         control={form.control}
         render={({ field }) => (
             <FormItem className='w-[65%]'>
@@ -202,9 +182,9 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                     <SelectValue placeholder="Content Type" />
                 </SelectTrigger>
                 <SelectContent className="font-semibold">
-                    <SelectItem value="default">Default - no additional content </SelectItem>
-                    <SelectItem value="mp4">Additional video content</SelectItem>
-                    <SelectItem value="mp3">Additional audio content</SelectItem>
+                    <SelectItem value="default">No Additional Content </SelectItem>
+                    <SelectItem value="mp4">+ Video Content</SelectItem>
+                    <SelectItem value="mp3">+ Audio Content</SelectItem>
                 </SelectContent>
                 </Select>
                 <FormMessage />
@@ -213,8 +193,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         />
       </div>
 
-      <Controller
-        name="content"
+      <Controller name="content"
         control={form.control}
         render={({ field: { onChange, ref } }) => (
           <FormItem>
@@ -223,8 +202,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                 Additional Content
               </FormLabel>
               <FormControl>
-              <Input 
-                type="file"
+              <Input type="file"
                 onChange={(e) => {
                   onChange(e.target.files[0]); // store file
                 }}

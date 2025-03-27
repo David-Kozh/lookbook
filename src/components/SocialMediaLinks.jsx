@@ -1,8 +1,9 @@
 import React from 'react';
-
+//* Displays links in top right corner of profile 
+//* (rendered in ProfileSection.jsx)
 //? Add an svg/link for a personal website?
 const MediaLinks = ({ mode, mediaLinks, isMobile }) => {
-    console.log('LINKS:  ', mediaLinks);
+    console.log('LINKS:  ', mediaLinks, '\n', mode, isMobile);
     const defaultLinks = {
         linkedin: "https://www.linkedin.com",
         instagram: "https://www.instagram.com",
@@ -14,7 +15,6 @@ const MediaLinks = ({ mode, mediaLinks, isMobile }) => {
 
     const instagramIdA = isMobile ? 'a' : 'c';
     const instagramIdB = isMobile ? 'b' : 'd';
-
     const size = isMobile ? 24 : 26;
     const youtubeSize = isMobile ? 32 : 35;
 

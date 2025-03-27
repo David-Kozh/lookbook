@@ -3,15 +3,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserCollections } from './services/collectionService';
 import { fetchUserData, getUserCollectionThumbnails } from './services/userService';
-import exampleThumbnails from './data/exampleThumbnails';
+import exampleThumbnails from './data/exampleThumbnails.js';
 import EditUserSettings from './EditUserSettings';
 import MediaLinks from './components/SocialMediaLinks';
 // Data required:
 //  - User image, name, bio, and links
 //  - User's collections
-//  - Currently open collection id (so it can be skipped in the MoreCollections section. Possibly for More Info header as well)
-// ? Should additional info section be associated with the collection?
 //? Display Profile and More Collections section in 2 columns on larger screens
+//?     > And then display caption/description of collection below it?
 
 export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
     const location = useLocation(); // URL location
@@ -36,10 +35,16 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     //* Function to view a collection from profile
     const viewCollection = (index) => {
         console.log('Viewing collection:', collections[index].title);
-        const userIdToUse = userId || loggedInUser.uid;
-        setTimeout(() => {
-            navigate(`/posts/${userIdToUse}/${collections[index].id}`);
-        }, 10);
+        if(mode != 'example') {
+            const userIdToUse = userId || loggedInUser.uid;
+            setTimeout(() => {
+                navigate(`/posts/${userIdToUse}/${collections[index].id}`);
+            }, 10);
+        } else {
+            setTimeout(() => {
+                navigate('/posts');
+            }, 10);
+        }
     }
 
     useEffect(() => {   //* Get the current URL, extract the index and update
@@ -134,7 +139,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 <div className="w-full h-min">
                     <div className='w-full h-min flex items-center justify-between'>
                         <h1 className='text-3xl xl:text-4xl font-bold'>User Bio</h1>
-                        {(mode == 'self') && (<Button className=' p-3 md:flex md:gap-1' onClick={() => setEditSettings(true)}>
+                        {(mode == 'self') && (<Button className='p-3 md:flex md:gap-1' onClick={() => setEditSettings(true)}>
                             <svg 
                                 xmlns="http://www.w3.org/2000/svg" 
                                 viewBox="0 0 24 24" id="settings" className='w-4 h-4'>
@@ -145,6 +150,14 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             </svg>
                             <div className='hidden text-xs md:inline'>Settings</div>
                         </Button>)}
+                        {(mode == 'user') && (
+                            <Button className='p-3 md:flex md:gap-1' onClick={() => {
+                                navigate('/bio');
+                                window.location.reload();
+                            }}>
+                                <div className='text-xs md:inline'>Go to Bio</div>
+                            </Button>
+                        )}
                     </div>
                     <div className="h-0.5 rounded-lg bg-zinc-700 my-1"></div>
                 </div>
@@ -153,7 +166,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 <div id="contact-profile" className="w-full h-full lg:w-4/5 2xl:w-3/4 flex flex-col justify-evenly items-center mt-2 px-0">
             
                     {/* Username Section for Mobile Only */}
-                    <div className="flex flex-col w-[92%] sm:hidden">
+                    <div className="flex flex-col w-[92%] md:hidden">
                         {/* Display Name and Links */}
                         <div className='w-full h-min flex items-center justify-between'>
                             <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
@@ -164,7 +177,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         </div>
                         {/* Handle */}
                         <h4 className="text-xl/none xl:text-2xl/none 2xl:text-3xl/none 
-                            font-medium text-gray-800 sm:mb-2">{(mode != 'example') ? '@' + userProfile.handle : '@user-handle'} 
+                            font-medium text-gray-800">{(mode != 'example') ? '@' + userProfile.handle : '@user-handle'} 
                         </h4>
                         {/* Avatar and Bio */}
                         <div className='mt-6'>
@@ -180,24 +193,24 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             </p>
                         </div>
                     </div>
-
+          
                     {/* User heading for larger screens */}
                     <div className="w-full flex justify-center gap-4 xl:gap-8">
                         {/* Avatar */}
-                        <div className="hidden sm:inline w-20 sm:w-28 h-20 sm:h-28 rounded">
+                        <div className="hidden md:inline w-20 md:w-28 h-20 md:h-28 rounded">
                             {(mode != 'example') ? (<img src={userProfile.photoURL} />) :
                             (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />)}
                         </div>
                         
                         {/* User's Name, Handle and Links */}
-                        <div className="hidden w-2/3 sm:flex flex-col justify-between" >
+                        <div className="hidden w-2/3 md:flex flex-col justify-between" >
                             
                             <div className='flex justify-between items-center'>
                                 <h3 className="text-3xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
                                 font-bold text-gray-900">{(mode != 'example') ? userProfile.displayName : 'Jane Doe'}</h3>
                                 {/* Links */}
                                 <div className='w-[50%]'>
-                                    <MediaLinks mode={'example'} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={false}/>
+                                    <MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={false}/>
                                 </div>
                             </div>
 
@@ -210,8 +223,8 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     </div>
 
                     {/* Bio for larger screens */}
-                    <div className="hidden w-full lg:w-5/6 2xl:w-4/5 sm:flex px-6 md:px-8 lg:px-0">
-                        <p className="text-lg w-full xl:text-xl text-gray-700 text-justify mb-1">
+                    <div className="hidden md:flex w-full lg:w-5/6 2xl:w-4/5 px-6 md:px-8 lg:px-0">
+                        <p className="text-lg w-full xl:text-xl text-gray-700 text-justify my-2">
                             {
                                 (mode != 'example') ? userProfile.bio : 
                                 "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi."

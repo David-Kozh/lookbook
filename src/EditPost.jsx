@@ -98,6 +98,26 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     async function onSubmit(values) {
         console.log(values)
         
+        const updatedData = {}; //* Prune data of unchanged fields before updating
+        if (values.title !== post.title) {
+            updatedData.title = values.title;
+        }
+        if (values.description !== post.description) {
+            updatedData.description = values.description;
+        }
+        if (values.image) {
+            updatedData.imageFile = values.image;
+        }
+        if (values.aspectRatio !== post.aspectRatio) {
+            updatedData.bio = values.bio;
+        }
+        if (values.contentType !== post.contentType) {
+            updatedData.bio = values.bio;
+        }
+        if (values.content) {
+            updatedData.contentFile = values.content;
+        }
+
         // TODO: Additionally make sure the file extensions match the content type 
         if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
@@ -112,14 +132,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             loggedInUserId, 
             collectionId, 
             post.id, 
-            {
-                title: values.title,
-                description: values.description,
-                imageFile: values.image, 
-                aspectRatio: values.aspectRatio,
-                contentType: values.contentType,
-                contentFile: values.content,
-            }
+            updatedData
         );
         cancelEdit();
     }

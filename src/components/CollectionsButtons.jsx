@@ -10,7 +10,6 @@ const ButtonGroup = ({
     if (selectedItemName == ('No Collections Yet!' || 'No Posts Yet!') && buttonName !== 'create') {
       //* Prevent buttons from changing state when they can't be used (can't edit or delete the blank items)
       //* Keeps the buttons from getting stuck in a highlighted state after they fail to do anything
-      //? Could maybe alterenatively check for .id == 'default' instead of name? (ids are in itemRef)
       console.log('No valid item selected');
     } else {
       setSelectedButton(buttonName);
@@ -23,22 +22,19 @@ const ButtonGroup = ({
 
   return (
     <div className="h-min inline-flex rounded-lg border border-zinc-600 bg-zinc-600 
-        p-1 sm:gap-2 text-xs sm:text-sm shadow-lg shadow-black/30 collections-btns-mobile">
+      p-1 sm:gap-2 text-xs sm:text-sm shadow-lg shadow-black/30 collections-btns-mobile">
       
-      <button
-        onClick={() => handleClick('create')}
+      <button onClick={() => handleClick('create')}
         className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-12 
-          ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
       >
-        <svg 
-        xmlns="http://www.w3.org/2000/svg" 
+        <svg xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 67.733 67.733" 
         strokeWidth="0"
         fill='none'
         className="h-4 w-4"
         >
-          <path 
-          d="M18.094 231.519c-8.73 0-15.841 7.112-15.841 15.842v31.545c0 8.73 7.11 15.842 15.841 15.842h31.545c8.73 0 15.842-7.112 15.842-15.842V247.36c0-8.73-7.112-15.842-15.842-15.842zm0 5.293h31.545c5.89 0 10.55 4.659 10.55 10.549v31.545c0 5.89-4.66 10.548-10.55 10.548H18.094c-5.89 0-10.549-4.658-10.549-10.548V247.36c0-5.89 4.659-10.549 10.549-10.549zm16.395 8.068a2.646 2.646 0 0 0-2.608 2.682v12.752h-12.75a2.646 2.646 0 1 0 0 5.29h12.75v12.75a2.647 2.647 0 1 0 5.293 0v-12.75h12.75a2.646 2.646 0 1 0 0-5.29h-12.75v-12.752a2.646 2.646 0 0 0-2.685-2.682z" 
+          <path d="M18.094 231.519c-8.73 0-15.841 7.112-15.841 15.842v31.545c0 8.73 7.11 15.842 15.841 15.842h31.545c8.73 0 15.842-7.112 15.842-15.842V247.36c0-8.73-7.112-15.842-15.842-15.842zm0 5.293h31.545c5.89 0 10.55 4.659 10.55 10.549v31.545c0 5.89-4.66 10.548-10.55 10.548H18.094c-5.89 0-10.549-4.658-10.549-10.548V247.36c0-5.89 4.659-10.549 10.549-10.549zm16.395 8.068a2.646 2.646 0 0 0-2.608 2.682v12.752h-12.75a2.646 2.646 0 1 0 0 5.29h12.75v12.75a2.647 2.647 0 1 0 5.293 0v-12.75h12.75a2.646 2.646 0 1 0 0-5.29h-12.75v-12.752a2.646 2.646 0 0 0-2.685-2.682z" 
           fill='currentColor'
           transform="translate(0 -229.267)" 
           />
@@ -48,24 +44,21 @@ const ButtonGroup = ({
         </p>
       </button>
 
-      <button
-        onClick={() => handleClick('edit')}
+      <button onClick={() => handleClick('edit')}
         className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-12 mr-2 sm:mr-0
-          ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
       >
-        <svg
-        xmlns="http://www.w3.org/2000/svg"
+        <svg xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth="1.5"
         stroke="currentColor"
         className="h-4 w-4"
         >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-            />
+          <path strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+          />
         </svg>
         <p className='hidden sm:inline'>
           Edit
@@ -77,13 +70,11 @@ const ButtonGroup = ({
         <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg hover:bg-slate-700">❯</a>
       </div>}
 
-      <button
-        onClick={() => handleClick('view')}
+      <button onClick={() => handleClick('view')}
         className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-l-lg sm:rounded-md px-4 h-12 ml-2 sm:ml-0
-          ${selectedButton === 'view' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'view' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
       >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg"
+        <svg xmlns="http://www.w3.org/2000/svg"
           fill="none"
           className="h-5 w-5"
           viewBox="0 0 24 24"
@@ -100,8 +91,6 @@ const ButtonGroup = ({
 
       {/* Delete Modal */}
       <DeleteAlert itemName={selectedItemName} handleClick={handleClick} selectedButton={selectedButton} setSelectedIndex={setSelectedIndex} itemType={itemType} itemRef={itemRef} />
-
-
       
     </div>
   );

@@ -34,7 +34,7 @@ function Home() {
                   ></div>
                 </span>
                 <div className="mt-6 text-gray-200 font-medium 2xl:text-lg font-mono">
-                  A simple and sleek platform for creatives to showcase their work to the world. Perfect for photographers, programmers, illustrators, designers, and musicians. 
+                &nbsp;&nbsp;&nbsp;&nbsp;A simple and sleek platform for creatives to showcase their work to the world. Perfect for photographers, programmers, illustrators, designers, and musicians. 
                   <div className='mt-6'>&nbsp;&nbsp;&nbsp;&nbsp;➣ Skip the sign up and log in instantly with Google or Github! </div>
                 </div>
                 

@@ -36,9 +36,9 @@ export default function Root({ isLoggedIn }) {
                     </Link>
 
                     <div className=''>
-                        {/* Back button for displayed images */}
+                        {/* Back button for displayed images (currently unused) */}
                         <button 
-                            className={`${selectedImage != null ? 'absolute' : 'hidden'} z-10 border border-gray-400 transition bg-gray-100/10 hover:bg-gray-100/50 mt-2 ml-5 sm:ml-6 py-1 sm:py-2 px-4 rounded shadow`}
+                            className={`${selectedImage != null ? 'hidden absolute' : 'hidden'} z-10 border border-gray-400 transition bg-gray-100/10 hover:bg-gray-100/50 mt-2 ml-5 sm:ml-6 py-1 sm:py-2 px-4 rounded shadow`}
                             onClick={() => {
                                 closeSelectedImage(selectedImage);
                             }} 
@@ -92,7 +92,7 @@ export default function Root({ isLoggedIn }) {
             </div>
             
             {/* All page content is rendered here, below the topbar */}
-            <Outlet className='body-h'/>
+            <Outlet className='body-h w-full'/>
 
             {/* Bottom navbar to display on small screens */}
             <BottomBar />

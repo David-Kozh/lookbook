@@ -38,7 +38,6 @@ const formSchema = z.object({
 
 //* ✅ Ready for testing with firebase db and storage
 //* This component is used in CreateCollection.jsx (parent component) 
-//* which handles the database and cloud storage for the post
 export default function CreatePostForm({ addPost, dismiss }) {
   const form = useForm({
     mode: 'onChange',
@@ -59,9 +58,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
   //* which will process the final set of posts when the collection is submitted.
   //* This allows this post to be edited or deleted, before being uploaded, preserving resources
   function onSubmit(values) {
-    console.log('submitting form');
-    console.log(values);
-
+    console.log('submitting form', values);
     //TODO: Additionally make sure the file extensions match the content type 
     if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
       form.setError('content', {
@@ -136,8 +133,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
                 Image
               </FormLabel>
               <FormControl>
-                <Input 
-                  type="file"
+                <Input type="file"
                   onChange={(e) => {
                     onChange(e.target.files[0]); // store file
                   }}
@@ -151,7 +147,6 @@ export default function CreatePostForm({ addPost, dismiss }) {
         )}
       />
 
-      {/* replace with radio group? */}
       <div className="flex w-full gap-4">
         <FormField name="aspectRatio"
         control={form.control}
@@ -174,7 +169,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         )}
         />
 
-        <FormField  name="postType"
+        <FormField name="postType"
         control={form.control}
         render={({ field }) => (
             <FormItem className='w-[65%]'>
@@ -183,9 +178,9 @@ export default function CreatePostForm({ addPost, dismiss }) {
                     <SelectValue placeholder="Content Type" />
                 </SelectTrigger>
                 <SelectContent className="font-semibold">
-                    <SelectItem value="default">Default - no additional content </SelectItem>
-                    <SelectItem value="mp4">Additional video content</SelectItem>
-                    <SelectItem value="mp3">Additional audio content</SelectItem>
+                    <SelectItem value="default">No Additional Content </SelectItem>
+                    <SelectItem value="mp4">+ Video Content</SelectItem>
+                    <SelectItem value="mp3">+ Audio Content</SelectItem>
                 </SelectContent>
                 </Select>
                 <FormMessage />
@@ -203,8 +198,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
                 Additional Content
               </FormLabel>
               <FormControl>
-              <Input 
-                type="file"
+              <Input type="file"
                 onChange={(e) => {
                   onChange(e.target.files[0]); // store file
                 }}

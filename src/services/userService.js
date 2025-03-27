@@ -27,6 +27,7 @@ export const updateUser = async (uid, data) => {
   try {
     // Check if photo is present in data; Upload to storage
     if (data.photo) {
+      console.log('Uploading profile picture...');
       const photoFile = data.photo;
       const photoUrl = await uploadProfilePicture(uid, photoFile);
       data.photoUrl = photoUrl;
@@ -38,6 +39,39 @@ export const updateUser = async (uid, data) => {
 
   } catch (error) {
     console.error('Error updating user data:', error.message);
+  }
+};
+
+export const getUserCollectionThumbnails = async (uid) => {
+  const collectionsRef = collection(db, 'users', uid, 'collections');
+  const thumbnails = [];
+
+  try {
+      const collectionsSnapshot = await getDocs(collectionsRef);
+      for (const collectionDoc of collectionsSnapshot.docs) {
+          const collectionData = collectionDoc.data();
+          let thumbnailUrl = collectionData.thumbnail;
+          let aspectRatio = '1:1';
+
+          // If the collection does not have a thumbnail, get the first post's image
+          if (!thumbnailUrl) {
+              const postsRef = collection(db, 'users', uid, 'collections', collectionDoc.id, 'posts');
+              const postsSnapshot = await getDocs(postsRef);
+              if (!postsSnapshot.empty) {
+                  const firstPostDoc = postsSnapshot.docs[0];
+                  const firstPostData = firstPostDoc.data();
+                  thumbnailUrl = firstPostData.image || '';
+                  aspectRatio = firstPostData.aspectRatio || '1:1';
+              }
+          }
+
+          thumbnails.push({thumbnailUrl: thumbnailUrl, aspectRatio: aspectRatio});
+      }
+
+      return thumbnails;
+  } catch (error) {
+      console.error('Error getting collection thumbnails:', error.message);
+      throw new Error('Failed to get collection thumbnails');
   }
 };
 
@@ -75,37 +109,4 @@ export const deleteUser = async (uid) => {
     console.error('Error deleting user:', error.message);
   }
 
-};
-
-export const getUserCollectionThumbnails = async (uid) => {
-  const collectionsRef = collection(db, 'users', uid, 'collections');
-  const thumbnails = [];
-
-  try {
-      const collectionsSnapshot = await getDocs(collectionsRef);
-      for (const collectionDoc of collectionsSnapshot.docs) {
-          const collectionData = collectionDoc.data();
-          let thumbnailUrl = collectionData.thumbnail;
-          let aspectRatio = '1:1';
-
-          // If the collection does not have a thumbnail, get the first post's image
-          if (!thumbnailUrl) {
-              const postsRef = collection(db, 'users', uid, 'collections', collectionDoc.id, 'posts');
-              const postsSnapshot = await getDocs(postsRef);
-              if (!postsSnapshot.empty) {
-                  const firstPostDoc = postsSnapshot.docs[0];
-                  const firstPostData = firstPostDoc.data();
-                  thumbnailUrl = firstPostData.image || '';
-                  aspectRatio = firstPostData.aspectRatio || '1:1';
-              }
-          }
-
-          thumbnails.push({thumbnailUrl: thumbnailUrl, aspectRatio: aspectRatio});
-      }
-
-      return thumbnails;
-  } catch (error) {
-      console.error('Error getting collection thumbnails:', error.message);
-      throw new Error('Failed to get collection thumbnails');
-  }
 };

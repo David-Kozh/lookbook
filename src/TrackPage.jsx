@@ -5,16 +5,19 @@ import posts from './data/posts.js';
 import { useParams } from 'react-router-dom';
 import { getPosts } from "./services/postService";
 import { getCollection, getUserCollections } from "./services/collectionService";
+import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeService";
 
 //* Component that fetches posts and pases them to the ImageTrack component
-//TODO  Implement collectionInfo in TrackPage
+//TODO  Implement collectionInfo in Track.jsx
+//TODO  Create 'likeFunction' to be passed to ImageTrack
+//TODO      --> Add a 'like' button to the ImageTrack component
+//TODO      --> Pass function and isLoggedIn. Call function on click
 /*
   TODOs for <ImageTrack/>:
   - Split down into some sub-components for readability
   - Handle posts with no description (display title as a caption)
     - Then use that structure to implement a way to hide the description (if present)
     allowing for the image to be displayed in a larger space.
-    
 */
 function TrackPage({ isLoggedIn, loggedInUser}) {
   const { userId, collectionId } = useParams();
@@ -22,26 +25,45 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   const [collection, setCollection] = useState([]);
   // Information about the collection (Title, description, etc.)
   const [collectionInfo, setCollectionInfo] = useState({});
-
+  const [mode, setMode] = useState('loading');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(false);
 
-  useEffect(() => {
+  const handleLike = async (postId) => { //* Function to be called by like button in image info
+    if (await hasLiked(userId, postId)) {
+      await removeLike(userId, postId);
+    } else {
+      await addLike(userId, postId);
+    }
+  };
+
+  //* Fetch the collection of posts
+  useEffect(() => { 
     const fetchCollection = async () => {
-      if (userId && collectionId) {
+      if (userId) {
         try {
-          const userCollection = await getPosts(userId, collectionId);
-          const userCollectionInfo = await getCollection(userId, collectionId);
+          let userCollectionInfo = '';
+          let idToUse = collectionId;
+          if(!collectionId){
+            const userCollections = await getUserCollections(userId);
+            userCollectionInfo = userCollections[0];
+            idToUse = userCollectionInfo.id;
+          } else {
+            userCollectionInfo = await getCollection(userId, collectionId);
+          }
+          const userCollection = await getPosts(userId, idToUse);
+          
           setCollection(userCollection);
           setCollectionInfo(userCollectionInfo);
           console.log('User Collection found in params');
 
           if(userCollection.length > 0){
             setIsLoading(false);
+            setMode('view');
           } else {
             setErrorMessage('No posts found');
             setIsLoading(false);
-          }
+          }        
 
         } catch (error) {
           console.error(error);
@@ -60,6 +82,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
             
             if(userCollection.length > 0){
               setIsLoading(false);
+              setMode('view');
             } else {
               setErrorMessage('No posts found');
               setIsLoading(false);
@@ -75,6 +98,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
       } else {
         console.log('Displaying Example Collection');
         setCollection(posts);
+        setMode('example');
         setIsLoading(false);
       }
     }
@@ -82,8 +106,30 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
     fetchCollection();
   }, [isLoggedIn, userId, collectionId]);
 
+  useEffect(() => { // Check if the user is logged in and if the user has liked any of the posts in the collection
+    const updateLikedStatus = async () => {
+      if (mode === 'view' && isLoggedIn && loggedInUser) {
+        console.log('Checking if user has liked any posts in the collection');
+        try {
+          const userLikes = await getUserLikes(loggedInUser.uid);
+          if (userLikes) {
+            const updatedCollection = collection.map(post => ({
+              ...post,
+              liked: userLikes.includes(post.id),
+            }));
+            setCollection(updatedCollection);
+          }
+        } catch (error) {
+          console.error('Error fetching user likes:', error);
+        }
+      }
+    };
+  
+    updateLikedStatus();
+  }, [mode, isLoggedIn, loggedInUser]);
+
   return (
-    <>
+    <div className="w-full h-full">
       {isLoading ? (
         <div className="w-full h-[60%] flex items-center justify-center text-mono text-2xl italic"> 
           Loading... 
@@ -95,10 +141,10 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           </div>
 
         ) : (
-          <ImageTrack posts={collection} collectionInfo={collectionInfo} />
+          <ImageTrack isLoggedIn={isLoggedIn} posts={collection} collectionInfo={collectionInfo} handleLike={handleLike} />
         ))
       }
-    </>
+    </div>
   )
 }
 export default TrackPage;

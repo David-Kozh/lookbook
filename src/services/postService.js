@@ -49,6 +49,7 @@ export const updatePost = async (uid, collectionId, postId, data) => {
   const postDocRef = doc(db, 'users', uid, 'collections', collectionId, 'posts', postId);
 
   try {
+    const updatedData = {}; //* Prune data so only changed fields are passed to updateDoc
     const mediaFiles = {};
     let mediaUrls = {};
 
@@ -69,11 +70,23 @@ export const updatePost = async (uid, collectionId, postId, data) => {
       delete data.contentFile;
     }
 
+    // Add non-null/undefined fields from data to updatedData
+    for (const key in data) {
+      if (data[key] !== null && data[key] !== undefined) {
+        updatedData[key] = data[key];
+      }
+    }
+
+    // Add media URLs to updatedData
+    if (mediaUrls.image) {
+      updatedData.image = mediaUrls.image;
+    }
+    if (mediaUrls.content) {
+      updatedData.content = mediaUrls.content;
+    }
+
     // Update the post document with the new media URLs and other data
-    await updateDoc(postDocRef, {
-      ...data,
-      ...mediaUrls,
-    });
+    await updateDoc(postDocRef, updatedData);
 
     console.log('Post updated successfully');
   } catch (error) {

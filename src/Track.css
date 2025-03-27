@@ -16,7 +16,7 @@
 
   #image-track {
     display: flex;
-    gap: 4vmin;
+    gap: 5vmin;
     position: absolute;
     width: max-content; /* Do not remove: Prevents wrapping of image-track */
     top: 50%;
@@ -63,7 +63,7 @@
   }
 
 /* Image Info */
-  .info-container-col {   /* Used for 16:9-selected-images and mobile resolutions */
+  .info-container-col {   /* Used for 16:9-selected-images and Vertical Orientation 1:1 */
     display: flex;
     flex-direction: column; 
     align-items: center;
@@ -71,7 +71,7 @@
     position: absolute;
     width: 100vw;
     height: 84vh;
-    top: 10%; /* top 10% is topbar */
+    top: 8%; /* top 8% is topbar */
     user-select: none;
   }
   .img-panel-wide {
@@ -90,12 +90,42 @@
     align-items: top;
   }
   .image-info-wide {
-    width: 80%;
-    height: min-content;
+    height: auto;
     max-height: 95%;
     opacity: 0;
     z-index: 12;
     user-select: none;
+  }
+  .info-container {   /* --> img-panel & (info-panel --> image-info --> info-text) */
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    top: 8%;
+    width: 100%;
+    height: 85%;
+    user-select: none;
+  }
+  .img-panel {
+    width: 50vw;
+    height: 85vh;
+    user-select: none;
+    z-index: 0;
+  }
+  .info-panel {
+    width: 50vw;
+    height: 85vh;
+    align-items: center;
+    user-select: none;
+    z-index: 11;
+  }
+  .image-info {
+    width: 90%;
+    height: min-content;
+    opacity: 0;
+    user-select: none;
+    z-index: 12;
   }
   .info-text {
     overflow-y: auto;
@@ -165,43 +195,10 @@
     height: 25vh;
   }
 
-/* Media Queries */
-@media (min-width: 768px) {  /* Style not applied on smaller screens */
-  .info-container {   /* Used for 1:1 selected-images */
-    display: flex;
-    flex-direction: row; 
-    align-items: center;
-    justify-content: space-between;
-    position: absolute;
-    top: 10%;
-    width: 100%;
-    height: 90%;
-    user-select: none;
-  }
-  .img-panel {
-    width: 50vw;
-    height: 85vh;
-    user-select: none;
-    z-index: 0;
-  }
-  .info-panel {
-    width: 50vw;
-    height: 85vh;
-    align-items: center;
-    user-select: none;
-    z-index: 11;
-  }
-  .image-info {
-    width: 90%;
-    height: min-content;
-    opacity: 0;
-    user-select: none;
-    z-index: 12;
-  }
-  .breadcrumb-opacity {
-    opacity: 1;
-  }
+.breadcrumb-opacity {
+  opacity: 1;
 }
+
 
 /* Animations */
 .fade-in {

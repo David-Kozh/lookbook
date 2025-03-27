@@ -129,8 +129,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-4 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between px-2 pb-2">
             
-            <FormField
-                name="title"
+            <FormField name="title"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full">
@@ -148,8 +147,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 )}
             />
 
-            <FormField
-                name="subtitle"
+            <FormField name="subtitle"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full">
@@ -210,8 +208,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             </div>
 
             <div className="flex justify-between items-end gap-2 w-full">
-                <Controller
-                    name="thumbnail"
+                <Controller name="thumbnail"
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
                         <FormItem>
@@ -220,8 +217,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                                     Thumbnail
                                 </FormLabel>
                                 <FormControl>
-                                    <Input 
-                                        type="file"
+                                    <Input type="file"
                                         onChange={(e) => {
                                         onChange(e.target.files[0]); // store file
                                         }}
@@ -234,8 +230,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         </FormItem>
                     )}
                 />
-                <FormField
-                    name="displaySettings.theme"
+                <FormField name="displaySettings.theme"
                     control={form.control}
                     render={({ field }) => (
                         <div className="grid gap-1.5">
@@ -258,8 +253,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         </div>
                     )}
                 />
-                <FormField
-                    name="displaySettings.font"
+                <FormField name="displaySettings.font"
                     control={form.control}
                     render={({ field }) => (
                         <div className="grid gap-1.5">
@@ -288,24 +282,23 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 <Button type="button" className='bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelCreate()}>Cancel</Button>
                 
                 <div className="w-full h-min mx-6 flex justify-end">
-                <FormField
-                        name="displaySettings.public"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem className='flex gap-1 items-center h-min mb-1.5'>
-                                    <FormLabel className='mt-1.5'>
-                                        Public
-                                    </FormLabel>
-                                <FormControl>
-                                    <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className='ml-2'
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                <FormField name="displaySettings.public"
+                    control={form.control}
+                    render={({ field }) => (
+                        <FormItem className='flex gap-1 items-center h-min mb-1.5'>
+                                <FormLabel className='mt-1.5'>
+                                    Public
+                                </FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className='ml-2'
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
                 </div>
                 <Button type="submit">Submit</Button>
