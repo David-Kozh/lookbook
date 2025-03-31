@@ -3,7 +3,7 @@ import React from 'react';
 //* (rendered in ProfileSection.jsx)
 //? Add an svg/link for a personal website?
 const MediaLinks = ({ mode, mediaLinks, isMobile }) => {
-    console.log('LINKS:  ', mediaLinks, '\n', mode, isMobile);
+
     const defaultLinks = {
         linkedin: "https://www.linkedin.com",
         instagram: "https://www.instagram.com",

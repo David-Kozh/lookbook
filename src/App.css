@@ -2,25 +2,32 @@
 @tailwind components;
 @tailwind utilities;
  
+
+/*
+* Colors to translate for palette:
+* Light Background: 
+* Dark Background:
+* Secondary text? (Grey navbar text):
+*/
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 32.96, 51.08%, 72.75%; /* #ddbd96 */
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0, 23.33%, 88.24%;
+    --card-foreground: 240, 3.7%, 15.88%;
  
-    --popover: 0 0% 100%;
+    --popover: 0, 60%, 95%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 250, 4.23%, 17.84%;
     --primary-foreground: 210 40% 98%;
  
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 242.31, 28.26%, 18.04%;
+    --secondary-foreground: 0 0% 100%;
  
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 216.92, 19.12%, 26.67%;
  
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -28,44 +35,55 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0, 23.33%, 88.24%;
+    --input: 0, 15%, 78%;
+    --ring: 0, 23.33%, 88.24%;
  
     --radius: 0.5rem;
   }
  
+
+/*
+--clr-surface-a0: #19191e; Background/primary (buttons and input fields)
+--clr-surface-a10: #2e2e34; Card
+--clr-surface-a20: #45444a; Popover
+--clr-surface-a30: #5c5c61; 5
+--clr-surface-a40: #757579; 3
+--clr-surface-a50: #8f8f93; 6
+*/
+
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 240, 9.09%, 10.78%;  /* 1 */
+    --foreground: 210 40% 88%;
  
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240, 6.12%, 19.22%; /* 2 */
+    --card-foreground: 210 40% 88%;
  
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 250, 4.23%, 27.84%; /* 3 */
+    --popover-foreground: 210 40% 88%;
  
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 240, 9.09%, 10.78%; /* 3 (Buttons) */
+    --primary-foreground: 210 40% 88%;
  
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 242.31, 32.26%, 22.04%;
+    --secondary-foreground: 210 40% 88%;
  
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 216.92, 19.12%, 26.67%; /* gray 700 */
+    --muted-foreground: 215 20.2% 65.1%; 
  
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 217.2 32.6% 17.5%; /* 6 */
     --accent-foreground: 210 40% 98%;
  
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
  
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 250, 4.23%, 27.84%;
+    --input: 240, 9.09%, 10.78%;
+    --ring: 250, 4.23%, 27.84%;
   }
 }
  
+/*  Applies foreground to text as default color, etc.  */
 @layer base {
   * {
     @apply border-border;
@@ -78,7 +96,6 @@
 body {
   height: 100vh;
   width: 100vw;
-  background-color: #DDBD96;
   margin: 0rem;
   overflow: hidden;
 }

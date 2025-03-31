@@ -97,7 +97,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     return (
     <div id="edit-collection-menu" className='w-full h-full flex flex-col gap-2'>
         <div className="flex mt-2 ml-2 justify-between" style={{height: "5%"}}>
-            <div className=' text-2xl font-bold select-none italic text-zinc-900' >
+            <div className=' text-2xl font-bold select-none italic' >
                 '{collection.title}'
             </div>
             <div className='flex gap-2'>
@@ -118,7 +118,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
         
         <div id="edit-collection" className='w-full mt-1 flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
             <div className='w-full flex flex-col gap-6 sm:gap-4 items-center'>
-                <div className='text-2xl lg:text-3xl mt-2 font-mono font-bold underline underline-offset-4 text-zinc-900 select-none'>'{posts[currentIndex].title}'</div>
+                <div className='text-2xl lg:text-3xl mt-2 font-mono font-bold underline underline-offset-4 select-none'>'{posts[currentIndex].title}'</div>
 
                 <div className={`carousel my-2 shadow-lg shadow-black/40 ${posts[currentIndex].aspectRatio === '1:1' ? 'carousel-img' : 'carousel-img-wide'}`} 
                     style={{transition: 'width 0.3s 0.01s'}}>

@@ -218,10 +218,10 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                                 </FormLabel>
                                 <FormControl>
                                     <Input type="file"
+                                        className="file-input-ghost"
                                         onChange={(e) => {
                                         onChange(e.target.files[0]); // store file
                                         }}
-                                        className='bg-slate-600 text-white'
                                         ref={ref}
                                     />
                                 </FormControl>
@@ -239,7 +239,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         </FormLabel>
                         <FormItem>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="w-[100px]">
+                            <SelectTrigger className="w-[100px] bg-input">
                                 <SelectValue placeholder="Light" />
                             </SelectTrigger>
                             <SelectContent>
@@ -262,7 +262,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         </FormLabel>
                         <FormItem>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="w-[100px]">
+                            <SelectTrigger className="w-[100px] bg-input">
                                 <SelectValue placeholder="Sans" />
                             </SelectTrigger>
                             <SelectContent>
@@ -279,7 +279,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             </div>
             <div className="w-full flex justify-between h-min items-center my-2">
                 
-                <Button type="button" className='bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelCreate()}>Cancel</Button>
+                <Button type="button" onClick={()=> cancelCreate()}>Cancel</Button>
                 
                 <div className="w-full h-min mx-6 flex justify-end">
                 <FormField name="displaySettings.public"
@@ -301,7 +301,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                     )}
                 />
                 </div>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" variant="secondary">Submit</Button>
             </div>
         </form>
     </Form>

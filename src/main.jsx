@@ -21,23 +21,22 @@ import './App.css'
     //✅ Database for user collections and posts
     //✅  Finish replacing example data with Firestore function calls
     //✅  Cloud Storage for images and videos
-    TODO  Implement deleteUser functionality to button in user settings
     TODO  Testing and bugfixing
     TODO  Establish ordering for posts when creating a collection (is createdAt sufficient?)
+    ! Testing:  Likes
   * Current Tasks:
-    ! Current Stage: Testing Firebase and updating front end
+    ! Putting together tailwind theme colors in App.css and apply them to components
   * Functionalies to implement:
-    Add "like" functionality to posts (views + likes to be added to post data structure)
+    Make dark mode a user profile variable, and keep it persistent
     Add "carousel" as a content type (daisyUI) like other post.content
     Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
-  * Lower-priority:
-    TODO  Signup page form validation (using sign in with google for now)
-    TODO  Apply resize functionality to mp4 content
-    TODO  Add blank skeleton loading elements for bio to prevent flickering of example profile
-    * Edit-Collection/Post Components:
-      TODO  Gray out the "Save Changes" button if no changes have been made
-      TODO  Gray out unchanged fields using Form API (touched fields)
+    * Lower-priority:
+      Signup page form validation (using sign in with google for now)
+      Add blank skeleton loading elements for bio to prevent flickering of example profile
+      Edit-form Components: Gray out the "Save Changes" btn, and untouched fields, if no changes have been made
   ?  Questions:
+  ?   A 'by user.displayName' tag below the image track?
+  ?   'Favorite' functionality for entire collections?
   ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view) 
   ?   Limits on num collections/posts? File sizes?
   ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections

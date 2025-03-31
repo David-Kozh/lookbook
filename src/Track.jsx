@@ -553,9 +553,9 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       </div>
       
       {/* App ProfileName and Subheading */}
-      <div className='title-panel ml-5 md:ml-20 flex flex-col justify-center'>
-        <h1 style={{textDecoration: 'underline'}} className='text-3xl sm:text-4xl md:text-5xl lg:text-7xl ml-3 sm:ml-5 md:ml-10 font-mono my-2'> {collectionInfo?.title || 'LookBook'} </h1>
-        <h2 className='text-lg sm:text-2xl lg:text-4xl font-mono ml-3 sm:ml-5 md:ml-10 md:my-2'>   {collectionInfo?.subtitle !== undefined && collectionInfo?.subtitle !== null
+      <div className='title-panel ml-5 sm:ml-10 lg:ml-20 flex flex-col justify-center'>
+        <h1 style={{textDecoration: 'underline'}} className='text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-mono my-2'> {collectionInfo?.title || 'LookBook'} </h1>
+        <h2 className='text-lg sm:text-2xl lg:text-4xl font-mono md:my-2'>   {collectionInfo?.subtitle !== undefined && collectionInfo?.subtitle !== null
           ? collectionInfo.subtitle
           : 'Aesthetic and Professional Portfolios'} 
         </h2>
@@ -570,7 +570,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
           {/* Vertically Stacked Orientation */}
           {((posts[selectedImage].aspectRatio == '16:9') || isVerticalOrientation) &&  
           (<div key="vertical" className='info-panel-wide flex flex-col items-center justify-start p-4'>
-            <div className='image-info-wide px-6 py-4 mx-3 rounded-xl bg-[#e8dada] bg-opacity-80 flex flex-col justify-around'>
+            <div className='bg-card text-card-foreground image-info-wide px-6 py-4 mx-3 rounded-xl flex flex-col justify-around'>
               <div className='flex flex-row justify-between items-center'>
                 <h1 className='h-max font-mono font-bold text-lg mb-2'>
                   {selectedImageInfo.title}
@@ -618,7 +618,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
           {/* Side by Side Orientation */}
           {((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) &&  
           (<div key="horizontal" className='info-panel-wide info-panel flex flex-col items-center'>
-            <div className='image-info-wide image-info px-6 py-4 mx-3 rounded-xl bg-[#e8dada] bg-opacity-80 flex flex-col justify-around'>
+            <div className='bg-card text-card-foreground image-info-wide image-info px-6 py-4 mx-3 rounded-xl flex flex-col justify-around'>
               <h1 className='h-[15%] font-mono font-bold text-lg mb-2'>
                 {selectedImageInfo.title}
               </h1>

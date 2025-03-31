@@ -15,7 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import ChangePassword from "./components/ChangePassword"
-import { updateUser } from "./services/userService"
+import { updateUser, deleteUser } from "./services/userService"
+import { logout } from "./services/authService"
 
 // ** Zod Schema for Form Validation
 const formSchema = z.object({
@@ -65,6 +66,22 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
             },
         }
     })
+
+    async function handleDeleteAccount() {
+        const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+        if (confirmDelete) {
+            try {
+                await deleteUser(loggedInUserId); // Call the deleteUser function in userService.js
+                alert("Your account has been deleted.");
+                await logout();
+                window.location.href = "/home";
+                window.location.reload();
+            } catch (error) {
+                console.error("Error deleting account:", error);
+                alert("An error occurred while deleting your account. Please try again.");
+            }
+        }
+    }
     
     async function onSubmit(values) {
         console.log(values)
@@ -98,16 +115,16 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
         <div id='edit-user-settings' className="w-full h-full flex flex-col items-center">
             <div className="w-full h-min">
                 <div className="w-full flex justify-between items-center">
-                    <div className="w-full mt-2 ml-1 text-2xl font-bold select-none text-zinc-800">User Settings</div>
+                    <div className="w-full mt-2 ml-1 text-2xl font-bold select-none">User Settings</div>
                     <ChangePassword />
                 </div>
                 
-                <div className="h-0.5 rounded-lg bg-zinc-700 my-1"></div>
+                <div className="h-0.5 rounded-lg bg-card-foreground dark:opacity-50 my-1"></div>
             </div>
             
             
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full lg:w-5/6 xl:w-2/3 flex flex-col sm:items-center justify-between">
                     
                     <FormField name="displayName"
                         control={form.control}
@@ -156,7 +173,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                 </FormDescription>
                                 </div>
                                 <FormControl>
-                                    <Textarea className='text-md' {...field} rows={4} />
+                                    <Textarea className='text-md bg-input text-foreground' {...field} rows={4} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -173,14 +190,13 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                             Profile Photo
                                         </FormLabel>
                                         <FormControl>
-                                        <Input 
-                                            type="file"
+                                        <Input type="file"
+                                            className="file-input-ghost bg-primary text-primary-foreground"
                                             onChange={(e) => {
                                                 if (e.target.files.length > 0) {
                                                 onChange(e.target.files[0]); // store file
                                                 }
                                             }}
-                                            className='bg-slate-600 text-slate-100'
                                             ref={ref}
                                         />
                                         </FormControl>
@@ -193,9 +209,9 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         {/* Social Media links */}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button type="button" className="">Add Social Media Links</Button>
+                                    <Button type="button">Add Social Media Links</Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="p-4">
+                                <PopoverContent className="p-4 bg-popover text-popover-foreground">
                                     <div className="grid gap-4">
                                         <FormField name="socialMediaLinks.linkedin"
                                             control={form.control}
@@ -248,17 +264,22 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                     </div>
                                 </PopoverContent>
                             </Popover>
-                        
                     </div>
-                    <div className="h-0.5 w-full rounded-lg bg-zinc-700 mb-1 mt-10"></div>
+
+                    <div className="h-0.5 w-full rounded-lg bg-card-foreground dark:opacity-50 mb-1 mt-10"></div>
                     <div className="w-full flex justify-between h-[15%] items-center">
                         
-                        <Button type="button" className='' onClick={()=> cancelEditSettings()}>Cancel</Button>
+                        <Button type="button" onClick={()=> cancelEditSettings()}>Cancel</Button>
                         
                         <div className="w-full h-min mx-6 flex justify-around">
-                        <Button type="button" className='bg-[#602c2c] hover:bg-[#cd3d3d] font-bold italic' onClick={()=> cancelEditSettings()}> Delete Account </Button>
+                            <Button type="button" variant="destructive"
+                                className='font-bold italic' 
+                                onClick={handleDeleteAccount}
+                            > 
+                                Delete Account 
+                            </Button>
                         </div>
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit" variant="secondary">Submit</Button>
                     </div>
                 </form>
             </Form>

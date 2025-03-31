@@ -149,26 +149,21 @@
 /* Home Page */
   .h-content {
     height: 65vh;
-
   }
 
 
 /* Image in Carousel */
-  .carousel-post {
-    object-fit: cover;
-    object-position: 50% 50%;
-    transition: all 1s ease-in-out;
-  }
   .carousel-img {
     width: min(44vh, 75vw);
     height: min(44vh, 75vw);
-
   }
   .carousel-img-wide {
     width: 78vh;
     height: 44vh;
+    object-fit: cover;
+    object-position: center;
   }
-
+  
   @media (max-width: 639px) {
     .collections-btns-mobile {
       width: min(44vh, 75vmin);
@@ -188,6 +183,10 @@
   }
   .collection-mini {
     width: 22vh;
+    height: 22vh;
+  }
+  .collection-wide {
+    width: 39vh;
     height: 22vh;
   }
   .create-collection-carousel {

@@ -27,7 +27,7 @@ const formSchema = z.object({
     title: z.string().min(2, {
       message: "Title must be at least 2 characters.",
     }),
-    desc: z.string().optional(),
+    subtitle: z.string().optional(),
     thumbnail: z.any().refine(file => file instanceof File || file === undefined, {
         message: 'A file is required',
     }).optional(),
@@ -48,29 +48,52 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
             title: collection.title,
             subtitle: collection.subtitle,
             thumbnail: undefined,
-            displaySettings: collection.displaySettings
+            displaySettings: {
+                font: collection.displaySettings?.font || 'sans',
+                theme: collection.displaySettings?.theme || 'light',
+                public: collection.displaySettings?.public || false,
+            },
         }
     })
     
     async function onSubmit(values) {
-        console.log(values)
+        console.log(values);
+        const updatedData = {}; //* Prune data of unchanged fields before updating
+
+        if (values.title !== collection.title) {
+            updatedData.title = values.title;
+        }
+        if (values.subtitle !== collection.subtitle) {
+            updatedData.subtitle = values.subtitle;
+        }
+        if (values.thumbnail) {
+            updatedData.thumbnailFile = values.thumbnail;
+        }
+        if (values.displaySettings.font !== collection.displaySettings.font) {
+            updatedData.displaySettings = { ...updatedData.displaySettings, font: values.displaySettings.font };
+        }
+        if (values.displaySettings.theme !== collection.displaySettings.theme) {
+            updatedData.displaySettings = { ...updatedData.displaySettings, theme: values.displaySettings.theme };
+        }
+        if (values.displaySettings.public !== collection.displaySettings.public) {
+            updatedData.displaySettings = { ...updatedData.displaySettings, public: values.displaySettings.public };
+        }
         
-        await updateCollection(
-            loggedInUserId,
-            collection.id,
-            {
-                title: values.title,
-                subtitle: values.subtitle,
-                thumbnailFile: values.thumbnail,
-                displaySettings: values.displaySettings,
-            }
-        );
-        cancelEditSettings();
+        if (Object.keys(updatedData).length > 0) {
+            await updateCollection(
+                loggedInUserId,
+                collection.id,
+                updatedData
+            );
+            cancelEditSettings();
+        } else {
+            console.log('No changes detected');
+        }
     }
 
     return (
         <div id='edit-collection-settings' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none text-zinc-800">Collection Settings</div>
+            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">Collection Settings</div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center space-y-10">
                     
@@ -127,7 +150,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                                 onChange(e.target.files[0]); // store file
                                                 }
                                             }}
-                                            className='bg-slate-600 text-slate-100 sm:text-white'
+                                            className="file-input-ghost"
                                             ref={ref}
                                         />
                                         </FormControl>
@@ -146,7 +169,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                     </FormLabel>
                                     <FormItem>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <SelectTrigger className="w-[100px]">
+                                        <SelectTrigger className="w-[100px] bg-input">
                                             <SelectValue placeholder="Theme" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -170,7 +193,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                     </FormLabel>
                                     <FormItem>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <SelectTrigger className="w-[100px]">
+                                        <SelectTrigger className="w-[100px] bg-input">
                                             <SelectValue placeholder="Font" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -187,7 +210,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                     </div>
                     <div className="w-full flex justify-between h-[15%] items-center">
                         
-                        <Button type="button" className='bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelEditSettings()}>Cancel</Button>
+                        <Button type="button" onClick={()=> cancelEditSettings()}>Cancel</Button>
                         
                         <div className="w-full h-min mx-6 flex justify-end">
                         <FormField
@@ -210,7 +233,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                             )}
                         />
                         </div>
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit" variant="secondary" >Submit</Button>
                     </div>
                 </form>
             </Form>

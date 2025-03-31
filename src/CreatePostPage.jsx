@@ -85,8 +85,8 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
     
     return (
         <div id='create-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none text-zinc-800">New Post</div>
-            <div className="w-full ml-4 mt-1 font-semibold text-sm text-zinc-600">
+            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">New Post</div>
+            <div className="w-full ml-4 mt-1 font-semibold text-sm text-card-foreground/70">
                 Upload your work here. Click save when you're done.
             </div>
             <Form {...form}>
@@ -141,10 +141,10 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                             <FormControl>
                                 <Input 
                                     type="file"
+                                    className="file-input-ghost"
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); // store file
                                     }}
-                                    className='bg-slate-600 text-white'
                                     ref={ref}
                                 />
                             </FormControl>
@@ -164,8 +164,8 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                             Aspect Ratio
                         </FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-slate-200 mt-2 font-semibold">
-                            <SelectValue placeholder="Aspect Ratio" />
+                        <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
+                            <SelectValue placeholder="1:1" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
                             <SelectItem value="1:1">1:1</SelectItem>
@@ -185,13 +185,13 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                             Post Type
                         </FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-slate-200 mt-2 font-semibold">
+                        <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
                             <SelectValue placeholder="Content Type" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
-                            <SelectItem value="default">Default - no additional content </SelectItem>
-                            <SelectItem value="mp4">Additional video content</SelectItem>
-                            <SelectItem value="mp3">Additional audio content</SelectItem>
+                            <SelectItem value="default">No Content </SelectItem>
+                            <SelectItem value="mp4">+ Video Content</SelectItem>
+                            <SelectItem value="mp3">+ Audio Content</SelectItem>
                         </SelectContent>
                         </Select>
                         <FormMessage />
@@ -212,10 +212,10 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                             <FormControl>
                                 <Input 
                                     type="file"
+                                    className="file-input-ghost"
                                     onChange={(e) => {
-                                      onChange(e.target.files[0]); // store file
+                                      onChange(e.target.files[0]); //! Bug: 'content' field not being handled the same throughout project 
                                     }}
-                                    className='bg-slate-600 text-white'
                                     disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
                                     ref={ref}
                                 />
@@ -226,8 +226,8 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 )}
                 />
                 <div className="w-full flex justify-between gap-20">
-                    <Button type="button" className='mt-12 w-1/2 sm:w-min bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelCreate()}>Cancel</Button>
-                    <Button type="submit" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
+                    <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelCreate()}>Cancel</Button>
+                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
                 </div>
             </form>
         </Form>

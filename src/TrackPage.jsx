@@ -30,10 +30,15 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   const [errorMessage, setErrorMessage] = useState(false);
 
   const handleLike = async (postId) => { //* Function to be called by like button in image info
-    if (await hasLiked(userId, postId)) {
-      await removeLike(userId, postId);
+    if (!loggedInUser?.uid) {
+      console.error("No logged-in user found.");
+      return;
+    }
+  
+    if (await hasLiked(loggedInUser.uid, postId)) {
+      await removeLike(loggedInUser.uid, postId);
     } else {
-      await addLike(userId, postId);
+      await addLike(loggedInUser.uid, postId);
     }
   };
 
@@ -115,7 +120,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           if (userLikes) {
             const updatedCollection = collection.map(post => ({
               ...post,
-              liked: userLikes.includes(post.id),
+              isLiked: userLikes.includes(post.id),
             }));
             setCollection(updatedCollection);
           }
@@ -127,6 +132,29 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   
     updateLikedStatus();
   }, [mode, isLoggedIn, loggedInUser]);
+
+  useEffect(() => {
+    // Get the current theme class on the <html> element
+    const htmlElement = document.documentElement;
+    const originalTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+  
+    // Apply the collection's theme
+    const collectionTheme = collectionInfo?.displaySettings?.theme;
+    if (collectionTheme === 'dark') {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+  
+    // Cleanup: Restore the user's original theme on unmount
+    return () => {
+      if (originalTheme === 'dark') {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+    };
+  }, [collectionInfo?.displaySettings?.theme]);
 
   return (
     <div className="w-full h-full">

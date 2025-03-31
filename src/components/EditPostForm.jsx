@@ -102,7 +102,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
             </FormDescription>
             </div>
             <FormControl>
-                <Input className='bg-slate-300' {...field} />
+                <Input {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -120,7 +120,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
             </FormDescription>
             </div>
             <FormControl>
-                <Input className='bg-slate-300' {...field} />
+                <Input {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -137,12 +137,12 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
               </FormLabel>
               <FormControl>
                 <Input type="file"
+                  className="file-input-ghost"
                   onChange={(e) => {
                     if (e.target.files.length > 0) {
                       onChange(e.target.files[0]); // store file
                     }
                   }}
-                  className='bg-slate-600 text-slate-100 sm:text-white'
                   ref={ref}
                 />
               </FormControl>
@@ -159,7 +159,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
           <FormItem className='w-[35%]'>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
 
-              <SelectTrigger className="w-full bg-slate-300 mt-2 font-semibold">
+              <SelectTrigger className="w-full bg-input mt-2 font-semibold">
                 <SelectValue placeholder="Aspect Ratio" />
               </SelectTrigger>
 
@@ -178,7 +178,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         render={({ field }) => (
             <FormItem className='w-[65%]'>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full bg-slate-300 mt-2 font-semibold">
+                <SelectTrigger className="w-full bg-input mt-2 font-semibold">
                     <SelectValue placeholder="Content Type" />
                 </SelectTrigger>
                 <SelectContent className="font-semibold">
@@ -206,7 +206,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                 onChange={(e) => {
                   onChange(e.target.files[0]); // store file
                 }}
-                className='bg-slate-600 text-slate-100 sm:text-white'
+                className="file-input-ghost"
                 disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
                 ref={ref}
               />
@@ -218,7 +218,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       />
 
       <DialogFooter>
-        <Button type="submit" className="mt-8">Save Post</Button>
+        <Button type="submit" variant="secondary" className="mt-8">Save Post</Button>
       </DialogFooter>
 
     </form>

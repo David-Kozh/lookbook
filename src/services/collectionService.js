@@ -35,7 +35,7 @@ export const createCollection = async (uid, collectionData) => {
     }
 };
 
-export const updateCollection = async (uid, collectionId, data) => {
+export const updateCollection = async (uid, collectionId, data) => { //* Expects data.thumbnailFile not data.thumbnail
     const collectionDocRef = doc(db, 'users', uid, 'collections', collectionId);
     
     try {
@@ -85,6 +85,7 @@ export const deleteCollection = async (uid, collectionId) => {
     }
 };
 
+//TODO: Order by createdAt?
 export const getUserCollections = async (uid) => {
     const collectionsRef = collection(db, 'users', uid, 'collections');
     try {

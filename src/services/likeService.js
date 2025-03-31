@@ -1,4 +1,4 @@
-import { db } from '../config/firebaseConfig';
+import { auth, db } from '../config/firebaseConfig';
 import { collection, query, where, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 
 // Add a like
@@ -16,13 +16,19 @@ export const addLike = async (userId, postId) => {
 // Remove a like
 export const removeLike = async (userId, postId) => {
   try {
+    console.log('userId:', userId);
+    const currentUserId = auth.currentUser?.uid;
+    if (!currentUserId || currentUserId !== userId) {
+      console.error('User ID mismatch or user is not authenticated');
+    }
+
     const likesRef = collection(db, 'likes');
     const q = query(likesRef, where('userId', '==', userId), where('postId', '==', postId));
     const querySnapshot = await getDocs(q);
 
-    querySnapshot.forEach(async (doc) => {
+    for (const doc of querySnapshot.docs) {
       await deleteDoc(doc.ref);
-    });
+    }
 
     console.log('Like removed successfully');
   } catch (error) {

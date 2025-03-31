@@ -94,6 +94,7 @@ export const updatePost = async (uid, collectionId, postId, data) => {
   }
 };
 
+//TODO: Delete all a posts likes before deleting it
 export const deletePost = async (uid, collectionId, postId) => {
   const postDocRef = doc(db, 'users', uid, 'collections', collectionId, 'posts', postId);
 
@@ -110,7 +111,7 @@ export const deletePost = async (uid, collectionId, postId) => {
 
 export const getPosts = async (uid, collectionId) => {
   const postsRef = collection(db, 'users', uid, 'collections', collectionId, 'posts');
-  // How to order posts?
+  //TODO How to order posts?
   // Firebase does not have a static order?
   const postsQuery = query(postsRef, orderBy('createdAt'));
   try {

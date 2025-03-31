@@ -131,10 +131,10 @@ export default function UserDashboard({ loggedInUserId }) {
  
     return (
         <div className='w-full body-h flex justify-center'>
-            <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-[#e8dada] rounded-lg shadow-lg px-6 py-4 mt-8 bg-opacity-75 space-y-1'>               
+            <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-card text-card-foreground rounded-lg shadow-lg px-6 py-4 mt-8 space-y-1'>               
                     <div className='w-full h-min'>
                         <h1 className='text-3xl xl:text-4xl font-bold mb-1 select-none'>Dashboard</h1>
-                        <div className="h-0.5 rounded-full bg-zinc-800 my-1"></div>
+                        <div className="h-0.5 rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
                     </div>
 
                     {dashTab === 'menu' && 

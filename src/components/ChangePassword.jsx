@@ -51,7 +51,7 @@ const ChangePassword = () => {
           <PopoverTrigger asChild>
             <Button>Change Password</Button>
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent className="bg-popover text-popover-foreground">
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <h3>Change Password</h3>
               <FormControl>
@@ -63,7 +63,7 @@ const ChangePassword = () => {
                 />
               </FormControl>
               <FormMessage/>
-              <Button type="submit">Change Password</Button>
+              <Button type="submit" variant="secondary">Edit Password</Button>
             </form>
           </PopoverContent>
         </Popover>

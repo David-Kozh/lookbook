@@ -139,8 +139,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
       
     return (
         <div id='edit-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none text-zinc-800">Edit Post</div>
-            <div className="w-full mt-1 ml-4 font-semibold text-sm text-zinc-600">
+            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">Edit Post</div>
+            <div className="w-full mt-1 ml-4 font-semibold text-sm text-card-foreground/70">
                 Update your work here. Click save when you're done.
             </div>
             <Form {...form}>
@@ -163,8 +163,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <FormField
-                control={form.control}
+                <FormField control={form.control}
                 name="description"
                 render={({ field }) => (
                     <FormItem className="w-full">
@@ -181,8 +180,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <Controller
-                    name="image"
+                <Controller name="image"
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
                     <FormItem>
@@ -191,14 +189,13 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             Image
                         </FormLabel>
                         <FormControl>
-                            <Input 
-                            type="file"
+                            <Input type="file"
+                            className="file-input-ghost bg-input text-foreground"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
                                 onChange(e.target.files[0]); // store file
                                 }
                             }}
-                            className='bg-slate-600 text-slate-100 sm:text-white'
                             ref={ref}
                             />
                         </FormControl>
@@ -217,8 +214,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     <FormItem className='w-[35%]'>
                         <FormLabel>Aspect Ratio</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-slate-100 mt-2 font-semibold">
-                            <SelectValue placeholder="Aspect Ratio" />
+                        <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
+                            <SelectValue placeholder="1:1" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
                             <SelectItem value="1:1">1:1</SelectItem>
@@ -236,13 +233,13 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     <FormItem className='w-[65%]'>
                         <FormLabel>Post Type</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-slate-100 mt-2 font-semibold">
-                            <SelectValue placeholder="Content Type" />
+                        <SelectTrigger className="w-full mt-2 font-semibold bg-input text-foreground">
+                            <SelectValue placeholder="No Content" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
-                            <SelectItem value="default">Default - no additional content </SelectItem>
-                            <SelectItem value="mp4">Additional video content</SelectItem>
-                            <SelectItem value="mp3">Additional audio content</SelectItem>
+                            <SelectItem value="default">No Additional Content </SelectItem>
+                            <SelectItem value="mp4">+ Video Content</SelectItem>
+                            <SelectItem value="mp3">+ Audio Content</SelectItem>
                         </SelectContent>
                         </Select>
                         <FormMessage />
@@ -256,14 +253,13 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 render={({ field }) => (
                     <FormItem>
                         <div className="grid gap-1.5">
-                            <FormLabel className={`${(contentType === 'mp4' || contentType === 'mp3') ? '' : 'text-slate-500' }`}>
+                            <FormLabel className={`${(contentType === 'mp4' || contentType === 'mp3') ? '' : 'opacity-50' }`}>
                                 Additional Content
                             </FormLabel>
                             <FormControl>
-                                <Input 
-                                id="picture" 
+                                <Input id="picture" 
                                 type="file" 
-                                className='bg-slate-600 text-slate-100 sm:text-white'
+                                className="file-input-ghost bg-input text-foreground"
                                 disabled={!(contentType === 'mp4' || contentType === 'mp3')}
                                 />
                             </FormControl>
@@ -273,8 +269,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 )}
                 />
                 <div className="w-full flex justify-between gap-20">
-                    <Button type="button" className='mt-12 w-1/2 sm:w-min bg-zinc-800 hover:bg-zinc-700' onClick={()=> cancelEdit()}>Cancel</Button>
-                    <Button type="submit" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
+                    <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelEdit()}>Cancel</Button>
+                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
                 </div>
 
             </form>
