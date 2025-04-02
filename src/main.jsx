@@ -31,6 +31,7 @@ import './App.css'
     Add "carousel" as a content type (daisyUI) like other post.content
     Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
     * Lower-priority:
+      Enforcing of unique handles
       Signup page form validation (using sign in with google for now)
       Add blank skeleton loading elements for bio to prevent flickering of example profile
       Edit-form Components: Gray out the "Save Changes" btn, and untouched fields, if no changes have been made
@@ -43,7 +44,6 @@ import './App.css'
   ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
-  Alternate colors for App Title gradient (red/rose): from-rose-500 via-red-600 to-rose-700
 */
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

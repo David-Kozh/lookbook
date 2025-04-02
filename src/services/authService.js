@@ -6,7 +6,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
 
-// TODO: Complete fields for the user document
+// TODO: Complete fields for the user document. defaultTheme?
 const createUserDocument = async (user) => {
   // ! This is where the user document is defined in the database
   const userDocRef = doc(db, 'users', user.uid);

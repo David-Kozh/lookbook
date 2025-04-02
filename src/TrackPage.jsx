@@ -7,11 +7,8 @@ import { getPosts } from "./services/postService";
 import { getCollection, getUserCollections } from "./services/collectionService";
 import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeService";
 
-//* Component that fetches posts and pases them to the ImageTrack component
+//* Component that fetches posts and manages their states for the ImageTrack component
 //TODO  Implement collectionInfo in Track.jsx
-//TODO  Create 'likeFunction' to be passed to ImageTrack
-//TODO      --> Add a 'like' button to the ImageTrack component
-//TODO      --> Pass function and isLoggedIn. Call function on click
 /*
   TODOs for <ImageTrack/>:
   - Split down into some sub-components for readability
@@ -34,11 +31,33 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
       console.error("No logged-in user found.");
       return;
     }
+    try {
+      // Optimistically update the local state
+      setCollection((prevCollection) =>
+        prevCollection.map((post) =>
+          post.id === postId
+            ? { ...post, isLiked: !post.isLiked }
+            : post
+        )
+      );
   
-    if (await hasLiked(loggedInUser.uid, postId)) {
-      await removeLike(loggedInUser.uid, postId);
-    } else {
-      await addLike(loggedInUser.uid, postId);
+      // Perform the server-side update
+      if (await hasLiked(loggedInUser.uid, postId)) {
+        await removeLike(loggedInUser.uid, postId);
+      } else {
+        await addLike(loggedInUser.uid, postId);
+      }
+    } catch (error) {
+      console.error("Error updating like status:", error);
+  
+      // Revert the optimistic update in case of an error
+      setCollection((prevCollection) =>
+        prevCollection.map((post) =>
+          post.id === postId
+            ? { ...post, isLiked: !post.isLiked }
+            : post
+        )
+      );
     }
   };
 

@@ -114,6 +114,7 @@
     z-index: 0;
   }
   .info-panel {
+    display: flex;
     width: 50vw;
     height: 85vh;
     align-items: center;
@@ -123,6 +124,7 @@
   .image-info {
     width: 90%;
     height: min-content;
+    max-height: 95%; /*? taken from -wide so that -wide class could be removed from row view panel, but not sure if needed */
     opacity: 0;
     user-select: none;
     z-index: 12;
@@ -181,15 +183,15 @@
       transform: translateX(-50px);
     }
   }
-  .collection-mini {
+  .collection-mini { /* Profile Section */
     width: 22vh;
     height: 22vh;
   }
-  .collection-wide {
+  .collection-wide { /* Profile Section */
     width: 39vh;
     height: 22vh;
   }
-  .create-collection-carousel {
+  .create-collection-carousel { /* Create Collection Form */
     width: 25vh;
     height: 25vh;
   }

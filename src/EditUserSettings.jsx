@@ -48,7 +48,6 @@ const formSchema = z.object({
 
 //* Component for editing user settings
 //*     Rendered in the /bio page
-//TODO  Delete User button
 export default function EditUserSettings({ loggedInUserId, userProfile, cancelEditSettings }) {
 
     const form = useForm({

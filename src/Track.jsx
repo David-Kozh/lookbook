@@ -167,8 +167,8 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
             }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
           }
           else{ 
-            const targetX = window.innerWidth * 0.1;              // Calculate the target position (10% from the left)
-            const currentX = image.getBoundingClientRect().left; // Get the current position of the image
+            const targetX = (window.innerWidth / 2) - (window.innerWidth * 0.02); // Center minus 2% of screen width
+            const currentX = image.getBoundingClientRect().right; // Get the current position of the image
             const deltaX = targetX - currentX;
             image.animate({
             transform: ['translateX(' + deltaX + 'px)']
@@ -192,6 +192,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
           }
           else {
             element.style.height = `${imageDimensions.height}px`; //* Height of the 1:1 image-info when in row-view with image
+            element.style.width = `${imageDimensions.width}px`;
           }
           element.animate({
             opacity: "1",
@@ -334,7 +335,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       }
     } else { //* 1:1 aspect ratio, VerticalOrientation
       const maxWidth = window.innerWidth - (window.innerWidth / 10);   // 5% padding on each side
-      const maxHeight = window.innerHeight/2;         // Top 50% of screen
+      const maxHeight = window.innerHeight/2 - (window.innerHeight / 50);         // Top 50% of screen (-2% padding)
       if(maxWidth/maxHeight > 1){
         ImgDim.width = maxHeight;
         ImgDim.height = maxHeight;
@@ -429,8 +430,8 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
 
           } else if(aspectRatio >= 1){ //* Center the 1:1 image in the left half of the screen, 10% from the left
             let rect = image.getBoundingClientRect();
-            const targetX = window.innerWidth * 0.1;        
-            const currentX = rect.left; 
+            const targetX = (window.innerWidth / 2) - (window.innerWidth * 0.02); // Center minus 2% of screen width
+            const currentX = rect.right; // Use the right edge of the image
             const deltaX = targetX - currentX;
             const targetY = window.innerHeight / 2;
             const currentY = rect.top + (rect.height / 2);
@@ -582,10 +583,10 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
                   >
                     {posts[selectedImage].isLiked ? (
                       <svg xmlns="http://www.w3.org/2000/svg"
-                        fill="pink"
+                        fill="red"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
-                        stroke="currentColor"
+                        stroke="red"
                         className="w-6 h-6"
                       >
                         <path strokeLinecap="round"
@@ -617,11 +618,48 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
 
           {/* Side by Side Orientation */}
           {((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) &&  
-          (<div key="horizontal" className='info-panel-wide info-panel flex flex-col items-center'>
-            <div className='bg-card text-card-foreground image-info-wide image-info px-6 py-4 mx-3 rounded-xl flex flex-col justify-around'>
-              <h1 className='h-[15%] font-mono font-bold text-lg mb-2'>
-                {selectedImageInfo.title}
-              </h1>
+          (<div key="horizontal" className='info-panel flex pl-[2%] pr-[4%]'>
+            <div className='bg-card text-card-foreground image-info px-10 py-4 rounded-xl flex flex-col justify-around'>
+              <div className='flex flex-row justify-between items-center'>
+                <h1 className='h-[15%] font-mono font-bold text-lg mb-2'>
+                  {selectedImageInfo.title}
+                </h1>
+
+                {/* Like Button */}
+                {isLoggedIn && (
+                    <button className='like-button'
+                      onClick={() => handleLike(posts[selectedImage].id)}
+                    >
+                      {posts[selectedImage].isLiked ? (
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                          fill="red"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="red"
+                          className="w-6 h-6"
+                        >
+                          <path strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               <p className='info-text w-full h-[80%] text-base font-mono break-words'>{selectedImageInfo.description}</p>
             </div>
           </div>)}

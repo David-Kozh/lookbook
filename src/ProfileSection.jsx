@@ -79,7 +79,11 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
           if (userId) { //* A userId is present in the URL
             const profile = await fetchUserData(userId);
             setUserProfile(profile);
-            setMode('user');
+            if(loggedInUser && loggedInUser.uid === userId) {
+                setMode('self');
+            } else {
+                setMode('user');
+            }
             try {
                 const userCollections = await getUserCollections(userId);
                 const userThumbnails = await getUserCollectionThumbnails(userId);
@@ -155,7 +159,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                                 navigate('/bio');
                                 window.location.reload();
                             }}>
-                                <div className='text-xs md:inline'>Go to Bio</div>
+                                <div className='text-xs md:inline'>My Profile</div>
                             </Button>
                         )}
                     </div>

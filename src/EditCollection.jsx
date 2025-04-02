@@ -59,7 +59,6 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
             console.log("View Button Clicked");
             // TODO: Animate to the selected post in the image track
             // ? Back Button? (to return to the same place in the dashboard?) Or BreadCrumbs?
-            //! TODO: pass params
             setTimeout(() => {
                 navigate(`/posts/${loggedInUserId}/${collection.id}`);
             }, 10);

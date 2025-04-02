@@ -32,7 +32,6 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
     handleClick(null);
   };
 
-  // TODO: 'Continue' should delete item stored in local posts
   const handleContinue = () => {
     handleClick(null);
     removePost();
