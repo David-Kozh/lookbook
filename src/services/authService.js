@@ -40,6 +40,9 @@ const createUserDocument = async (user) => {
 export const signup = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await createUserDocument(userCredential.user);
+    
+    console.log('User signed up:', userCredential.user);
     return userCredential.user;
   } catch (error) {
     throw new Error('Error in signup: ' + error.message);

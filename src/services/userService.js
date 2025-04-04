@@ -1,7 +1,6 @@
 import { db } from '../config/firebaseConfig';
 import { doc, getDoc, updateDoc, deleteDoc, getDocs, collection } from "firebase/firestore";
-import { deleteCollectionThumbnail } from './storageService';
-import { deleteAllPostMedia } from './storageService';
+import { uploadProfilePicture, deleteCollectionThumbnail, deleteAllPostMedia } from './storageService';
 
 export const fetchUserData = async (uid) => {
   console.log('Fetching user data...');
@@ -22,16 +21,13 @@ export const fetchUserData = async (uid) => {
 export const updateUser = async (uid, data) => {
   const userDocRef = doc(db, 'users', uid);
 
-  //? Can we check if the thumbnail is different from the current one?
-  // thumbnail file in data vs thumbnail url in userDoc
   try {
     // Check if photo is present in data; Upload to storage
-    if (data.photo) {
+    if (data.photoFile) {
       console.log('Uploading profile picture...');
-      const photoFile = data.photo;
-      const photoUrl = await uploadProfilePicture(uid, photoFile);
-      data.photoUrl = photoUrl;
-      delete data.photo; // Remove the photo file from data
+      const photoUrl = await uploadProfilePicture(uid, data.photoFile);
+      data.photoURL = photoUrl;
+      delete data.photoFile; // Remove the photo file from data
     }
 
     await updateDoc(userDocRef, data);

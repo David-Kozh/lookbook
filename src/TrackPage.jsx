@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { getPosts } from "./services/postService";
 import { getCollection, getUserCollections } from "./services/collectionService";
 import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeService";
+import { fetchUserData } from "./services/userService.js";
 
 //* Component that fetches posts and manages their states for the ImageTrack component
 //TODO  Implement collectionInfo in Track.jsx
@@ -18,13 +19,14 @@ import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeServ
 */
 function TrackPage({ isLoggedIn, loggedInUser}) {
   const { userId, collectionId } = useParams();
+  const [userToView, setUserToView] = useState(null);
   // The collection of posts to display
   const [collection, setCollection] = useState([]);
   // Information about the collection (Title, description, etc.)
   const [collectionInfo, setCollectionInfo] = useState({});
   const [mode, setMode] = useState('loading');
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLike = async (postId) => { //* Function to be called by like button in image info
     if (!loggedInUser?.uid) {
@@ -68,7 +70,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
         try {
           let userCollectionInfo = '';
           let idToUse = collectionId;
-          if(!collectionId){
+          if(!collectionId){ // Use the first collection if no collectionId is provided
             const userCollections = await getUserCollections(userId);
             userCollectionInfo = userCollections[0];
             idToUse = userCollectionInfo.id;
@@ -77,6 +79,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           }
           const userCollection = await getPosts(userId, idToUse);
           
+          setUserToView(await fetchUserData(userId));
           setCollection(userCollection);
           setCollectionInfo(userCollectionInfo);
           console.log('User Collection found in params');
@@ -101,11 +104,13 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
             // Get the first collection by default
             const userCollection = await getPosts(loggedInUser.uid, collections[1].id);
             const userCollectionInfo = await getCollection(loggedInUser.uid, collections[1].id);
+            setUserToView(loggedInUser);
             setCollection(userCollection);
             setCollectionInfo(userCollectionInfo);
             
             if(userCollection.length > 0){
               setIsLoading(false);
+              setErrorMessage(false);
               setMode('view');
             } else {
               setErrorMessage('No posts found');
@@ -121,7 +126,8 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
         }
       } else {
         console.log('Displaying Example Collection');
-        setCollection(posts);
+        setCollection(posts); // Set Collection info?
+        setUserToView('example'); // Set user to example user
         setMode('example');
         setIsLoading(false);
       }
@@ -157,12 +163,13 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
     const htmlElement = document.documentElement;
     const originalTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
   
-    // Apply the collection's theme
-    const collectionTheme = collectionInfo?.displaySettings?.theme;
-    if (collectionTheme === 'dark') {
-      htmlElement.classList.add('dark');
-    } else {
-      htmlElement.classList.remove('dark');
+    if(errorMessage === false) {  // Apply the collection's theme only if no error was detetcted during fetching
+      const collectionTheme = collectionInfo?.displaySettings?.theme;
+      if (collectionTheme === 'dark') {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
     }
   
     // Cleanup: Restore the user's original theme on unmount
@@ -188,7 +195,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
           </div>
 
         ) : (
-          <ImageTrack isLoggedIn={isLoggedIn} posts={collection} collectionInfo={collectionInfo} handleLike={handleLike} />
+          <ImageTrack isLoggedIn={isLoggedIn} posts={collection} collectionInfo={collectionInfo} handleLike={handleLike} userToView={userToView}/>
         ))
       }
     </div>

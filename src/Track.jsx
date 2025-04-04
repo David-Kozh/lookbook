@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import { SelectedImgContext } from './contexts/SelectedImageContext';
+import { Link } from 'react-router-dom';
 import './Track.css';
+import LikeButton from './components/LikeButton.jsx';
 
-function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
+function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView }) {
   const mouseDownAtRef = useRef(0); // x position of the mouse when it is/was clicked
   const percentageRef = useRef(0);  // Percentage track has been slid. Updated on mouseUp to include the last drag (+= deltaPercentageRef.current)
   const deltaPercentageRef = useRef(0); //  Value of current drag (for handleMouseMove). Reset to 0 on mouseDown
@@ -150,8 +152,8 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
           image.animate({
             width: `${imageDimensions.width}px`,
             height: `${imageDimensions.height}px`
-          }, {duration: 500, fill: 'forwards', easing: 'ease-in-out'});
-        }, 200);
+          }, {duration: 550, fill: 'forwards', easing: 'ease-in-out'});
+        }, 10);
 
         setTimeout(() => {    //* Wait for image to be revealed, then translate
           if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) ){
@@ -164,7 +166,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
             const deltaY = targetY - centerY;
             image.animate({
               transform: [`translate( ${deltaX}px, ${deltaY}px)`]
-            }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+            }, {duration: 600, fill: 'forwards', easing: 'ease-in-out'});
           }
           else{ 
             const targetX = (window.innerWidth / 2) - (window.innerWidth * 0.02); // Center minus 2% of screen width
@@ -172,10 +174,10 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
             const deltaX = targetX - currentX;
             image.animate({
             transform: ['translateX(' + deltaX + 'px)']
-            }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+            }, {duration: 600, fill: 'forwards', easing: 'ease-in-out'});
             console.log(targetX, currentX, deltaX);
           }
-        }, 800);
+        }, 600);
       }
     });
     
@@ -204,9 +206,12 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
           console.log('animated image info')
         });
       }
-      showMedia(index); // Show media if applicable
+    }, 1000);
+
+    setTimeout(() => { //* Show media if applicable
+      showMedia(index);
       isAnimatingOpen.current = false;  // Animations are complete
-    }, 1600);
+    }, 1500);
     
   };
 
@@ -237,7 +242,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       setSelectedImage(null);
       selectedImageRef.current = null;
       setSelectedImageInfo({ title: '', description: '' });
-    }, 200);  
+    }, 300);  
     
 
     // Remove video if it exists
@@ -253,11 +258,11 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
         if (i < index) {  // Images to the left of the selected image
           image.animate({
             transform: ['translateX(0%)']
-          }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+          }, {duration: 600, fill: 'forwards', easing: 'ease-in-out'});
         } else {          // Images to the right of the selected image
           image.animate({
             transform: ['translateX(0%)']
-          }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+          }, {duration: 600, fill: 'forwards', easing: 'ease-in-out'});
         }
       } else {            // Animate the selected image
         if(posts[i].aspectRatio == '16:9'){
@@ -265,14 +270,14 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
             transform: ['translateX(0%)'],
             width: "71vmin",
             height: "56vmin"
-          }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+          }, {duration: 550, fill: 'forwards', easing: 'ease-in-out'});
         }
         else if(posts[i].aspectRatio == '1:1'){
           image.animate({
             transform: ['translateX(0%)'],
             width: "40vmin",
             height: "56vmin"
-          }, {duration: 750, fill: 'forwards', easing: 'ease-in-out'});
+          }, {duration: 550, fill: 'forwards', easing: 'ease-in-out'});
         }
       }
     });
@@ -378,7 +383,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       audioElement.classList.add('mt-8');
 
       //* Find the image info element and append the audio element to it
-      const imageInfoElement = document.querySelector('.info-panel');
+      const imageInfoElement = document.querySelector('.info-panel'); //! Need to update to new class names TODO
       if (imageInfoElement) {
         console.log('Found image info element');
         imageInfoElement.appendChild(audioElement);
@@ -563,7 +568,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
       </div>
 
       {/* Image Info */}
-      {selectedImage !== null && (
+      {selectedImage !== null ? (
       <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) ? 'info-container-col info-container' : 'info-container-col'}`}>
 
         <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) ? 'img-panel-wide img-panel' : 'img-panel-wide'}`}/>
@@ -578,37 +583,10 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
                 </h1>
                 {/* Like Button */}
                 {isLoggedIn && (
-                  <button className='like-button'
-                    onClick={() => handleLike(posts[selectedImage].id)}
-                  >
-                    {posts[selectedImage].isLiked ? (
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        fill="red"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="red"
-                        className="w-6 h-6"
-                      >
-                        <path strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        />
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        />
-                      </svg>
-                    )}
-                  </button>
+                  <LikeButton
+                    isLiked={posts[selectedImage].isLiked}
+                    onLike={() => handleLike(posts[selectedImage].id)}
+                  />
                 )}
               </div>
                 
@@ -627,44 +605,39 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike }) {
 
                 {/* Like Button */}
                 {isLoggedIn && (
-                    <button className='like-button'
-                      onClick={() => handleLike(posts[selectedImage].id)}
-                    >
-                      {posts[selectedImage].isLiked ? (
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                          fill="red"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="red"
-                          className="w-6 h-6"
-                        >
-                          <path strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                          />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  )}
-                </div>
+                  <LikeButton
+                    isLiked={posts[selectedImage].isLiked}
+                    onLike={() => handleLike(posts[selectedImage].id)}
+                  />
+                )}
+              </div>
               <p className='info-text w-full h-[80%] text-base font-mono break-words'>{selectedImageInfo.description}</p>
             </div>
           </div>)}
         
-      </div>)}
+      </div>)
+      : (
+        <div className="flex w-full h-[15%] justify-center items-center sm:pt-[5%] select-none font-mono">
+          {userToView ?
+            userToView === 'example' ? (
+              <span>
+                By{' '}
+                <Link to={`/bio`} className="underline">
+                  Jane Doe
+                </Link>
+              </span>
+            ) : (
+              <span>
+                By{' '}
+                <Link to={`/bio/${userToView.id}`} className="underline">
+                  {userToView.displayName}
+                </Link>
+              </span>
+            )
+          : null}
+        </div>
+      )}
+  
     </div>
   );
 }
