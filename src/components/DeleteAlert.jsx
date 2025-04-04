@@ -71,12 +71,12 @@ import { deleteCollection } from "@/services/collectionService";
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will <strong style={{ color: 'maroon' }}>permanently delete</strong> your <strong>'{itemName}' {itemType}.</strong>
+              This action cannot be undone. This will <strong className="text-destructive dark:text-red-500">permanently delete</strong> your <strong>'{itemName}' {itemType}.</strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleContinue}>Continue</AlertDialogAction>
+            <AlertDialogCancel className='bg-primary text-primary-foreground hover:text-card-foreground hover:bg-transparent border-primary' onClick={handleCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction className='bg-destructive' onClick={handleContinue}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
