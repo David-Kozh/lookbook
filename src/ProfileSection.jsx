@@ -6,6 +6,7 @@ import { fetchUserData, getUserCollectionThumbnails } from './services/userServi
 import exampleThumbnails from './data/exampleThumbnails.js';
 import EditUserSettings from './EditUserSettings';
 import MediaLinks from './components/SocialMediaLinks';
+
 // Data required:
 //  - User image, name, bio, and links
 //  - User's collections
@@ -17,10 +18,23 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     const navigate = useNavigate();
     const { userId } = useParams();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [collections, setCollections] = useState(exampleCollections);
-    const [thumbnails, setThumbnails] = useState(exampleThumbnails);
+    const [loading, setLoading] = useState(true);
+    const [collections, setCollections] = useState([{
+        title: "Loading...",
+        subtitle: '',
+        thumbnail: null,
+        displaySettings: {
+            font: 'mono',
+            theme: 'dark',
+            public: true,
+        }
+    }]);
+    const [thumbnails, setThumbnails] = useState([{
+            aspectRatio: '1:1',
+            thumbnailUrl: false
+    }]);
     const [userProfile, setUserProfile] = useState(null);
-    const [mode, setMode] = useState('example');
+    const [mode, setMode] = useState('loading');
     const [editSettings, setEditSettings] = useState(false); // State to toggle edit settings
 
     const defaultCollection = {
@@ -76,52 +90,58 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     //* Set the mode to 'self', 'user', or 'example' respectively
     useEffect(() => {
         const fetchCollections = async () => {
-          if (userId) { //* A userId is present in the URL
-            const profile = await fetchUserData(userId);
-            setUserProfile(profile);
-            if(loggedInUser && loggedInUser.uid === userId) {
-                setMode('self');
-            } else {
-                setMode('user');
-            }
+            var isLoading = true;
             try {
-                const userCollections = await getUserCollections(userId);
-                const userThumbnails = await getUserCollectionThumbnails(userId);
-                if(userCollections.length > 0) {
-                    setCollections(userCollections);
-                    setThumbnails(userThumbnails);
-                } else {
-                    setCollections([defaultCollection]);
-                    setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                if (userId) { //* A userId is present in the URL
+                    const profile = await fetchUserData(userId);
+                    setUserProfile(profile);
+                    if(loggedInUser && loggedInUser.uid === userId) {
+                        setMode('self');
+                    } else {
+                        setMode('user');
+                    }
+                    const userCollections = await getUserCollections(userId);
+                    const userThumbnails = await getUserCollectionThumbnails(userId);
+                    if(userCollections.length > 0) {
+                        setCollections(userCollections);
+                        setThumbnails(userThumbnails);
+                    } else {
+                        setCollections([defaultCollection]);
+                        setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                    }
+                    isLoading = false;
+                } else if (isLoggedIn && loggedInUser) { //* The user is logged in, and there is no userId in the URL
+                    const profile = await fetchUserData(loggedInUser.uid);
+                    setUserProfile(profile);
+                    setMode('self');
+                    const userCollections = await getUserCollections(loggedInUser.uid);
+                    const userThumbnails = await getUserCollectionThumbnails(loggedInUser.uid);
+                    if(userCollections.length > 0){
+                        setCollections(userCollections);
+                        setThumbnails(userThumbnails);
+                    } else {
+                        setCollections([defaultCollection]);
+                        setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                    }
+                    isLoading = false;
+                } else if (isLoggedIn === false && loggedInUser === false) { //* The user is not logged in, and there is no userId in the URL
+                    console.log(isLoggedIn, loggedInUser);
+                    setMode('example');
+                    setCollections(exampleCollections);
+                    setThumbnails(exampleThumbnails);
+                    console.log('Displaying Example Collections');
                 }
             } catch (error) {
-                console.error('Error fetching user collections:', error);
+                console.error('Error fetching collections:', error);
                 setCollections([defaultCollection]);
-            }
-
-          } else if (isLoggedIn && loggedInUser) { //* The user is logged in, and there is no userId in the URL
-            const profile = await fetchUserData(loggedInUser.uid);
-            setUserProfile(profile);
-            setMode('self');
-            try {
-                const userCollections = await getUserCollections(loggedInUser.uid);
-                const userThumbnails = await getUserCollectionThumbnails(loggedInUser.uid);
-                if(userCollections.length > 0){
-                    setCollections(userCollections);
-                    setThumbnails(userThumbnails);
-                } else {
-                    setCollections([defaultCollection]);
-                    setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
+                setThumbnails([{ thumbnailUrl: '', aspectRatio: '1:1' }]);
+                isLoading = false;
+            } finally {  //* The user is not logged in, and there is no userId in the URL
+                if(isLoading){
+                    isLoading = false;
+                    
                 }
-            } catch (error) {
-                console.error('Error fetching user collections:', error);
-                setCollections([defaultCollection]);
             }
-
-          } else {  //* The user is not logged in, and there is no userId in the URL
-            setCollections(exampleCollections);
-            console.log('Displaying Example Collections');
-          }
         };
 
         fetchCollections();
@@ -174,25 +194,25 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         {/* Display Name and Links */}
                         <div className='h-min flex items-center justify-between'>
                             <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
-                            font-bold">{(mode != 'example') ? userProfile.displayName : 'Jane Doe'}</h3>
+                            font-bold">{mode == 'loading' ? '' : (mode != 'example' ? userProfile.displayName : 'Jane Doe')}</h3>
                             <div className='mt-1'>
-                                <MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={true}/>
+                                {mode == 'loading' ? '' : (<MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={true}/>)}
                             </div>
                         </div>
                         {/* Handle */}
                         <h4 className="text-xl/tight xl:text-2xl/tight 2xl:text-3xl/tight 
-                            font-medium">{(mode != 'example') ? '@' + userProfile.handle : '@user-handle'} 
+                            font-medium">{mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')} 
                         </h4>
                         {/* Avatar and Bio */}
                         <div className='mt-6'>
                             <div className="w-20 sm:w-28 h-20 sm:h-28 rounded float-left mr-4">
-                                {(mode != 'example') ? (<img src={userProfile.photoURL} />) :
-                                (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />)}
+                                {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
+                                (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
                             </div>
                             <p className="text-base lg:text-lg xl:text-xl tracking-wider mb-1">
                                 {
-                                    (mode != 'example') ? userProfile.bio : 
-                                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit."
+                                    mode == 'loading' ? 'Loading...' : (mode != 'example' ? userProfile.bio : 
+                                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit.")
                                 }
                             </p>
                         </div>
@@ -202,8 +222,8 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     <div className="w-full flex lg:w-5/6 2xl:w-4/5 gap-4 xl:gap-8 px-6 md:px-10 lg:px-0">
                         {/* Avatar */}
                         <div className="hidden md:inline w-20 md:w-28 h-20 md:h-28 rounded">
-                            {(mode != 'example') ? (<img src={userProfile.photoURL} />) :
-                            (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />)}
+                            {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
+                            (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
                         </div>
                         
                         {/* User's Name, Handle and Links */}
@@ -211,15 +231,15 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             
                             <div className='flex justify-between items-center'>
                                 <h3 className="text-3xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
-                                font-bold ">{(mode != 'example') ? userProfile.displayName : 'Jane Doe'}</h3>
+                                font-bold ">{mode == 'loading' ? '' : (mode != 'example' ? userProfile.displayName : 'Jane Doe')}</h3>
                                 {/* Links */}
                                 <div className='w-[50%]'>
-                                    <MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={false}/>
+                                    {mode == 'loading' ? '' : (<MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={false}/>)}
                                 </div>
                             </div>
 
                             <h4 className="text-xl/tight xl:text-2xl/tight 2xl:text-3xl/tight font-medium ">
-                                {(mode != 'example') ? '@' + userProfile.handle : '@user-handle'}
+                                {mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')}
                             </h4>
                            
                             <div className="h-0.5 w-full mt-4 mb-6 rounded-lg bg-gradient-to-r from-card-foreground to-[#FFFFFF00] dark:opacity-50"></div>
@@ -230,14 +250,14 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     <div className="hidden md:flex w-full lg:w-5/6 2xl:w-4/5 px-6 md:px-10 lg:px-0">
                         <p className="tracking-wider text-base lg:text-lg w-full xl:text-xl my-2">
                             {
-                                (mode != 'example') ? userProfile.bio : 
-                                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi."
+                                mode == 'loading' ? 'Loading...' : (mode != 'example' ? userProfile.bio : 
+                                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi.")
                             }
                         </p>
                     </div>
                     
                     <div id="more-collections" className="w-full h-full mb-6 flex flex-col justify-center items-center">
-                        <h1 className="w-full text-xl xl:text-2xl font-bold">{(mode != 'example') ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections'}</h1>
+                        <h1 className="w-full text-xl xl:text-2xl font-bold">{mode == 'loading' ? ' ' : (mode != 'example' ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections')}</h1>
                         <div className="min-h-0.5 w-full rounded-lg bg-card-foreground dark:opacity-50 my-1"></div>
 
                         <div className='w-full flex flex-col items-center'>

@@ -31,6 +31,7 @@ import './App.css'
     Add "carousel" as a content type (daisyUI) like other post.content
     Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
     * Lower-priority:
+      Remove static "Dashboard" heading in favor of component specific headings
       Enforcing of unique handles
       Signup page form validation (using sign in with google for now)
       Add blank skeleton loading elements for bio to prevent flickering of example profile
@@ -57,8 +58,8 @@ function App() {
         setUser(user);
       } else {
         setIsLoggedIn(false);
-        setUser(null);
-        setUserProfile(null);
+        setUser(false);
+        setUserProfile(false);
       }
     });
     
