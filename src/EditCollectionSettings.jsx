@@ -86,6 +86,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                 updatedData
             );
             cancelEditSettings();
+            window.location.reload();
         } else {
             console.log('No changes detected');
         }
@@ -93,7 +94,8 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
 
     return (
         <div id='edit-collection-settings' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">Collection Settings</div>
+            <div className="w-full mt-2 ml-1 mb-2 text-3xl xl:text-4xl font-bold select-none">Collection Settings</div>
+            <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center space-y-10">
                     
@@ -143,8 +145,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                             Thumbnail
                                         </FormLabel>
                                         <FormControl>
-                                        <Input 
-                                            type="file"
+                                        <Input type="file"
                                             onChange={(e) => {
                                                 if (e.target.files.length > 0) {
                                                 onChange(e.target.files[0]); // store file
@@ -159,8 +160,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            name="displaySettings.theme"
+                        <FormField name="displaySettings.theme"
                             control={form.control}
                             render={({ field }) => (
                                 <div className="grid gap-1.5">
@@ -183,8 +183,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 </div>
                             )}
                         />
-                        <FormField
-                            name="displaySettings.font"
+                        <FormField name="displaySettings.font"
                             control={form.control}
                             render={({ field }) => (
                                 <div className="grid gap-1.5">
@@ -213,25 +212,23 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                         <Button type="button" onClick={()=> cancelEditSettings()}>Cancel</Button>
                         
                         <div className="w-full h-min mx-6 flex justify-end">
-                        <FormField
-                            name="displaySettings.public"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className='flex gap-1 items-center h-min mb-1.5'>
-                                        <FormLabel className='mt-1.5'>
-                                            Public
-                                        </FormLabel>
-                                    <FormControl>
-                                        <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        className='ml-2'
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField name="displaySettings.public"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className='flex gap-1 items-center h-min mb-1.5'>
+                                            <FormLabel className='mt-1.5'>
+                                                Public
+                                            </FormLabel>
+                                        <FormControl>
+                                            <Checkbox checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                            className='ml-2'
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                         <Button type="submit" variant="secondary" >Submit</Button>
                     </div>

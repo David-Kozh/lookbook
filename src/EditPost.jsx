@@ -128,26 +128,30 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
         }
         
         //* Update post with the form input data
-        await updatePost(
-            loggedInUserId, 
-            collectionId, 
-            post.id, 
-            updatedData
-        );
+        try{
+            await updatePost(
+                loggedInUserId, 
+                collectionId, 
+                post.id, 
+                updatedData
+            );
+        } catch (error) {
+            console.error('Error updating post:', error.message);
+        }
         cancelEdit();
     }
       
     return (
         <div id='edit-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">Edit Post</div>
+            <div className="w-full mt-2 ml-2 mb-2 text-3xl xl:text-4xl font-bold select-none">Edit Post</div>
+            <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <div className="w-full mt-1 ml-4 font-semibold text-sm text-card-foreground/70">
                 Update your work here. Click save when you're done.
             </div>
             <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-4/5 w-full px-2 mt-8">
-                <FormField
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-4/5 w-full px-2 mt-6">
+                <FormField name="title"
                 control={form.control}
-                name="title"
                 render={({ field }) => (
                     <FormItem className="w-full mt-2">
                     <div className="flex gap-4 items-center">
@@ -163,8 +167,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control}
-                name="description"
+                <FormField name="description"
+                control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full">
                     <div className="flex gap-4 items-center">
@@ -189,7 +193,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             Image
                         </FormLabel>
                         <FormControl>
-                            <Input type="file"
+                            <Input id="image"
+                            type="file"
                             className="file-input-ghost bg-input text-foreground"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
@@ -207,9 +212,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
 
                 {/* replace with radio group */}
                 <div className="flex w-full gap-4 my-4">
-                <FormField 
+                <FormField name="aspectRatio"
                 control={form.control}
-                name="aspectRatio"
                 render={({ field }) => (
                     <FormItem className='w-[35%]'>
                         <FormLabel>Aspect Ratio</FormLabel>
@@ -226,9 +230,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <FormField 
+                <FormField name="contentType"
                 control={form.control}
-                name="contentType"
                 render={({ field }) => (
                     <FormItem className='w-[65%]'>
                         <FormLabel>Post Type</FormLabel>
@@ -237,7 +240,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             <SelectValue placeholder="No Content" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
-                            <SelectItem value="default">No Additional Content </SelectItem>
+                            <SelectItem value="default"> No Content </SelectItem>
                             <SelectItem value="mp4">+ Video Content</SelectItem>
                             <SelectItem value="mp3">+ Audio Content</SelectItem>
                         </SelectContent>
@@ -247,20 +250,25 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 )}
                 />
                 </div>
-                <FormField
+                <Controller name="content"
                 control={form.control}
-                name="content"
-                render={({ field }) => (
+                render={({ field: { onChange, ref } }) => (
                     <FormItem>
                         <div className="grid gap-1.5">
                             <FormLabel className={`${(contentType === 'mp4' || contentType === 'mp3') ? '' : 'opacity-50' }`}>
                                 Additional Content
                             </FormLabel>
                             <FormControl>
-                                <Input id="picture" 
+                                <Input id="content" 
                                 type="file" 
                                 className="file-input-ghost bg-input text-foreground"
                                 disabled={!(contentType === 'mp4' || contentType === 'mp3')}
+                                onChange={(e) => {
+                                    if (e.target.files.length > 0) {
+                                      onChange(e.target.files[0]); // Store the selected file
+                                    }
+                                  }}
+                                  ref={ref}
                                 />
                             </FormControl>
                         </div>
@@ -274,8 +282,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 </div>
 
             </form>
-        </Form>
-
+            </Form>
         </div>
     )
 }

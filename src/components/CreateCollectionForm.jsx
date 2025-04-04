@@ -290,8 +290,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                                     Public
                                 </FormLabel>
                             <FormControl>
-                                <Checkbox
-                                checked={field.value}
+                                <Checkbox checked={field.value}
                                 onCheckedChange={field.onChange}
                                 className='ml-2'
                                 />

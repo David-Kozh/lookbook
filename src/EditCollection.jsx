@@ -95,10 +95,11 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
 
     return (
     <div id="edit-collection-menu" className='w-full h-full flex flex-col gap-2'>
-        <div className="flex mt-2 ml-2 justify-between" style={{height: "5%"}}>
-            <div className=' text-2xl font-bold select-none italic' >
-                '{collection.title}'
+        <div className="flex mt-2 ml-1 justify-between" style={{height: "5%"}}>
+            <div className='text-3xl xl:text-4xl font-bold select-none' >
+                {collection.title}
             </div>
+
             <div className='flex gap-2'>
                 <Button onClick={cancelEdit}>❮</Button>
                 <Button className='px-3 md:flex md:gap-1' onClick={() => showSettings(collection)}>
@@ -114,6 +115,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
                 </Button>
             </div>
         </div>
+        <div className="h-0.5 rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
         
         <div id="edit-collection" className='w-full mt-1 flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
             <div className='w-full flex flex-col gap-6 sm:gap-4 items-center'>

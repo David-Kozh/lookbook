@@ -123,7 +123,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
             
             
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full lg:w-5/6 xl:w-2/3 flex flex-col sm:items-center justify-between">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between">
                     
                     <FormField name="displayName"
                         control={form.control}
@@ -172,7 +172,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                 </FormDescription>
                                 </div>
                                 <FormControl>
-                                    <Textarea className='text-md bg-input text-foreground' {...field} rows={4} />
+                                    <Textarea className='text-md' {...field} rows={4} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -189,13 +189,14 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                             Profile Photo
                                         </FormLabel>
                                         <FormControl>
-                                        <Input type="file"
-                                            className="file-input-ghost bg-primary text-primary-foreground"
+                                        <Input 
+                                            type="file"
                                             onChange={(e) => {
                                                 if (e.target.files.length > 0) {
                                                 onChange(e.target.files[0]); // store file
                                                 }
                                             }}
+                                            className='file-input-ghost text-xs sm:text-sm'
                                             ref={ref}
                                         />
                                         </FormControl>
@@ -208,9 +209,9 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         {/* Social Media links */}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button type="button">Add Social Media Links</Button>
+                                    <Button type="button" className="">Add Social Media Links</Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="p-4 bg-popover text-popover-foreground">
+                                <PopoverContent className="p-4">
                                     <div className="grid gap-4">
                                         <FormField name="socialMediaLinks.linkedin"
                                             control={form.control}
@@ -271,14 +272,14 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         <Button type="button" onClick={()=> cancelEditSettings()}>Cancel</Button>
                         
                         <div className="w-full h-min mx-6 flex justify-around">
-                            <Button type="button" variant="destructive"
-                                className='font-bold italic' 
+                            <Button type="button" 
+                                className='bg-destructive' 
                                 onClick={handleDeleteAccount}
                             > 
                                 Delete Account 
                             </Button>
                         </div>
-                        <Button type="submit" variant="secondary">Submit</Button>
+                        <Button type="submit" variant="secondary" >Submit</Button>
                     </div>
                 </form>
             </Form>

@@ -11,10 +11,9 @@ function Home() {
           <div className="grid grid-cols-1 h-content lg:grid-cols-2">
             <div className="relative z-10 lg:py-16">
               <div className="relative h-72 sm:h-80 lg:h-full">
-                <img
-                  alt="Logo"
+                <img alt="Logo"
                   src={logoNew}
-                  className="absolute inset-0 h-full w-full object-cover shadow-lg lg:shadow-2xl shadow-black/10 lg:shadow-black/30"
+                  className="absolute inset-0 h-full w-full object-cover shadow-lg lg:shadow-2xl shadow-black/10 lg:shadow-black/30 select-none"
                 />
               </div>
             </div>

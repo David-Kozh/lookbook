@@ -89,8 +89,9 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
 
     return (
         <div id='create-collection-menu' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">New Collection</div>
-            
+            <div className="w-full mt-2 mb-2 ml-2 text-3xl xl:text-4xl font-bold select-none" style={{height: "5%"}}>New Collection</div>
+            <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
+
             <CreateCollectionForm cancelCreate={cancelCreate} openDialog={handleOpenDialog} submitCollection={submitCollection} posts={posts} 
                 selectedButton={selectedBtn} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} removePost={removePost}
             />

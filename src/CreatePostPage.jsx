@@ -60,7 +60,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
     const contentTypeWatch = form.watch('contentType');
     
     //* Submit handler calls db and cloud storage
-    function onSubmit(values) {
+    async function onSubmit(values) {
         // TODO: Additionally make sure the file extensions match the content type 
         if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
@@ -69,30 +69,36 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
             });
             return;
         }
+        
+        const updatedData = {}; //* Prune data of unchanged fields before updating
 
-        //* Create a new post with the form input data, through postService.js
-        createPost(loggedInUserId, collectionId, {
-            title: values.title,
-            description: values.description,
-            imageFile: values.image,
-            aspectRatio: values.aspectRatio,
-            contentType: values.contentType,
-            contentFile: values.content,
-        })
-
+        if (values.title) updatedData.title = values.title;
+        if (values.description) updatedData.description = values.description;
+        if (values.image) updatedData.imageFile = values.image;
+        if (values.aspectRatio) updatedData.aspectRatio = values.aspectRatio;
+        if (values.contentType) updatedData.contentType = values.contentType;
+        if (values.content) updatedData.contentFile = values.content;
+        
+        if(updatedData) {   //* Create a new post with the form input data, through postService.js
+            try{
+                await createPost(loggedInUserId, collectionId, updatedData)
+            } catch (error) {
+                console.error('Error creating post:', error);
+            }
+        }
         cancelCreate(); // Close the form (returns the user to EditCollection)
     }
     
     return (
         <div id='create-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 text-2xl font-bold select-none">New Post</div>
+            <div className="w-full mt-2 ml-2 mb-2 text-2xl font-bold select-none">New Post</div>
+            <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <div className="w-full ml-4 mt-1 font-semibold text-sm text-card-foreground/70">
                 Upload your work here. Click save when you're done.
             </div>
             <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-4/5 w-full mt-8 px-2">
-                <FormField
-                name="title"
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-4/5 w-full mt-6 px-2">
+                <FormField name="title"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full mt-2">
@@ -109,8 +115,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                <FormField
-                name="description"
+                <FormField name="description"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full">
@@ -129,8 +134,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                <Controller
-                name="image"
+                <Controller name="image"
                 control={form.control}
                 render={({ field: { onChange, ref } }) => (
                     <FormItem>
@@ -153,10 +157,9 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                {/* replace with radio group */}
+
                 <div className="flex w-full gap-4 my-4">
-                <FormField 
-                name="aspectRatio"
+                <FormField name="aspectRatio"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className='w-[35%]'>
@@ -176,8 +179,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                <FormField 
-                name="contentType"
+                <FormField name="contentType"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className='w-[60%]'>
@@ -200,8 +202,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 />
                 </div>
 
-                <Controller
-                name="content"
+                <Controller name="content"
                 control={form.control}
                 render={({ field: { onChange, ref } }) => (
                     <FormItem>
@@ -210,11 +211,10 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                                 Additional Content
                             </FormLabel>
                             <FormControl>
-                                <Input 
-                                    type="file"
+                                <Input type="file"
                                     className="file-input-ghost"
                                     onChange={(e) => {
-                                      onChange(e.target.files[0]); //! Bug: 'content' field not being handled the same throughout project 
+                                      onChange(e.target.files[0]); 
                                     }}
                                     disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
                                     ref={ref}

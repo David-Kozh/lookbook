@@ -126,7 +126,8 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
 
     return (
     <div id="collections-menu" className='w-full h-full flex flex-col gap-2'>
-        <div className='mt-2 ml-2 text-2xl lg:text-3xl font-bold select-none' style={{height: "5%"}}>Your Collections</div>
+        <div className='w-full mt-2 ml-1 text-3xl xl:text-4xl font-bold select-none' style={{height: "5%"}}>New Collection</div>
+        <div className="h-0.5 rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
 
         <div id="collections" className='w-full mt-1 flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
             <div className='w-full flex flex-col gap-6 sm:gap-4 items-center'>
