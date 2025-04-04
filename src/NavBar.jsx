@@ -6,8 +6,9 @@ function Navbar( {selectedImage, posts, closeSelectedImage} ) { // Top bar to be
   return (
       <nav className="nav-h font-mono text-lg text-center w-3/5 select-none gap-12 md:gap-16 lg:gap-20">
         
-        <Link reloadDocument to="/home" 
+        <Link to="/home" 
           className="w-1/3 text-muted-foreground hover:text-accent-foreground hover:underline underline-offset-8"
+          onClick={() => closeSelectedImage(selectedImage)}
         >
           Home
         </Link>

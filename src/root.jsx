@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet } from "react-router-dom";
 import { SelectedImgContext } from './contexts/SelectedImageContext';
 
@@ -15,6 +15,47 @@ import BottomBar from './BottomBar.jsx';
 export default function Root({ isLoggedIn }) {
     const [selectedImage, setSelectedImage] = useState(null); // Index of the selected image, null if no image is selected
     const [closeSelectedImage, setCloseSelectedImage] = useState(() => () => {}); // Function from Track to close the selected image.
+
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        // Initialize state from localStorage or default to false
+        return localStorage.getItem('theme') === 'dark';
+    });
+
+    const toggleDarkMode = () => {
+        const htmlElement = document.documentElement;
+        if (htmlElement.classList.contains('dark')) {
+          htmlElement.classList.remove('dark');
+          setIsDarkMode(false);
+          localStorage.setItem('theme', 'light'); // Save preference
+        } else {
+          htmlElement.classList.add('dark');
+          setIsDarkMode(true);
+          localStorage.setItem('theme', 'dark'); // Save preference
+        }
+    };
+
+    useEffect(() => {
+        const htmlElement = document.documentElement;
+    
+        // Apply the saved theme from localStorage on initial load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+          htmlElement.classList.add('dark');
+        } else {
+          htmlElement.classList.remove('dark');
+        }
+    
+        // Observe changes to the <html> classList
+        const observer = new MutationObserver(() => {
+          // Dynamically update the state when the dark class changes
+          setIsDarkMode(htmlElement.classList.contains('dark'));
+        });
+    
+        observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
+    
+        // Cleanup observer on unmount
+        return () => observer.disconnect();
+    }, []);
 
     return (
         <SelectedImgContext.Provider value={
@@ -62,55 +103,51 @@ export default function Root({ isLoggedIn }) {
                 {/* 1/4 of topBar; to the right of NavBar */}
                 <div className='w-1/4 flex justify-end align-middle'>
                     {/* 
-                        TODO:  Consider using this shadcn 'Dropdown Menu' component 
+                        TODO:  Consider using this shadcn 'Dropdown Menu' component, when more links are needed 
                         https://ui.shadcn.com/docs/components/dropdown-menu
                     */}
-                { 
-                    isLoggedIn && (
-                        <LogoutButton />
-                    )  
-                }
-                {   !isLoggedIn && (
+
                     <div className='flex mr-2 sm:mr-4 gap-2'>
-                        <a onClick={() => {
-                                const htmlElement = document.documentElement;
-                                if (htmlElement.classList.contains('dark')) {
-                                htmlElement.classList.remove('dark');
-                                } else {
-                                htmlElement.classList.add('dark');
-                                }
-                            }}
-                            className="cursor-pointer bg-background px-2 py-2 sm:px-3 sm:py-3 lg:px-5 
-                                text-background-foreground hover:bg-white/30 rounded-xl
-                                transition duration-150 flex items-center justify-center"
+                        <a onClick={toggleDarkMode}
+                            className="cursor-pointer bg-background p-2 sm:p-2 lg:px-5 
+                            text-foreground hover:bg-white/30 rounded-xl
+                            flex items-center justify-center"
+                        >
+                            {isDarkMode ? (
+                            // Filled moon for dark mode
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                className="w-6 h-6"
                             >
-                            {document.documentElement.classList.contains('dark') ? (
-                                // Filled moon for dark mode
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    className="w-5 h-5"
-                                >
-                                <path d="M12 2a9.93 9.93 0 0 0-7.07 2.93A10 10 0 1 0 12 2z" />
-                                </svg>
+                            <path strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"
+                            />
+                            </svg>
                             ) : (
-                                // Hollow moon for light mode
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    viewBox="0 0 24 24"
-                                    className="w-5 h-5"
-                                >
-                                <path strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"
-                                />
-                                </svg>
+                            // Hollow moon for light mode
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                className="w-6 h-6"
+                            >
+                            <path strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"
+                            />
+                            </svg>
                             )}
                         </a>
-                        <a href="/login"
+                        
+                        {isLoggedIn ? (
+                            <LogoutButton />
+                        ) : (
+                            <a href="/login"
                             className="bg-secondary text-secondary-foreground inline-block rounded-lg p-2 
                             hover:text-foreground border border-secondary hover:border-foreground transition hover:bg-transparent
                             sm:hover:shadow-[2px_3px_0px_0px_rgba(0,0,0)] duration-200">
@@ -121,9 +158,8 @@ export default function Root({ isLoggedIn }) {
                             </g>
                             </svg>
                         </a>
+                        )}
                     </div>
-                    )
-                }
                 </div>
             </div>
             
