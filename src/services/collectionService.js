@@ -1,5 +1,6 @@
 import { db } from '../config/firebaseConfig';
 import { doc, addDoc, updateDoc, deleteDoc, getDoc, getDocs, collection } from "firebase/firestore";
+import { collectionGroup, query, where, orderBy, limit, startAfter } from "firebase/firestore";
 import { uploadCollectionThumbnail, deleteCollectionThumbnail } from './storageService';
 
 //* Returns the ID of the newly created collection
@@ -85,11 +86,11 @@ export const deleteCollection = async (uid, collectionId) => {
     }
 };
 
-//TODO: Order by createdAt?
 export const getUserCollections = async (uid) => {
     const collectionsRef = collection(db, 'users', uid, 'collections');
     try {
-        const querySnapshot = await getDocs(collectionsRef);
+        const collectionsQuery = query(collectionsRef, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(collectionsQuery);
         const collections = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return collections;
     } catch (error) {
@@ -111,5 +112,47 @@ export const getCollection = async (uid, collectionId) => {
         }
     } catch (error) {
         console.error('Error fetching collection:', error.message);
+    }
+};
+
+/**
+ * Fetch recent collections from users the current user is following.
+ * @param {Array} following - Array of user IDs the current user is following.
+ * @param {Object} lastDoc - The last document from the previous batch (for pagination).
+ * @param {number} batchSize - Number of collections to fetch per batch.
+ 
+ */
+export const getRecentCollectionsFromFollowing = async (following, lastDoc = null, batchSize = 12) => {
+    try {
+        if (following.length === 0) {
+            return { collections: [], lastDoc: null }; // Return an empty result if no users are followed
+            }
+  
+        // Use a collection group query to fetch collections across all followed users
+        const collectionsRef = collectionGroup(db, "collections");
+        const q = query(
+            collectionsRef,
+            where("userId", "in", following), // Filter by followed users
+            orderBy("createdAt", "desc"), // Order by createdAt in descending order
+            ...(lastDoc ? [startAfter(lastDoc)] : []), // Pagination support
+            limit(batchSize) // Limit the number of results
+        );
+    
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+    
+        // Map the results to an array of collection objects
+        const collections = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+    
+        return {
+            collections,
+            lastDoc: querySnapshot.docs[querySnapshot.docs.length - 1] || null, // Return the last document for pagination
+        };
+    } catch (error) {
+        console.error("Error fetching recent collections:", error.message);
+        throw new Error("Failed to fetch recent collections");
     }
 };

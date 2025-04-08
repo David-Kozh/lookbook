@@ -15,34 +15,36 @@ import exampleCollections from './data/userCollections.js';
 import Login from './login.jsx';
 import SignUp from './signup.jsx';
 import './App.css'
+import { FollowingFeed } from './FollowingFeed';
+import { ParallaxScrollDemo } from './FeedDemo.jsx';
 /*
   * Firebase Tasks:
-    //✅ User Authentication
-    //✅ Database for user collections and posts
+    //✅  User Authentication
+    //✅  Database for user collections and posts
     //✅  Finish replacing example data with Firestore function calls
     //✅  Cloud Storage for images and videos
-    TODO  Testing and bugfixing
+    //✅  Likes
+    TODO  Feed
     TODO  Establish ordering for posts when creating a collection (is createdAt sufficient?)
-    ! Testing:  Likes
   * Current Tasks:
-    ! Putting together tailwind theme colors in App.css and apply them to components
+    Feed of collections from users that the user follows, and 'liked' posts components, using parallax scroll
   * Functionalies to implement:
     Make dark mode a user profile variable, and keep it persistent
     Add "carousel" as a content type (daisyUI) like other post.content
-    Add a check for 'theme' of collection in track. If dark, use something like bg-[#546578db]
     * Lower-priority:
-      Remove static "Dashboard" heading in favor of component specific headings
       Enforcing of unique handles
-      Signup page form validation (using sign in with google for now)
       Add blank skeleton loading elements for bio to prevent flickering of example profile
       Edit-form Components: Gray out the "Save Changes" btn, and untouched fields, if no changes have been made
   ?  Questions:
-  ?   A 'by user.displayName' tag below the image track?
+  ?   Remove "Posts" from navbars in favor navigating from bio or feed?
+  ?   --> Save carousel index from within bio while viewing posts then replace in url if returning to bio?
+  ?   Change submit button text to "Save Changes" when editing a collection and "Create Collection" when creating a new collection
+  ?   --> Change to loading gif when submitting?
   ?   'Favorite' functionality for entire collections?
   ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view) 
   ?   Limits on num collections/posts? File sizes?
   ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections
-  ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll
+  ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll --> Multi-collection view?
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */
@@ -113,6 +115,10 @@ function App() {
         { //* Displays profile of a seperate user
           path: "/bio/:userId",
           element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={user} exampleCollections={exampleCollections}/>,
+        },
+        { //* Displays user's feed of collections from users they follow
+          path: "/feed",
+          element: isLoggedIn ? <FollowingFeed currentUserId={user.uid}/> : <ParallaxScrollDemo/>, //TODO replace Demo with Feed from Jane Doe's following (need to populate some more example collections)
         }
       ],
     },

@@ -96,7 +96,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     return (
     <div id="edit-collection-menu" className='w-full h-full flex flex-col gap-2'>
         <div className="flex mt-2 ml-1 justify-between" style={{height: "5%"}}>
-            <div className='text-3xl xl:text-4xl font-bold select-none' >
+            <div className='text-2xl md:text-3xl font-bold select-none' >
                 {collection.title}
             </div>
 

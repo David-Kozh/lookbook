@@ -246,6 +246,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
     
 
     // Remove video if it exists
+    //! Bug? Doesnt remove audio?
     const videoElement = document.querySelector('video');
     if (videoElement) {
       videoElement.parentNode.removeChild(videoElement);

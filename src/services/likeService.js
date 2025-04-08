@@ -62,3 +62,41 @@ export const getUserLikes = async (userId) => {
     throw new Error('Failed to fetch user likes');
   }
 };
+
+
+//* Delete functions
+// Delete all likes on a specific post
+export const deleteAllLikesOnPost = async (postId) => {
+  try {
+    const likesRef = collection(db, 'likes');
+    const q = query(likesRef, where('postId', '==', postId));
+    const querySnapshot = await getDocs(q);
+
+    for (const doc of querySnapshot.docs) {
+      await deleteDoc(doc.ref);
+    }
+
+    console.log(`All likes on post ${postId} have been deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting likes on post:', error.message);
+    throw new Error('Failed to delete likes on post');
+  }
+};
+
+// Delete all outgoing likes from a user
+export const deleteAllOutgoingLikes = async (userId) => {
+  try {
+    const likesRef = collection(db, 'likes');
+    const q = query(likesRef, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+
+    for (const doc of querySnapshot.docs) {
+      await deleteDoc(doc.ref);
+    }
+
+    console.log(`All outgoing likes from user ${userId} have been deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting outgoing likes:', error.message);
+    throw new Error('Failed to delete outgoing likes');
+  }
+};

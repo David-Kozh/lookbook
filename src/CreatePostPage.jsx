@@ -32,7 +32,7 @@ const formSchema = z.object({
     }),
     aspectRatio: z.string(),
     description: z.string().optional(),
-    contentType: z.string(),
+    postType: z.string(),
     content: z.any().refine(file => file instanceof File || file === undefined, {
         message: 'A file is required',
     }),
@@ -52,17 +52,17 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
             description: '',
             image: null,
             aspectRatio: '1:1',
-            contentType: 'default',
+            postType: 'default',
             content: undefined,
         },
     });
 
-    const contentTypeWatch = form.watch('contentType');
+    const postTypeWatch = form.watch('postType');
     
     //* Submit handler calls db and cloud storage
     async function onSubmit(values) {
         // TODO: Additionally make sure the file extensions match the content type 
-        if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
+        if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
                 type: 'manual',
                 message: 'A file is required',
@@ -76,11 +76,11 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
         if (values.description) updatedData.description = values.description;
         if (values.image) updatedData.imageFile = values.image;
         if (values.aspectRatio) updatedData.aspectRatio = values.aspectRatio;
-        if (values.contentType) updatedData.contentType = values.contentType;
+        if (values.postType) updatedData.postType = values.postType;
         if (values.content) updatedData.contentFile = values.content;
         
         if(updatedData) {   //* Create a new post with the form input data, through postService.js
-            try{
+            try {
                 await createPost(loggedInUserId, collectionId, updatedData)
             } catch (error) {
                 console.error('Error creating post:', error);
@@ -179,7 +179,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                <FormField name="contentType"
+                <FormField name="postType"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className='w-[60%]'>
@@ -188,7 +188,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                         </FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
-                            <SelectValue placeholder="Content Type" />
+                            <SelectValue placeholder="Default" />
                         </SelectTrigger>
                         <SelectContent className="font-semibold">
                             <SelectItem value="default">No Content </SelectItem>
@@ -207,7 +207,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 render={({ field: { onChange, ref } }) => (
                     <FormItem>
                         <div className="grid gap-1.5">
-                            <FormLabel className={`${(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
+                            <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
                                 Additional Content
                             </FormLabel>
                             <FormControl>
@@ -216,7 +216,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); 
                                     }}
-                                    disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
+                                    disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
                                     ref={ref}
                                 />
                             </FormControl>

@@ -104,7 +104,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
             // Get the first collection by default
             const userCollection = await getPosts(loggedInUser.uid, collections[1].id);
             const userCollectionInfo = await getCollection(loggedInUser.uid, collections[1].id);
-            setUserToView(loggedInUser);
+            setUserToView({ ...loggedInUser, id: loggedInUser.uid });
             setCollection(userCollection);
             setCollectionInfo(userCollectionInfo);
             

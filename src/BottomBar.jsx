@@ -15,6 +15,8 @@ export default function BottomBar() {
             navigate(`/bio${userId ? `/${userId}` : ''}`);
         } else if(tabName === 'posts'){
             navigate(`/posts${userId ? `/${userId}` : ''}${collectionId ? `/${collectionId}` : ''}`);
+        } else if(tabName === 'feed'){
+            navigate('/feed');
         }
     };
 
@@ -27,7 +29,7 @@ export default function BottomBar() {
     }, [location]);
 
     return (
-        <div className="btm-nav bottom-bar sm:hidden text-white/70 bg-zinc-900 dark:bg-[#ffffff07] font-mono leading-none">
+        <div className="btm-nav btm-nav-md bottom-bar sm:hidden text-white/70 bg-zinc-900 dark:bg-[#ffffff07] font-mono leading-none">
             <button 
                 className={`${barTab === 'home' ? 'active bg-transparent' : ''}`}
                 onClick={() => handleClick('home')}
@@ -66,6 +68,19 @@ export default function BottomBar() {
                 <span className="btm-nav-label">Posts</span>
             
             </button>
+
+            <button 
+                className={`${barTab === 'feed' ? 'active bg-transparent' : ''}`}
+                onClick={() => handleClick('feed')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z" />
+                </svg>
+                
+                <span className="btm-nav-label">Feed</span>
+            
+            </button>
+            
         </div>
     );
 }

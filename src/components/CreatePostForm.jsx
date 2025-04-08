@@ -52,7 +52,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
     },
   });
 
-  const contentTypeWatch = form.watch('postType');
+  const postTypeWatch = form.watch('postType');
       
   //* Submit handler passes the post to CreateCollection.jsx,
   //* which will process the final set of posts when the collection is submitted.
@@ -175,7 +175,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
             <FormItem className='w-[65%]'>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger className="w-full bg-input mt-2 font-semibold">
-                    <SelectValue placeholder="Content Type" />
+                    <SelectValue placeholder="Default" />
                 </SelectTrigger>
                 <SelectContent className="font-semibold">
                     <SelectItem value="default">No Additional Content </SelectItem>
@@ -194,7 +194,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
         render={({ field: { onChange, ref } }) => (
           <FormItem>
             <div className="grid gap-1.5">
-              <FormLabel className={`${(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3') ? '' : 'opacity-50' }`}>
+              <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'opacity-50' }`}>
                 Additional Content
               </FormLabel>
               <FormControl>
@@ -203,7 +203,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
                 onChange={(e) => {
                   onChange(e.target.files[0]); //? store file
                 }}
-                disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
+                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
                 ref={ref}
               />
               </FormControl>

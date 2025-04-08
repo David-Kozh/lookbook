@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserCollections } from './services/collectionService';
 import { fetchUserData, getUserCollectionThumbnails } from './services/userService';
+import { followUser, unfollowUser, getFollowers } from './services/userService';
 import exampleThumbnails from './data/exampleThumbnails.js';
 import EditUserSettings from './EditUserSettings';
 import MediaLinks from './components/SocialMediaLinks';
@@ -36,7 +37,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     const [userProfile, setUserProfile] = useState(null);
     const [mode, setMode] = useState('loading');
     const [editSettings, setEditSettings] = useState(false); // State to toggle edit settings
-
+    const [isFollowing, setIsFollowing] = useState(false); // Track follow state
     const defaultCollection = {
         title: 'No Collections Yet!',
         postsArray: [
@@ -147,6 +148,40 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
         fetchCollections();
     }, [isLoggedIn, loggedInUser, userId]);
 
+    //* Following Functions
+    useEffect(() => {
+        const checkFollowStatus = async () => {
+          if (loggedInUser && userId && (loggedInUser.uid !== userId)) {
+            try {
+              const followers = await getFollowers(userId);
+              //setFollowersCount(followers.length);
+              setIsFollowing(followers.includes(loggedInUser.uid));
+            } catch (error) {
+              console.error('Error checking follow status:', error.message);
+            }
+          }
+        };
+    
+        checkFollowStatus();
+      }, [loggedInUser, userId]);
+
+    const handleFollow = async () => {
+        if (!loggedInUser || !userId) return;
+
+        try {
+            if (isFollowing) {
+            await unfollowUser(loggedInUser.uid, userId);
+            setIsFollowing(false);
+            //setFollowersCount((prev) => prev - 1);
+            } else {
+            await followUser(loggedInUser.uid, userId);
+            setIsFollowing(true);
+            //setFollowersCount((prev) => prev + 1);
+            }
+        } catch (error) {
+            console.error('Error updating follow status:', error.message);
+        }
+    };
 
     return(
         <div className="w-full body-h flex justify-center">
@@ -195,16 +230,27 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         <div className='h-min flex items-center justify-between'>
                             <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
                             font-bold">{mode == 'loading' ? '' : (mode != 'example' ? userProfile.displayName : 'Jane Doe')}</h3>
-                            <div className='mt-1'>
+                            <div>
                                 {mode == 'loading' ? '' : (<MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={true}/>)}
                             </div>
                         </div>
-                        {/* Handle */}
-                        <h4 className="text-xl/tight xl:text-2xl/tight 2xl:text-3xl/tight 
-                            font-medium">{mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')} 
-                        </h4>
+                        {/* Handle and follow button */}
+                        <div className='flex justify-between'>
+                            <h4 className="text-xl/tight xl:text-2xl/tight 2xl:text-3xl/tight 
+                                font-medium">{mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')} 
+                            </h4>
+                            {(mode == 'user') && (
+                                <Button className='flex items-center gap-0.5 text-xs md:text-sm px-1.5 h-min py-0.5 mt-1'
+                                    onClick={handleFollow}
+                                    variant={isFollowing ? 'secondary' : 'default'}
+                                >
+                                    <span>{isFollowing ? 'Following' : '+ Follow'}</span>
+                                </Button>
+                            )}
+                        </div>
+                        
                         {/* Avatar and Bio */}
-                        <div className='mt-6'>
+                        <div className='mt-4'>
                             <div className="w-20 sm:w-28 h-20 sm:h-28 rounded float-left mr-4">
                                 {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
                                 (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}

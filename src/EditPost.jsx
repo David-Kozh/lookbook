@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from 'react-hook-form';
- 
+import { Controller, useForm } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -22,7 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-import { updatePost, getPosts } from "./services/postService";
+import { updatePost, getPosts } from "./services/postService.js"
 
 
 // ** Zod Schema for Form Validation
@@ -35,17 +33,14 @@ const formSchema = z.object({
     }).optional(),
     aspectRatio: z.string(),
     description: z.string().optional(),
-    contentType: z.string().optional(),
+    postType: z.string().optional(),
     content: z.any().refine(file => file instanceof File || file === undefined, {
         message: 'A file is required',
     }),
-    // Other post fields...
 })
 
 // ** Form for Creating Post
 //? Should the current image be rendered rather than just a file input?
-//? Completed? TODO: UPDATE File handling (Controller, Schema, etc)
-//* ✅ Ready for testing with firebase db and storage
 export default function EditPost({ loggedInUserId, collectionId, postIndex, cancelEdit }) {
     
     const [post, setPost] = useState({ 
@@ -53,7 +48,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
         description: '', 
         image: '', 
         aspectRatio: '', 
-        contentType: '', 
+        postType: '', 
         content: '' 
     });
 
@@ -77,11 +72,11 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             description: post.description,
             image: undefined,       //! How should default file be handled?
             aspectRatio: post.aspectRatio,
-            contentType: post.contentType,
+            postType: post.postType,
             content: undefined,     //! How should default file be handled?
         }
     });
-    const contentType = form.watch('contentType');
+    const postTypeWatch = form.watch('postType');
       
     useEffect(() => {
         //* Reset form values when post state changes
@@ -90,7 +85,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             description: post.description,
             image: undefined,               //?
             aspectRatio: post.aspectRatio,
-            contentType: post.contentType,
+            postType: post.postType,
             content: undefined,             //?
         });
     }, [post, form]);
@@ -109,17 +104,17 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             updatedData.imageFile = values.image;
         }
         if (values.aspectRatio !== post.aspectRatio) {
-            updatedData.bio = values.bio;
+            updatedData.aspectRatio = values.aspectRatio;
         }
-        if (values.contentType !== post.contentType) {
-            updatedData.bio = values.bio;
+        if (values.postType !== post.postType) {
+            updatedData.postType = values.postType;
         }
         if (values.content) {
             updatedData.contentFile = values.content;
         }
 
         // TODO: Additionally make sure the file extensions match the content type 
-        if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
+        if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
             form.setError('content', {
                 type: 'manual',
                 message: 'A file is required',
@@ -230,7 +225,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <FormField name="contentType"
+                <FormField name="postType"
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className='w-[65%]'>
@@ -255,14 +250,14 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 render={({ field: { onChange, ref } }) => (
                     <FormItem>
                         <div className="grid gap-1.5">
-                            <FormLabel className={`${(contentType === 'mp4' || contentType === 'mp3') ? '' : 'opacity-50' }`}>
+                            <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'opacity-50' }`}>
                                 Additional Content
                             </FormLabel>
                             <FormControl>
                                 <Input id="content" 
                                 type="file" 
                                 className="file-input-ghost bg-input text-foreground"
-                                disabled={!(contentType === 'mp4' || contentType === 'mp3')}
+                                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
                                 onChange={(e) => {
                                     if (e.target.files.length > 0) {
                                       onChange(e.target.files[0]); // Store the selected file

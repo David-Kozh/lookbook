@@ -31,7 +31,7 @@ const formSchema = z.object({
       message: "Title must be at least 2 characters.",
     }),
     subtitle: z.string().optional(),
-    thumbnail: z.any().refine(file => file instanceof File, {
+    thumbnailFile: z.any().refine(file => file instanceof File, {
         message: 'A file is required',
     }).optional(),
     displaySettings: z.object({
@@ -73,7 +73,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         defaultValues: {
             title: "",
             subtitle: "",
-            thumbnail: undefined,
+            thumbnailFile: undefined,
             displaySettings: {
                 font: "sans",
                 theme: "light",
@@ -92,7 +92,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             submitCollection({
                 title: values.title,
                 subtitle: values.subtitle,
-                thumbnail: values.thumbnail,
+                thumbnailFile: values.thumbnailFile,
                 displaySettings: values.displaySettings,
             }, posts);
             cancelCreate();
@@ -127,7 +127,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
     //? TODO: 'carousel-img' : 'carousel-img-wide' - replaced by create-collection-carousel
     return (
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-4 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between px-2 pb-2">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-2 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center justify-between px-2 pb-2">
             
             <FormField name="title"
                 control={form.control}
@@ -208,7 +208,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             </div>
 
             <div className="flex justify-between items-end gap-2 w-full">
-                <Controller name="thumbnail"
+                <Controller name="thumbnailFile"
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
                         <FormItem>
@@ -277,7 +277,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                     )}
                 />
             </div>
-            <div className="w-full flex justify-between h-min items-center my-2">
+            <div className="w-full flex justify-between h-min items-center mb-2">
                 
                 <Button type="button" onClick={()=> cancelCreate()}>Cancel</Button>
                 
