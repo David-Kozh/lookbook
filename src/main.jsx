@@ -19,32 +19,21 @@ import { FollowingFeed } from './FollowingFeed';
 import { ParallaxScrollDemo } from './FeedDemo.jsx';
 /*
   * Firebase Tasks:
-    //✅  User Authentication
-    //✅  Database for user collections and posts
-    //✅  Finish replacing example data with Firestore function calls
-    //✅  Cloud Storage for images and videos
-    //✅  Likes
-    TODO  Feed
-    TODO  Establish ordering for posts when creating a collection (is createdAt sufficient?)
+    ✅  User Authentication
+    ✅  Database for users, collections, posts, likes
+    ✅  Cloud Storage for images and videos
   * Current Tasks:
-    Feed of collections from users that the user follows, and 'liked' posts components, using parallax scroll
+    TODO  Link images in FollowingFeed to their respective collections
   * Functionalies to implement:
+    Similar parallax scroll component for liked posts (within feed)
     Make dark mode a user profile variable, and keep it persistent
     Add "carousel" as a content type (daisyUI) like other post.content
-    * Lower-priority:
-      Enforcing of unique handles
-      Add blank skeleton loading elements for bio to prevent flickering of example profile
-      Edit-form Components: Gray out the "Save Changes" btn, and untouched fields, if no changes have been made
+
   ?  Questions:
-  ?   Remove "Posts" from navbars in favor navigating from bio or feed?
-  ?   --> Save carousel index from within bio while viewing posts then replace in url if returning to bio?
-  ?   Change submit button text to "Save Changes" when editing a collection and "Create Collection" when creating a new collection
-  ?   --> Change to loading gif when submitting?
-  ?   'Favorite' functionality for entire collections?
+  ?   Remove "Posts" from navbars in favor navigating from bio/feed?
   ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view) 
   ?   Limits on num collections/posts? File sizes?
-  ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections
-  ? Additional Track Orientation?: https://ui.aceternity.com/components/parallax-scroll --> Multi-collection view?
+  ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections?
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */

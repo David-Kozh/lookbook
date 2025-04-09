@@ -8,6 +8,7 @@ export const createCollection = async (uid, collectionData) => {
     const collectionsRef = collection(db, 'users', uid, 'collections');
 
     const newCollectionData = {
+        userId: uid,
         title: collectionData.title || 'Untitled Collection',
         subtitle: collectionData.subtitle || '',
         thumbnail: '',
@@ -125,9 +126,10 @@ export const getCollection = async (uid, collectionId) => {
 export const getRecentCollectionsFromFollowing = async (following, lastDoc = null, batchSize = 12) => {
     try {
         if (following.length === 0) {
+            console.log("No users followed");
             return { collections: [], lastDoc: null }; // Return an empty result if no users are followed
-            }
-  
+        }
+        console.log("Fetching recent collections from followed users:", following);
         // Use a collection group query to fetch collections across all followed users
         const collectionsRef = collectionGroup(db, "collections");
         const q = query(
@@ -142,11 +144,30 @@ export const getRecentCollectionsFromFollowing = async (following, lastDoc = nul
         const querySnapshot = await getDocs(q);
     
         // Map the results to an array of collection objects
-        const collections = querySnapshot.docs.map((doc) => ({
+        const collections = [];
+        for (const doc of querySnapshot.docs) {
+        const collectionData = doc.data();
+        let thumbnailUrl = collectionData.thumbnail;
+
+        // If the collection does not have a thumbnail, fetch the first post's image
+        if (!thumbnailUrl) {
+            const postsRef = collection(db, "users", collectionData.userId, "collections", doc.id, "posts");
+            const postsSnapshot = await getDocs(query(postsRef, orderBy("createdAt", "asc"), limit(1))); // Fetch the first post
+            if (!postsSnapshot.empty) {
+            const firstPostDoc = postsSnapshot.docs[0];
+            const firstPostData = firstPostDoc.data();
+            thumbnailUrl = firstPostData.image || ""; // Use the first post's image as the thumbnail
+            }
+        }
+
+        collections.push({
             id: doc.id,
-            ...doc.data(),
-        }));
-    
+            ...collectionData,
+            thumbnail: thumbnailUrl, // Use the fetched thumbnail or fallback
+        });
+        }
+
+        console.log("Fetched collections:", collections);
         return {
             collections,
             lastDoc: querySnapshot.docs[querySnapshot.docs.length - 1] || null, // Return the last document for pagination

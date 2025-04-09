@@ -17,7 +17,7 @@ const createUserDocument = async (user) => {
       email = 'no-email@example.com', 
       displayName = 'Display Name',
       handle = 'your-handle',
-      photoURL = 'default' 
+      photoURL = 'default'  //TODO: Add darkMode var
     } = user;
     const createdAt = new Date();
 

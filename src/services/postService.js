@@ -13,7 +13,7 @@ export const createPost = async (uid, collectionId, post) => {
     aspectRatio: post.aspectRatio || '1:1',
     postType: post.postType || 'default',
     content: null,
-    createdAt: new Date(),
+    createdAt: post.createdAt || new Date(),
   };
 
   try {

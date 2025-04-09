@@ -3,6 +3,7 @@ import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
 import { getFollowing } from "./services/userService.js";
 import { getRecentCollectionsFromFollowing } from "./services/collectionService.js";
 
+//TODO "no more collections to load" message does not display when end of page reached. Move to inside parallax-scroll component?
 export function FollowingFeed({ currentUserId }) {
   const [thumbnails, setThumbnails] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ export function FollowingFeed({ currentUserId }) {
       );
 
       if (collections.length > 0) {
+        console.log("Fetched collections:", collections);
         setThumbnails((prevThumbnails) => [
           ...prevThumbnails,
           ...collections.map((collection) => ({
@@ -56,6 +58,13 @@ export function FollowingFeed({ currentUserId }) {
     }
   };
 
+  // Trigger fetching collections when the 'following' array is updated
+  useEffect(() => {
+    if (following.length > 0) {
+      fetchCollections();
+    }
+  }, [following]); // Runs whenever the 'following' array changes
+
   // Infinite scroll: Load more collections when the user scrolls near the bottom
   useEffect(() => {
     const handleScroll = () => {
@@ -73,7 +82,7 @@ export function FollowingFeed({ currentUserId }) {
   }, [hasMore, loading, fetchCollections]);
 
   return (
-    <div className="w-full h-full flex">
+    <div className="w-full h-full flex flex-col">
 
       {following.length === 0 && !loading ? (
         <div className="flex w-full h-[50%] items-center justify-center">
@@ -82,8 +91,16 @@ export function FollowingFeed({ currentUserId }) {
       ) : (
         <ParallaxScroll images={thumbnails.map((thumb) => thumb.thumbnailUrl)} />
       )}
-      {loading && <p>Loading more...</p>}
-      {!hasMore && <p>No more collections to load.</p>}
+      {loading && 
+        <div className="w-full h-min items-center justify-center">
+          <p className="w-full text-xl font-bold font-mono text-center">Loading...</p>
+        </div>
+      }
+      {!hasMore && following.length > 0 && 
+        <div className="w-full h-min items-center justify-center">
+          <p className="w-full text-xl font-bold font-mono text-center">No more collections to load.</p>
+        </div>
+      }
       
     </div>
   );
