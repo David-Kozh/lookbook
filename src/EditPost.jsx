@@ -76,6 +76,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             content: undefined,     //! How should default file be handled?
         }
     });
+    const { formState } = form;
     const postTypeWatch = form.watch('postType');
       
     useEffect(() => {
@@ -273,7 +274,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 />
                 <div className="w-full flex justify-between gap-20">
                     <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelEdit()}>Cancel</Button>
-                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
+                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min" disabled={!formState.isDirty}>Save Post</Button>
                 </div>
 
             </form>

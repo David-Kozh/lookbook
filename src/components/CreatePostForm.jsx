@@ -49,9 +49,10 @@ export default function CreatePostForm({ addPost, dismiss }) {
       aspectRatio: '1:1',
       postType: 'default',
       content: undefined,
+      createdAt: new Date(),
     },
   });
-
+  const { formState } = form;
   const postTypeWatch = form.watch('postType');
       
   //* Submit handler passes the post to CreateCollection.jsx,
@@ -214,7 +215,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
       />
 
       <DialogFooter>
-        <Button type="submit" variant="secondary" className="mt-8">Save Post</Button>
+        <Button type="submit" variant="secondary" className="mt-8" disabled={!formState.isDirty}>Save Post</Button>
       </DialogFooter>
     </form>
   </Form>

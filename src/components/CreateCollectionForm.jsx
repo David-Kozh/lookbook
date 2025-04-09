@@ -80,7 +80,8 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 public: true,
             },
         }
-    })
+    });
+    const { formState } = form;
     
     //* Submit Handler takes the data for the Collection, and calls the submitCollection function,
     //* which will process the final set of posts when the collection is submitted.
@@ -300,7 +301,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                     )}
                 />
                 </div>
-                <Button type="submit" variant="secondary">Submit</Button>
+                <Button type="submit" variant="secondary" disabled={!formState.isDirty}>Submit</Button>
             </div>
         </form>
     </Form>

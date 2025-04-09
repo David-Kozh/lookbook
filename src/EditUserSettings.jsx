@@ -64,7 +64,9 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                 twitter: userProfile.socialMediaLinks?.twitter || '',
             },
         }
-    })
+    });
+
+    const { formState } = form;
 
     async function handleDeleteAccount() {
         const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
@@ -279,7 +281,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                 Delete Account 
                             </Button>
                         </div>
-                        <Button type="submit" variant="secondary" >Submit</Button>
+                        <Button type="submit" variant="secondary" disabled={!formState.isDirty}>Submit</Button>
                     </div>
                 </form>
             </Form>

@@ -34,7 +34,7 @@ const formSchema = z.object({
   }).optional(),
   aspectRatio: z.string(),
   description: z.string().optional(),
-  contentType: z.string(),
+  postType: z.string(),
   content: z.any().refine(file => file instanceof File || file === undefined, {
     message: 'A file is required',
   }),
@@ -53,12 +53,12 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       description: post.description,
       image: undefined,
       aspectRatio: post.aspectRatio,
-      contentType: post.contentType,
+      postType: post.postType,
       content: undefined,
     },
   });
-
-  const contentTypeWatch = form.watch('contentType');
+  const { formState } = form;
+  const postTypeWatch = form.watch('postType');
       
   function onSubmit(values) {
     console.log('submitting form');
@@ -66,7 +66,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
 
     // TODO: Additionally make sure the file extensions match the content type 
     // TODO: Check post.content so that posts with non-updated content aren't marked as invalid
-    if ((values.contentType === 'mp4' || values.contentType === 'mp3') && !(values.content instanceof File)) {
+    if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
       form.setError('content', {
         type: 'manual',
         message: 'A file is required',
@@ -80,7 +80,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       description: values.description,
       image: values.image, 
       aspectRatio: values.aspectRatio,
-      contentType: values.contentType,
+      postType: values.postType,
       content: values.content,
     })
     dismiss('edit');
@@ -173,7 +173,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
           </FormItem>
         )}
         />
-        <FormField name="contentType"
+        <FormField name="postType"
         control={form.control}
         render={({ field }) => (
             <FormItem className='w-[65%]'>
@@ -198,7 +198,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         render={({ field: { onChange, ref } }) => (
           <FormItem>
             <div className="grid gap-1.5">
-              <FormLabel className={`${(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
+              <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
                 Additional Content
               </FormLabel>
               <FormControl>
@@ -207,7 +207,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                   onChange(e.target.files[0]); // store file
                 }}
                 className="file-input-ghost"
-                disabled={!(contentTypeWatch === 'mp4' || contentTypeWatch === 'mp3')}
+                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
                 ref={ref}
               />
               </FormControl>
@@ -218,7 +218,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       />
 
       <DialogFooter>
-        <Button type="submit" variant="secondary" className="mt-8">Save Post</Button>
+        <Button type="submit" variant="secondary" className="mt-8" disabled={!formState.isDirty}>Save Post</Button>
       </DialogFooter>
 
     </form>

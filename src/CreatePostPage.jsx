@@ -56,7 +56,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
             content: undefined,
         },
     });
-
+    const { formState } = form;
     const postTypeWatch = form.watch('postType');
     
     //* Submit handler calls db and cloud storage
@@ -227,7 +227,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 />
                 <div className="w-full flex justify-between gap-20">
                     <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelCreate()}>Cancel</Button>
-                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min">Save Post</Button>
+                    <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min" disabled={!formState.isDirty}>Save Post</Button>
                 </div>
             </form>
         </Form>

@@ -1,3 +1,4 @@
+
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -54,7 +55,9 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                 public: collection.displaySettings?.public || false,
             },
         }
-    })
+    });
+
+    const { formState } = form;
     
     async function onSubmit(values) {
         console.log(values);
@@ -230,7 +233,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 )}
                             />
                         </div>
-                        <Button type="submit" variant="secondary" >Submit</Button>
+                        <Button type="submit" variant="secondary" disabled={!formState.isDirty}>Submit</Button>
                     </div>
                 </form>
             </Form>
