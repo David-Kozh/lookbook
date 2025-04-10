@@ -160,6 +160,12 @@ export const getRecentCollectionsFromFollowing = async (following, lastDoc = nul
             }
         }
 
+        // Skip collections without a valid thumbnail or post for a fallback
+        if (!thumbnailUrl) {
+            console.log(`Skipping collection ${doc.id} (no thumbnail or posts)`);
+            continue;
+        }
+
         collections.push({
             id: doc.id,
             ...collectionData,

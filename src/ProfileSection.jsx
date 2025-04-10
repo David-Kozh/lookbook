@@ -14,12 +14,12 @@ import MediaLinks from './components/SocialMediaLinks';
 //? Display Profile and More Collections section in 2 columns on larger screens
 //?     > And then display caption/description of collection below it?
 
+//TODO Check for 'default' profile image url, if so, display skeleton avatar
 export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
-    const location = useLocation(); // URL location
+    const location = useLocation();
     const navigate = useNavigate();
     const { userId } = useParams();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [loading, setLoading] = useState(true);
     const [collections, setCollections] = useState([{
         title: "Loading...",
         subtitle: '',
@@ -251,7 +251,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         
                         {/* Avatar and Bio */}
                         <div className='mt-4'>
-                            <div className="w-20 sm:w-28 h-20 sm:h-28 rounded float-left mr-4">
+                            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded float-left mr-4">
                                 {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
                                 (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
                             </div>
@@ -267,7 +267,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     {/* User heading for larger screens */}
                     <div className="w-full flex lg:w-5/6 2xl:w-4/5 gap-4 xl:gap-8 px-6 md:px-10 lg:px-0">
                         {/* Avatar */}
-                        <div className="hidden md:inline w-20 md:w-28 h-20 md:h-28 rounded">
+                        <div className="hidden md:inline w-20 md:w-[6rem] h-20 md:h-[6rem] rounded">
                             {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
                             (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
                         </div>
@@ -288,7 +288,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                                 {mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')}
                             </h4>
                            
-                            <div className="h-0.5 w-full mt-4 mb-6 rounded-lg bg-gradient-to-r from-card-foreground to-[#FFFFFF00] dark:opacity-50"></div>
+                            <div className="h-0.5 w-full mt-4 mb-4 rounded-lg bg-gradient-to-r from-card-foreground to-[#FFFFFF00] dark:opacity-50"></div>
                         </div>
                     </div>
 

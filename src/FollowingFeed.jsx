@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
 import { getFollowing } from "./services/userService.js";
 import { getRecentCollectionsFromFollowing } from "./services/collectionService.js";
@@ -11,6 +12,12 @@ export function FollowingFeed({ currentUserId }) {
   const [following, setFollowing] = useState([]);
   const [lastDoc, setLastDoc] = useState(null); // Track the last document for pagination
   const batchSize = 12; // Number of collections to fetch per batch
+
+  const navigate = useNavigate();
+
+  const handleImageClick = (userId, collectionId) => {
+    navigate(`/posts/${userId}/${collectionId}`);
+  };
 
   // Fetch the list of users the current user is following
   useEffect(() => {
@@ -45,6 +52,8 @@ export function FollowingFeed({ currentUserId }) {
           ...collections.map((collection) => ({
             thumbnailUrl: collection.thumbnail,
             createdAt: collection.createdAt,
+            userId: collection.userId,
+            collectionId: collection.id,
           })),
         ]);
         setLastDoc(newLastDoc); // Update the last document for pagination
@@ -89,14 +98,22 @@ export function FollowingFeed({ currentUserId }) {
           <p className="w-[70%] text-xl font-bold font-mono text-center">Start following users to see their collections!</p>
         </div>
       ) : (
-        <ParallaxScroll images={thumbnails.map((thumb) => thumb.thumbnailUrl)} />
+        <ParallaxScroll 
+          className='h-[85.5%] sm:h-[91.5%]' 
+          images={thumbnails.map((thumb) => ({
+            thumbnailUrl: thumb.thumbnailUrl,
+            userId: thumb.userId,
+            collectionId: thumb.collectionId,
+          }))}
+          onClick={handleImageClick}
+        />
       )}
       {loading && 
         <div className="w-full h-min items-center justify-center">
           <p className="w-full text-xl font-bold font-mono text-center">Loading...</p>
         </div>
       }
-      {!hasMore && following.length > 0 && 
+      {false && !hasMore && following.length > 0 && 
         <div className="w-full h-min items-center justify-center">
           <p className="w-full text-xl font-bold font-mono text-center">No more collections to load.</p>
         </div>

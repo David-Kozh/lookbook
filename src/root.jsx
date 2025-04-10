@@ -38,7 +38,7 @@ export default function Root({ isLoggedIn }) {
         const htmlElement = document.documentElement;
     
         // Apply the saved theme from localStorage on initial load
-        const savedTheme = localStorage.getItem('theme');
+        const savedTheme = localStorage.getItem('theme'); //! Bug: When page is reloaded at /posts then navigated away, localStorage is cleared?
         if (savedTheme === 'dark') {
           htmlElement.classList.add('dark');
         } else {

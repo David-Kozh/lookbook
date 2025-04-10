@@ -17,7 +17,8 @@ const createUserDocument = async (user) => {
       email = 'no-email@example.com', 
       displayName = 'Display Name',
       handle = 'your-handle',
-      photoURL = 'default'  //TODO: Add darkMode var
+      photoURL = 'default',
+      darkModePref = false //* Dark mode prefered?
     } = user;
     const createdAt = new Date();
 
@@ -30,6 +31,7 @@ const createUserDocument = async (user) => {
         createdAt,
         bio: 'This is your profile bio. Tell the world a little about what kind of works are in your LookBook!',
         socialMediaLinks: {}, // Object of social media links (e.g. LinkedIn, Youtube, etc.)
+        darkModePref,
       });
     } catch (error) {
       console.error('Error in createUserDocument:', error.message);

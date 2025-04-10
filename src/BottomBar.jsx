@@ -23,7 +23,7 @@ export default function BottomBar() {
     useEffect(() => {
         const url = new URL(window.location.href);
         const tab = url.pathname.split('/')[1];
-        if(tab === 'bio' || tab === 'posts' || tab === 'home'){
+        if(tab === 'bio' || tab === 'posts' || tab === 'home' || tab === 'feed'){
             setBarTab(tab);
         }
     }, [location]);
