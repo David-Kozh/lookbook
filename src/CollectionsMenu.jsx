@@ -13,7 +13,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
     const [currentIndex, setCurrentIndex] = useState(0); // Collection index to edit/delete
     const defaultCollection = {
         id: 'default',
-        title: 'No Collections Yet!',
+        title: 'Loading...',
         postsArray: [
             {
                 aspectRatio: '1:1'
@@ -36,6 +36,12 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
             if (userCollections.length > 0) {
                 setCollections(userCollections);
                 setThumbnails(userThumbnails);
+            } else {
+                setCollections([{
+                    id: 'default',
+                    title: 'No Collections Yet!',
+                    postsArray: [{ aspectRatio: '1:1' }]
+                }]);
             }
           } catch (error) {
             console.error('Error fetching user collections:', error.message);

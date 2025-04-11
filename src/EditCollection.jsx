@@ -18,7 +18,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     const [currentIndex, setCurrentIndex] = useState(0);
     const defaultPost = {
         id: 'default',  //* Unique id for default objects
-        title: 'No Collections Yet!',
+        title: 'Loading...',
         aspectRatio: '1:1',
     };
     const [posts, setPosts] = useState([defaultPost]);
@@ -28,7 +28,15 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
         const fetchCollections = async () => {
             try {
             const collectionPosts = await getPosts(loggedInUserId, collection.id);
-            setPosts(collectionPosts);
+            if(collectionPosts.length > 0) {
+                setPosts(collectionPosts);
+            } else {
+                setPosts([{
+                    id: 'default',
+                    title: 'No Posts Yet!',
+                    aspectRatio: '1:1',
+                }]);
+            }
             } catch (error) {
             console.error('Error fetching user collections:', error.message);
             }
@@ -45,27 +53,25 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     const handleButtonClick = (buttonName) => {
         setSelectedButton(buttonName); //? why not referenced
         if(buttonName === 'create'){
-            console.log("Create Button Clicked");
-            // TODO: Animate in the CreatePost form/modal (undecided)
+            console.log("Create Post Clicked");
+            //? Animate in component?
             showCreatePost();
         }
         else if(buttonName === 'edit'){
-            console.log("Edit Button Clicked");
-            // TODO: Animate in the EditPost form/modal (undecided)
-            //! Can pass actual post so that getPosts doesnt have to be called again in the EditPost component (reducing total requested num bytes from firestore)
+            console.log("Edit Post Clicked");
+            //? Animate in component?
+            //TODO: Can pass actual post so that getPosts doesnt have to be called again in the EditPost component (reducing total requested num bytes from firestore)
             showEditPost(currentIndex); // pass current index
         }
         else if(buttonName === 'view'){
-            console.log("View Button Clicked");
-            // TODO: Animate to the selected post in the image track
-            // ? Back Button? (to return to the same place in the dashboard?) Or BreadCrumbs?
+            console.log("View Posts Clicked");
+            //? Can we animate to the selected post in the image track?
             setTimeout(() => {
                 navigate(`/posts/${loggedInUserId}/${collection.id}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
-            console.log("Delete Button Clicked");
-            // TODO: Pass name of selected post to CollectionsButtons to display in confirmation modal
+            console.log("Delete Post Clicked");
         }
     };
 

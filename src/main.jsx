@@ -27,7 +27,7 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     Test LikedPostsFeed with new like structure
   * Functionalies to implement:
     Add some feedback for when a user reaches the max num posts in a collection, and max num collections for the user
-    Add "carousel" as a content type (daisyUI) like other post.content
+    Add "carousel" as a additional content type
 
   ?  Questions:
   ?   Make dark mode a user profile variable, or is it persistent enough with local storage?
