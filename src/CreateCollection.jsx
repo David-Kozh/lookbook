@@ -75,6 +75,7 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
                 }
             }
             console.log('Collection and its posts created successfully');
+            
         } catch (error) {
             console.error('Error creating collection or its posts:', error.message);
         }

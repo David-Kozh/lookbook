@@ -249,12 +249,12 @@ Handle on hover : set the color of the scrollbar when hovered over
 */
 /* Default scrollbar styles (light mode) */
 .parallax-scroll-container {
-  scrollbar-width: thin; /* For Firefox */
+  scrollbar-width: auto; /* For Firefox */
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); /* For Firefox */
 }
 .parallax-scroll-container::-webkit-scrollbar {
   width: 2vw;
-  max-width: 20px;
+  max-width: 16px;
 }
 
 .parallax-scroll-container::-webkit-scrollbar-track {

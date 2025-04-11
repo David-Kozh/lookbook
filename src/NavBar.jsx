@@ -18,7 +18,7 @@ function Navbar( {selectedImage, posts, closeSelectedImage} ) { // Top bar to be
           Bio
         </Link>
 
-        <Link 
+        {/*<Link 
           to={`/posts${userId ? `/${userId}` : ''}${collectionId ? `/${collectionId}` : ''}`} 
           className="w-1/4 text-muted-foreground hover:text-accent-foreground hover:underline underline-offset-8"
           onClick={() => {
@@ -28,7 +28,7 @@ function Navbar( {selectedImage, posts, closeSelectedImage} ) { // Top bar to be
           }}
         >
           Posts
-        </Link>
+        </Link>*/}
 
         <Link to="/feed" 
           className="w-1/4 text-muted-foreground hover:text-accent-foreground hover:underline underline-offset-8"
