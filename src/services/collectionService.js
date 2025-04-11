@@ -4,23 +4,30 @@ import { collectionGroup, query, where, orderBy, limit, startAfter } from "fireb
 import { uploadCollectionThumbnail, deleteCollectionThumbnail } from './storageService';
 
 //* Returns the ID of the newly created collection
-export const createCollection = async (uid, collectionData) => {
+//* Max number of collections per user limited to 10
+export const createCollection = async (uid, collectionData, maxCollections = 10) => {
     const collectionsRef = collection(db, 'users', uid, 'collections');
 
-    const newCollectionData = {
-        userId: uid,
-        title: collectionData.title || 'Untitled Collection',
-        subtitle: collectionData.subtitle || '',
-        thumbnail: '',
-        createdAt: new Date(),
-        displaySettings: {
-            font: collectionData.displaySettings.font,
-            theme: collectionData.displaySettings.theme,
-            public: collectionData.displaySettings.public || false,
-        },
-    };
-
     try {
+        // Check the current number of collections for the user
+        const collectionsSnapshot = await getDocs(collectionsRef);
+        if (collectionsSnapshot.size >= maxCollections) {
+            throw new Error(`Collection limit of ${maxCollections} reached. Cannot create more collections.`);
+        }
+
+        const newCollectionData = {
+            userId: uid,
+            title: collectionData.title || 'Untitled Collection',
+            subtitle: collectionData.subtitle || '',
+            thumbnail: '',
+            createdAt: new Date(),
+            displaySettings: {
+                font: collectionData.displaySettings.font,
+                theme: collectionData.displaySettings.theme,
+                public: collectionData.displaySettings.public || false,
+            },
+        };
+
         const newCollectionRef = await addDoc(collectionsRef, newCollectionData);
         const collectionId = newCollectionRef.id;
         

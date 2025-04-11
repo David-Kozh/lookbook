@@ -1,17 +1,17 @@
 import { useScroll, useTransform } from "motion/react";
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect, useMemo, forwardRef } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils.js";
 
 //* Component created by editing ParallaxScroll from ui.aceternity.com
 //* Added explicit column structure for images to fix display error 
 // (Error: a single image would be displayed in the wrong position when number of columns changed in grid).
-export const ParallaxScroll = ({
+export const ParallaxScroll = forwardRef(({
   images,
   className,
   onClick,
   demoFlag = false 
-}) => {
+}, ref) => {
   const gridRef = useRef(null);
   const [numColumns, setNumColumns] = useState(3); // Default to 3 columns
 
@@ -50,6 +50,17 @@ export const ParallaxScroll = ({
     return newColumns;
   }, [images, numColumns]);
 
+  // Forward the internal gridRef to the parent component's ref
+  useEffect(() => {
+    if (ref) {
+      if (typeof ref === "function") {
+        ref(gridRef.current);
+      } else {
+        ref.current = gridRef.current;
+      }
+    }
+  }, [ref]);
+
   return (
     <div
       className={cn("h-full items-start overflow-y-auto w-full parallax-scroll-container", className)}
@@ -64,9 +75,9 @@ export const ParallaxScroll = ({
               <motion.div
                 key={`col-${columnIndex}-img-${idx}`}
                 onClick={
-                  !demoFlag && onClick  // Check that this is not demo component
-                    ? () => onClick(image.userId, image.collectionId) // Pass userId and collectionId if not in demo mode, to navigate to collection
-                    : undefined
+                  demoFlag  // Check that this is not demo component
+                    ? () => onClick()
+                    : () => onClick(image.userId, image.collectionId) // Pass userId and collectionId if not in demo mode, to navigate to collection
                 }
                 style={{
                   y:
@@ -91,4 +102,4 @@ export const ParallaxScroll = ({
       </div>
     </div>
   );
-};
+});

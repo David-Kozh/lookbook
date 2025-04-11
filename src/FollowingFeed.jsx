@@ -1,6 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
+import { LikedPostsFeed } from "./LikedPostsFeed.jsx";
 import { getFollowing } from "./services/userService.js";
 import { getRecentCollectionsFromFollowing } from "./services/collectionService.js";
 
@@ -11,8 +19,9 @@ export function FollowingFeed({ currentUserId }) {
   const [hasMore, setHasMore] = useState(true);
   const [following, setFollowing] = useState([]);
   const [lastDoc, setLastDoc] = useState(null); // Track the last document for pagination
+  const [selectedFeed, setSelectedFeed] = useState("Following"); // Track selected feed
   const batchSize = 12; // Number of collections to fetch per batch
-
+  const parallaxScrollRef = useRef(null); // Reference for the ParallaxScroll element
   const navigate = useNavigate();
 
   const handleImageClick = (userId, collectionId) => {
@@ -77,37 +86,65 @@ export function FollowingFeed({ currentUserId }) {
   // Infinite scroll: Load more collections when the user scrolls near the bottom
   useEffect(() => {
     const handleScroll = () => {
+      const scrollElement = parallaxScrollRef.current;
       if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 &&
-        hasMore &&
-        !loading
+        scrollElement && hasMore && !loading &&
+        scrollElement.scrollTop + scrollElement.clientHeight >= scrollElement.scrollHeight - 200
       ) {
+        console.log(hasMore, !loading);
         fetchCollections();
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const scrollElement = parallaxScrollRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (scrollElement) {
+        scrollElement.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, [hasMore, loading, fetchCollections]);
 
   return (
     <div className="w-full h-full flex flex-col">
-
-      {following.length === 0 && !loading ? (
-        <div className="flex w-full h-[50%] items-center justify-center">
-          <p className="w-[70%] text-xl font-bold font-mono text-center">Start following users to see their collections!</p>
-        </div>
-      ) : (
-        <ParallaxScroll 
-          className='h-[85.5%] sm:h-[91.5%]' 
-          images={thumbnails.map((thumb) => ({
-            thumbnailUrl: thumb.thumbnailUrl,
-            userId: thumb.userId,
-            collectionId: thumb.collectionId,
-          }))}
-          onClick={handleImageClick}
-        />
+      <div className="flex w-full h-[4%] justify-between items-start">
+        <p className="text-foreground font-mono ml-4 text-lg">Recent from Followed Users</p>
+        <Select 
+          defaultValue="Following"
+          onValueChange={(value) => setSelectedFeed(value)} // Update selected feed
+        >
+          <SelectTrigger className="w-[22%] h-min bg-popover mr-2 font-mono text-xs">
+            <SelectValue placeholder="Following"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem className='text-xs font-mono' value="Following">Following</SelectItem>
+            <SelectItem className='text-xs font-mono' value="Liked Posts">Liked Posts</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {selectedFeed === "Following" ? (
+        following.length === 0 && !loading ? (
+          <div className="flex w-full h-[50%] items-center justify-center">
+            <p className="w-[70%] text-xl font-bold font-mono text-center">Start following users to see their collections!</p>
+          </div>
+        ) : (
+          <ParallaxScroll 
+            ref={parallaxScrollRef}
+            className='h-[81.5%] sm:h-[87.5%]' 
+            images={thumbnails.map((thumb) => ({
+              thumbnailUrl: thumb.thumbnailUrl,
+              userId: thumb.userId,
+              collectionId: thumb.collectionId,
+            }))}
+            onClick={handleImageClick}
+          />
+        )
+      ):(
+          <LikedPostsFeed currentUserId={currentUserId} /> // Render the LikedPostsFeed component
       )}
+
       {loading && 
         <div className="w-full h-min items-center justify-center">
           <p className="w-full text-xl font-bold font-mono text-center">Loading...</p>

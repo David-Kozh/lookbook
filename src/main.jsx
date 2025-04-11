@@ -22,18 +22,17 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     ✅  User Authentication
     ✅  Database for users, collections, posts, likes
     ✅  Cloud Storage for images and videos
+    ✅  Following Feed
   * Current Tasks:
-    TODO  Link images in FollowingFeed to their respective collections
+    Test LikedPostsFeed with new like structure
   * Functionalies to implement:
-    Similar parallax scroll component for liked posts (within feed)
-    Make dark mode a user profile variable, and keep it persistent
+    Add some feedback for when a user reaches the max num posts in a collection, and max num collections for the user
     Add "carousel" as a content type (daisyUI) like other post.content
 
   ?  Questions:
-  ?   Remove "Posts" from navbars in favor navigating from bio/feed?
-  ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view) 
-  ?   Limits on num collections/posts? File sizes?
-  ?   Add a leftSideBar/drawer on the TrackPage for logged in users to easily swap between collections?
+  ?   Make dark mode a user profile variable, or is it persistent enough with local storage?
+  ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view)
+  ?   If a collection is made private after it was public, what should be done with it's likes? They will still display in the LikedPostsFeed
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */

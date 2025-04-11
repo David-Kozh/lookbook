@@ -44,10 +44,10 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
       );
   
       // Perform the server-side update
-      if (await hasLiked(loggedInUser.uid, postId)) {
-        await removeLike(loggedInUser.uid, postId);
+      if (await hasLiked(loggedInUser.uid, userId, collectionId, postId)) {
+        await removeLike(loggedInUser.uid, userId, collectionId, postId);
       } else {
-        await addLike(loggedInUser.uid, postId);
+        await addLike(loggedInUser.uid, userId, collectionId, postId);
       }
     } catch (error) {
       console.error("Error updating like status:", error);
@@ -143,10 +143,16 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
         try {
           const userLikes = await getUserLikes(loggedInUser.uid);
           if (userLikes) {
-            const updatedCollection = collection.map(post => ({
-              ...post,
-              isLiked: userLikes.includes(post.id),
-            }));
+            const updatedCollection = collection.map(post => {
+              // Check if the post is liked by matching postId, postOwnerId, and collectionId
+              const isLiked = userLikes.some(
+                like =>
+                  like.postId === post.id &&
+                  like.postOwnerId === userId &&
+                  like.collectionId === collectionId
+              );
+              return { ...post, isLiked }; // Add the isLiked property to the post
+            });
             setCollection(updatedCollection);
           }
         } catch (error) {
