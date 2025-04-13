@@ -18,6 +18,7 @@ import { deleteCollection } from "@/services/collectionService";
     itemName, itemType, // for confirmation message
     handleClick, setSelectedIndex, selectedButton, 
     itemRef, // {loggedInUserId, collectionId, postId}
+    emptyFlag
   }) {
     const { loggedInUserId, collectionId, postId } = itemRef;
     const handleCancel = () => {
@@ -45,7 +46,8 @@ import { deleteCollection } from "@/services/collectionService";
           <button
               onClick={() => handleClick('delete')}
               className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-12
-              ${selectedButton === 'delete' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+              ${selectedButton === 'delete' ? 'text-blue-500 bg-gray-200 shadow-sm' : 
+                emptyFlag ? 'text-white opacity-50' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
               disabled={itemName == ('No Collections Yet!' || 'No Posts Yet!')}
           >
               <svg

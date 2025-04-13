@@ -35,9 +35,9 @@ function Home() {
                     className="absolute rounded-l-full inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-white via-white to-transparent opacity-75"
                   ></div>
                 </span>
-                <div className="mt-6 text-gray-300 text-sm sm:text-base xl:text-lg font-mono">
-                A simple and sleek platform for creatives to showcase their work to the world. Perfect for photographers, videographers, musicians and more. Explore our example account and feed!
-                <div className='mt-6 text-gray-300 font-mono flex text-sm sm:text-base xl:text-lg'>➣ Skip the sign up and log in instantly with Google or Github!</div>
+                <div className="mt-6 ml-4 text-gray-300 text-sm sm:text-base xl:text-lg font-mono">
+                ➣ An elegant landing page platform for creatives. Showcase photos with optional descriptions, audio and video. Perfect for photographers, videographers, musicians and more.
+                <div className='mt-6 text-gray-300 font-mono flex text-sm sm:text-base xl:text-lg'>➣ Skip signing up and log in with Google or Github -- or explore our example profile and feed!</div>
                 </div>
                 
                 {/* Buttons for Sign Up and Log In (empty divs are for spacing) */}

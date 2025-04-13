@@ -21,6 +21,7 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
   * Firebase Tasks:
     ✅  User Authentication
     ✅  Database for users, collections, posts, likes
+      * Max-limits for number of collections and posts is enforced in CollectionButtons.jsx as well as service files
     ✅  Cloud Storage for images and videos
     ✅  Following Feed
   * Current Tasks:

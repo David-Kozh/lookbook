@@ -2,18 +2,25 @@ import React, { useState } from 'react';
 import DeleteAlert from './DeleteAlert';
 
 const ButtonGroup = ({ 
-  onButtonClick, selectedIndex, setSelectedIndex, numSlides, selectedItemName, itemType, itemRef
+  onButtonClick, selectedIndex, setSelectedIndex, numSlides, selectedItemName, itemType, itemRef, emptyFlag
 }) => {
   const [selectedButton, setSelectedButton] = useState(null);
 
   const handleClick = (buttonName) => {
+    
     if (selectedItemName == ('No Collections Yet!' || 'No Posts Yet!') && buttonName !== 'create') {
       //* Prevent buttons from changing state when they can't be used (can't edit or delete the blank items)
       //* Keeps the buttons from getting stuck in a highlighted state after they fail to do anything
       console.log('No valid item selected');
+    } else if(itemType == 'collection' && numSlides >= 10 && (buttonName == 'create')) {
+      console.log('Max collections reached');
+      setSelectedButton(null);
+    } else if(itemType == 'post' && numSlides >= 10 && (buttonName == 'create')) { //* allows for different max limits, unlike disabled/className fields of the create-button
+      console.log('Max posts reached');
+      setSelectedButton(null);
     } else {
       setSelectedButton(buttonName);
-      console.log('numslides', numSlides);
+      
       if (onButtonClick) {
         onButtonClick(buttonName);
       }
@@ -26,7 +33,9 @@ const ButtonGroup = ({
       
       <button onClick={() => handleClick('create')}
         className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-12 
-        ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' :
+          numSlides < 10 ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
+        disabled={numSlides >= 10} // Disable the button if numSlides is 10 or more
       >
         <svg xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 67.733 67.733" 
@@ -46,7 +55,9 @@ const ButtonGroup = ({
 
       <button onClick={() => handleClick('edit')}
         className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-12 mr-2 sm:mr-0
-        ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' :
+          !emptyFlag ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
+        disabled={emptyFlag} // Disable the button if emptyFlag is true
       >
         <svg xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -66,13 +77,15 @@ const ButtonGroup = ({
       </button>
 
       {<div className="flex justify-between items-center rounded-r-lg rounded-l-lg bg-slate-700 gap-0.5 h-12">
-        <a href={`#slide${selectedIndex == 0 ? (numSlides - 1) : (selectedIndex - 1)}`} className="btn border-none h-12 min-h-10 rounded-none rounded-l-lg hover:bg-slate-700">❮</a> 
-        <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg hover:bg-slate-700">❯</a>
+        <a href={`#slide${selectedIndex == 0 ? (numSlides - 1) : (selectedIndex - 1)}`} className="btn border-none h-12 min-h-10 rounded-none rounded-l-lg">❮</a> 
+        <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg">❯</a>
       </div>}
 
       <button onClick={() => handleClick('view')}
         className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-l-lg sm:rounded-md px-4 h-12 ml-2 sm:ml-0
-        ${selectedButton === 'view' ? 'text-blue-500 bg-gray-200 shadow-sm' : 'text-white hover:bg-zinc-500 hover:text-blue-100'}`}
+        ${selectedButton === 'view' ? 'text-blue-500 bg-gray-200 shadow-sm' : 
+          !emptyFlag ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
+        disabled={emptyFlag} // Disable the button if emptyFlag is true
       >
         <svg xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -90,7 +103,7 @@ const ButtonGroup = ({
       </button>
 
       {/* Delete Modal */}
-      <DeleteAlert itemName={selectedItemName} handleClick={handleClick} selectedButton={selectedButton} setSelectedIndex={setSelectedIndex} itemType={itemType} itemRef={itemRef} />
+      <DeleteAlert itemName={selectedItemName} handleClick={handleClick} selectedButton={selectedButton} setSelectedIndex={setSelectedIndex} itemType={itemType} itemRef={itemRef} emptyFlag={emptyFlag}/>
       
     </div>
   );

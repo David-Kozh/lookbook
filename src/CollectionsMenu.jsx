@@ -25,6 +25,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
         aspectRatio: '1:1'
     }
     const [thumbnails, setThumbnails] = useState([defultThumbnail]);
+    const [emptyFlag, setEmptyFlag] = useState(true);
     
     //* Get the user's collections
     useEffect(() => {
@@ -36,6 +37,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
             if (userCollections.length > 0) {
                 setCollections(userCollections);
                 setThumbnails(userThumbnails);
+                setEmptyFlag(false);
             } else {
                 setCollections([{
                     id: 'default',
@@ -171,6 +173,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                         collectionId: collections[currentIndex].id,
                         postId: false
                     }}
+                    emptyFlag={emptyFlag}
                 />
             </div>
         </div>

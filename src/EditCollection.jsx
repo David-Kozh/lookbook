@@ -22,6 +22,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
         aspectRatio: '1:1',
     };
     const [posts, setPosts] = useState([defaultPost]);
+    const [emptyFlag, setEmptyFlag] = useState(true);
     
     //* Get posts for loggedInUserId, collection.id. If no posts exist, posts == [defaultPost]
     useEffect(() => {
@@ -30,6 +31,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
             const collectionPosts = await getPosts(loggedInUserId, collection.id);
             if(collectionPosts.length > 0) {
                 setPosts(collectionPosts);
+                setEmptyFlag(false);
             } else {
                 setPosts([{
                     id: 'default',
@@ -160,6 +162,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
                         collectionId: collection.id,
                         postId: posts[currentIndex].id
                     }}
+                    emptyFlag={emptyFlag}
                 />
             </div>
         </div>
