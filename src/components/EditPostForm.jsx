@@ -25,24 +25,42 @@ import * as z from 'zod';
 // Default Values not supported for file inputs
 // Will require consideration to implement cloud storage
 const formSchema = z.object({
-
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
-  image: z.any().refine(file => file instanceof File || file === undefined, {
-    message: 'A file is required',
-  }).optional(),
+  image: z.any()
+    .refine(file => file instanceof File || file === undefined, {
+      message: 'A file is required',
+    })
+    .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+      message: 'File size must be 5MB or less',
+    })
+    .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+      message: 'Only JPG or PNG files are allowed',
+    })
+    .optional(),
   aspectRatio: z.string(),
   description: z.string().optional(),
-  postType: z.string(),
-  content: z.any().refine(file => file instanceof File || file === undefined, {
-    message: 'A file is required',
-  }),
+  content: z.any()
+    .refine(file => file instanceof File || file === undefined, {
+      message: 'A file is required',
+    })
+    .refine(file => {
+      if (file === undefined) return true;
+      if (file.type.startsWith('audio/') && file.size <= 10 * 1024 * 1024) return true; // 10MB for audio
+      if (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) return true; // 50MB for video
+      return false;
+    }, {
+      message: 'Audio files must be 10MB or less, and video files must be 50MB or less.',
+    })
+    .refine(file => file === undefined || ['audio/mp3', 'audio/wav', 'video/mp4', 'video/quicktime'].includes(file.type), {
+      message: 'Only MP3, WAV, MP4, or MOV files are allowed.',
+    }),
 
 })
 
-// TODO: Integrate with edit button in CreateCollection > CreateCollectionForm > LeftButtons
-// TODO: When editing a post with additional content, must check post.content (line 70)
+//? TODO: Integrate with edit button in CreateCollection > CreateCollectionForm > LeftButtons
+//? TODO: When editing a post with additional content, must check post.content (line 70)
 export default function EditPostForm({ post, updatePost, dismiss }) {
 
   const form = useForm({
@@ -53,35 +71,36 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
       description: post.description,
       image: undefined,
       aspectRatio: post.aspectRatio,
-      postType: post.postType,
       content: undefined,
     },
   });
   const { formState } = form;
-  const postTypeWatch = form.watch('postType');
       
   function onSubmit(values) {
     console.log('submitting form');
     console.log(values);
 
-    // TODO: Additionally make sure the file extensions match the content type 
-    // TODO: Check post.content so that posts with non-updated content aren't marked as invalid
-    if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
-      form.setError('content', {
-        type: 'manual',
-        message: 'A file is required',
-      });
-      return;
+    // Determine the post type based on the content file's MIME type
+    let postType = null;
+    if (values.content instanceof File) {
+      const mimeType = values.content.type;
+      if (mimeType.startsWith('audio/')) {
+        postType = 'audio';
+      } else if (mimeType.startsWith('video/')) {
+        postType = 'video';
+      }
+    } else {
+      postType = 'default';
     }
 
     //* Update post with the form input data
     updatePost({
       title: values.title,
       description: values.description,
-      image: values.image, 
+      imageFile: values.image, 
       aspectRatio: values.aspectRatio,
-      postType: values.postType,
-      content: values.content,
+      postType,
+      contentFile: values.content,
     })
     dismiss('edit');
   }
@@ -133,7 +152,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
           <FormItem>
             <div className="grid gap-1.5">
               <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
-                Image
+                New Image
               </FormLabel>
               <FormControl>
                 <Input type="file"
@@ -146,6 +165,11 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                   ref={ref}
                 />
               </FormControl>
+              {post.imageFile && (
+                <p className="text-sm text-zinc-500 mt-1">
+                  Current Image: {post.imageFile.name || 'Uploaded Image'}
+                </p>
+              )}
             </div>
             <FormMessage/>
           </FormItem>
@@ -157,9 +181,10 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         control={form.control}
         render={({ field }) => (
           <FormItem className='w-[35%]'>
+            <FormLabel>Aspect Ratio</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
 
-              <SelectTrigger className="w-full bg-input mt-2 font-semibold">
+              <SelectTrigger className="w-full bg-input font-semibold">
                 <SelectValue placeholder="Aspect Ratio" />
               </SelectTrigger>
 
@@ -173,49 +198,33 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
           </FormItem>
         )}
         />
-        <FormField name="postType"
-        control={form.control}
-        render={({ field }) => (
-            <FormItem className='w-[65%]'>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full bg-input mt-2 font-semibold">
-                    <SelectValue placeholder="Content Type" />
-                </SelectTrigger>
-                <SelectContent className="font-semibold">
-                    <SelectItem value="default">No Additional Content </SelectItem>
-                    <SelectItem value="mp4">+ Video Content</SelectItem>
-                    <SelectItem value="mp3">+ Audio Content</SelectItem>
-                </SelectContent>
-                </Select>
-                <FormMessage />
+        <Controller name="content"
+          control={form.control}
+          render={({ field: { onChange, ref } }) => (
+            <FormItem className={`${(form.watch('image') || post.imageFile !== undefined) ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
+                <FormLabel className={`${(form.watch('image') || post.imageFile !== undefined) ? '' : 'opacity-50'}`}>
+                  Optional Video/Audio
+                </FormLabel>
+                <FormControl>
+                <Input type="file"
+                  onChange={(e) => {
+                    onChange(e.target.files[0]); // store file
+                  }}
+                  className="file-input-ghost"
+                  disabled={!form.watch('image') && post.imageFile === undefined}
+                  ref={ref}
+                />
+                </FormControl>
+                {post.contentFile && (
+                  <p className="text-sm text-zinc-500 mt-1">
+                    Current Content: {post.contentFile.name || 'Uploaded Content'}
+                  </p>
+                )}
+              <FormMessage />
             </FormItem>
-        )}
+          )}
         />
       </div>
-
-      <Controller name="content"
-        control={form.control}
-        render={({ field: { onChange, ref } }) => (
-          <FormItem>
-            <div className="grid gap-1.5">
-              <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
-                Additional Content
-              </FormLabel>
-              <FormControl>
-              <Input type="file"
-                onChange={(e) => {
-                  onChange(e.target.files[0]); // store file
-                }}
-                className="file-input-ghost"
-                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
-                ref={ref}
-              />
-              </FormControl>
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
 
       <DialogFooter>
         <Button type="submit" variant="secondary" className="mt-8" disabled={!formState.isDirty}>Save Post</Button>

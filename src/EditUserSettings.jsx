@@ -26,10 +26,20 @@ const formSchema = z.object({
     handle: z.string().min(2, {
         message: "Display name must be at least 2 characters.",
       }),
-    bio: z.string().optional(),
-    photo: z.any().refine(file => file instanceof File || file === undefined, {
-        message: 'A file is required',
-    }).optional(),
+    bio: z.string()
+        .max(230, { message: "Bio must be at most 230 characters." })
+        .optional(),
+    photo: z.any()
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+            message: 'File size must be 5MB or less',
+        })
+        .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Only JPG or PNG files are allowed',
+        })
+        .optional(),
     socialMediaLinks: z.object({
         linkedin: z.string().url().refine(url => url.includes('linkedin.com'), {
             message: "LinkedIn URL must contain 'linkedin.com'",
@@ -185,7 +195,9 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         <Controller name="photo"
                             control={form.control}
                             render={({ field: { onChange, ref } }) => (
-                                <FormItem>
+                                <FormItem className={`${
+                                    form.watch('photo') ? 'opacity-100' : 'opacity-60'
+                                  } hover:opacity-100`}>
                                     <div className="grid gap-1.5">
                                         <FormLabel className='text-md'>
                                             Profile Photo
@@ -203,6 +215,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                         />
                                         </FormControl>
                                     </div>
+                                    
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -211,7 +224,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         {/* Social Media links */}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button type="button" className="">Add Social Media Links</Button>
+                                    <Button type="button" className="">Social Media Links</Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="p-4">
                                     <div className="grid gap-4">

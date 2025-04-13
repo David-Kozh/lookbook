@@ -28,9 +28,17 @@ const formSchema = z.object({
       message: "Title must be at least 2 characters.",
     }),
     subtitle: z.string().optional(),
-    thumbnail: z.any().refine(file => file instanceof File || file === undefined, {
-        message: 'A file is required',
-    }).optional(),
+    thumbnail: z.any()
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+            message: 'File size must be 5MB or less',
+        })
+        .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Only JPG or PNG files are allowed',
+        })
+        .optional(),
     displaySettings: z.object({
         font: z.string(),
         theme: z.string(),
@@ -41,7 +49,7 @@ const formSchema = z.object({
 //TODO Check use of image files in the thumbnail field
 //* ✅ Ready for testing with firebase db and storage
 export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings }) {
-
+    
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -122,7 +130,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                     <FormField name="subtitle"
                         control={form.control}
                         render={({ field }) => (
-                            <FormItem className="w-full">
+                            <FormItem className="w-full opacity-60 hover:opacity-100">
                                 <div className="flex gap-4 items-center">
                                 <FormLabel>Subtitle</FormLabel>
                                 <FormDescription>
@@ -137,31 +145,33 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                         )}
                     />
 
-                    <div className="flex justify-between items-end gap-2 w-full">
-                        <Controller name="thumbnail"
-                            control={form.control}
-                            render={({ field: { onChange, ref } }) => (
-                                <FormItem>
-                                    <div className="grid gap-1.5">
-                                        <FormLabel>
-                                            Thumbnail
-                                        </FormLabel>
-                                        <FormControl>
-                                        <Input type="file"
-                                            onChange={(e) => {
-                                                if (e.target.files.length > 0) {
-                                                onChange(e.target.files[0]); // store file
-                                                }
-                                            }}
-                                            className="file-input-ghost"
-                                            ref={ref}
-                                        />
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Controller name="thumbnail"
+                        control={form.control}
+                        render={({ field: { onChange, ref } }) => (
+                            <FormItem className={`${
+                                form.watch('thumbnail') ? 'opacity-100' : 'opacity-60'
+                              } hover:opacity-100 w-full`}>
+                                <div className="grid gap-1.5">
+                                    <FormLabel>
+                                        Thumbnail
+                                    </FormLabel>
+                                    <FormControl>
+                                    <Input type="file"
+                                        onChange={(e) => {
+                                            if (e.target.files.length > 0) {
+                                            onChange(e.target.files[0]); // store file
+                                            }
+                                        }}
+                                        className="file-input-ghost"
+                                        ref={ref}
+                                    />
+                                    </FormControl>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <div className="flex justify-between items-end w-full">
                         <FormField name="displaySettings.theme"
                             control={form.control}
                             render={({ field }) => (
@@ -208,30 +218,26 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 </div>
                             )}
                         />
+                        <FormField name="displaySettings.public"
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className='flex gap-3 items-start m-3'>
+                                        <FormLabel className='mt-2'>
+                                            Public
+                                        </FormLabel>
+                                    <FormControl>
+                                        <Checkbox checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </div>
                     <div className="w-full flex justify-between h-[15%] items-center">
                         
                         <Button type="button" onClick={()=> cancelEditSettings()}>Cancel</Button>
-                        
-                        <div className="w-full h-min mx-6 flex justify-end">
-                            <FormField name="displaySettings.public"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <FormItem className='flex gap-1 items-center h-min mb-1.5'>
-                                            <FormLabel className='mt-1.5'>
-                                                Public
-                                            </FormLabel>
-                                        <FormControl>
-                                            <Checkbox checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className='ml-2'
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
                         <Button type="submit" variant="secondary" disabled={!formState.isDirty}>Submit</Button>
                     </div>
                 </form>

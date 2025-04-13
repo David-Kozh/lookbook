@@ -1,5 +1,13 @@
+import { useState, useEffect } from "react";
 import { ParallaxScroll } from "./components/ui/parallax-scroll";
 import { useNavigate } from "react-router-dom";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select";
 import Image1 from './media/Image1.jpg';
 import Image2 from './media/Image2.jpg';
 import Image3 from './media/Image3.jpg';
@@ -19,8 +27,19 @@ const demoThumbnails = [
     Image4, 
     Image5
 ];
-//TODO: Make all demo images link to demo posts
+const demoPosts = [
+    Image5, 
+    Image4, 
+    Image3, 
+    Image2, 
+    Image1
+];
+//TODO: 
+// Make all demo images link to demo posts
+// Change demo images to example posts when selectedFeed changed
+
 export function ParallaxScrollDemo() {
+    const [selectedFeed, setSelectedFeed] = useState("Following"); // Track selected feed
     const navigate = useNavigate();
 
     const handleDemoClick = () => {
@@ -28,14 +47,31 @@ export function ParallaxScrollDemo() {
     };
 
     return (
-        <ParallaxScroll 
-            className='h-[85.5%] sm:h-[91.5%]' 
-            images={demoThumbnails.map((thumb) => ({
-                thumbnailUrl: thumb,
-            }))} 
-            onClick={handleDemoClick}
-            demoFlag={true}
-        />
+        <div className="w-full h-full flex flex-col items-center">
+            <div className="flex w-[92%] h-[5%] justify-between items-center bg-card rounded-xl">
+                <p className="text-card-foreground font-mono ml-4 text-lg select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
+                <Select 
+                    defaultValue="Following"
+                    onValueChange={(value) => setSelectedFeed(value)} // Update selected feed
+                >
+                <SelectTrigger className="w-[24%] max-w-32 h-min bg-input text-card-foreground mr-2 sm:mr-4 font-mono text-xs md:text-sm">
+                    <SelectValue placeholder="Following"/>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem className='text-xs font-mono' value="Following">Following</SelectItem>
+                    <SelectItem className='text-xs font-mono' value="Liked Posts">Liked Posts</SelectItem>
+                </SelectContent>
+                </Select>
+            </div>
+            <ParallaxScroll 
+                className='h-[80.5%] sm:h-[87%]' 
+                images={(selectedFeed === "Liked Posts" ? demoPosts : demoThumbnails).map((thumb) => ({
+                    thumbnailUrl: thumb,
+                }))} 
+                onClick={handleDemoClick}
+                demoFlag={true}
+            />
+        </div>
     );
 }
 

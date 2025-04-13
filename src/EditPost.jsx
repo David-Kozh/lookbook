@@ -28,15 +28,34 @@ const formSchema = z.object({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
     }),
-    image: z.any().refine(file => file instanceof File || file === undefined, {
-        message: 'A file is required',
-    }).optional(),
+    image: z.any()
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+            message: 'File size must be 5MB or less',
+        })
+        .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Only JPG or PNG files are allowed',
+        })
+        .optional(),
     aspectRatio: z.string(),
     description: z.string().optional(),
-    postType: z.string().optional(),
-    content: z.any().refine(file => file instanceof File || file === undefined, {
-        message: 'A file is required',
-    }),
+    content: z.any()    
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => {
+            if (file === undefined) return true;
+            if (file.type.startsWith('audio/') && file.size <= 10 * 1024 * 1024) return true; // 10MB for audio
+            if (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) return true; // 50MB for video
+            return false;
+        }, {
+            message: 'Audio files must be 10MB or less, and video files must be 50MB or less.',
+        })
+        .refine(file => file === undefined || ['audio/mp3', 'audio/wav', 'video/mp4', 'video/quicktime'].includes(file.type), {
+            message: 'Only MP3, WAV, MP4, or MOV files are allowed.',
+        }),
 })
 
 // ** Form for Creating Post
@@ -46,10 +65,9 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     const [post, setPost] = useState({ 
         title: 'Loading...',
         description: '', 
-        image: '', 
+        image: undefined, 
         aspectRatio: '', 
-        postType: '', 
-        content: '' 
+        content: undefined 
     });
 
     useEffect(() => {
@@ -72,12 +90,10 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             description: post.description,
             image: undefined,       //! How should default file be handled?
             aspectRatio: post.aspectRatio,
-            postType: post.postType,
             content: undefined,     //! How should default file be handled?
         }
     });
     const { formState } = form;
-    const postTypeWatch = form.watch('postType');
       
     useEffect(() => {
         //* Reset form values when post state changes
@@ -86,7 +102,6 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             description: post.description,
             image: undefined,               //?
             aspectRatio: post.aspectRatio,
-            postType: post.postType,
             content: undefined,             //?
         });
     }, [post, form]);
@@ -94,6 +109,19 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     async function onSubmit(values) {
         console.log(values)
         
+        // Determine the post type based on the content file's MIME type
+        let postType = null;
+        if (values.content instanceof File) {
+            const mimeType = values.content.type;
+            if (mimeType.startsWith('audio/')) {
+                postType = 'audio';
+            } else if (mimeType.startsWith('video/')) {
+                postType = 'video';
+            }
+        } else {
+            postType = 'default';
+        }
+
         const updatedData = {}; //* Prune data of unchanged fields before updating
         if (values.title !== post.title) {
             updatedData.title = values.title;
@@ -107,20 +135,11 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
         if (values.aspectRatio !== post.aspectRatio) {
             updatedData.aspectRatio = values.aspectRatio;
         }
-        if (values.postType !== post.postType) {
-            updatedData.postType = values.postType;
+        if (postType !== post.postType) {
+            updatedData.postType = postType;
         }
         if (values.content) {
             updatedData.contentFile = values.content;
-        }
-
-        // TODO: Additionally make sure the file extensions match the content type 
-        if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
-            form.setError('content', {
-                type: 'manual',
-                message: 'A file is required',
-            });
-            return;
         }
         
         //* Update post with the form input data
@@ -183,18 +202,20 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 <Controller name="image"
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
-                    <FormItem>
+                    <FormItem className={`${
+                        form.watch('image') ? 'opacity-100' : 'opacity-50'
+                      } hover:opacity-100`}>
                         <div className="grid gap-1.5">
                         <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
-                            Image
+                            New Image
                         </FormLabel>
                         <FormControl>
                             <Input id="image"
                             type="file"
-                            className="file-input-ghost bg-input text-foreground"
+                            className="file-input-ghost bg-input"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
-                                onChange(e.target.files[0]); // store file
+                                    onChange(e.target.files[0]); // store file
                                 }
                             }}
                             ref={ref}
@@ -206,7 +227,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     )}
                 />
 
-                {/* replace with radio group */}
+                {/* replace with radio group? */}
                 <div className="flex w-full gap-4 my-4">
                 <FormField name="aspectRatio"
                 control={form.control}
@@ -226,52 +247,33 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                     </FormItem>
                 )}
                 />
-                <FormField name="postType"
+                <Controller name="content"
                 control={form.control}
-                render={({ field }) => (
-                    <FormItem className='w-[65%]'>
-                        <FormLabel>Post Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full mt-2 font-semibold bg-input text-foreground">
-                            <SelectValue placeholder="No Content" />
-                        </SelectTrigger>
-                        <SelectContent className="font-semibold">
-                            <SelectItem value="default"> No Content </SelectItem>
-                            <SelectItem value="mp4">+ Video Content</SelectItem>
-                            <SelectItem value="mp3">+ Audio Content</SelectItem>
-                        </SelectContent>
-                        </Select>
+                render={({ field: { onChange, ref } }) => (
+                    <FormItem className={`${
+                        form.watch('content') ? 'opacity-100' : 'opacity-50'
+                      } hover:opacity-100 w-[65%]`}>
+                        <FormLabel>
+                            Additional Content
+                        </FormLabel>
+                        <FormControl>
+                            <Input id="content" 
+                            type="file" 
+                            className="file-input-ghost bg-input text-foreground"
+                            onChange={(e) => {
+                                if (e.target.files.length > 0) {
+                                    onChange(e.target.files[0]); // Store the selected file
+                                }
+                                }}
+                            ref={ref}
+                            />
+                        </FormControl>
                         <FormMessage />
                     </FormItem>
                 )}
                 />
                 </div>
-                <Controller name="content"
-                control={form.control}
-                render={({ field: { onChange, ref } }) => (
-                    <FormItem>
-                        <div className="grid gap-1.5">
-                            <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'opacity-50' }`}>
-                                Additional Content
-                            </FormLabel>
-                            <FormControl>
-                                <Input id="content" 
-                                type="file" 
-                                className="file-input-ghost bg-input text-foreground"
-                                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
-                                onChange={(e) => {
-                                    if (e.target.files.length > 0) {
-                                      onChange(e.target.files[0]); // Store the selected file
-                                    }
-                                  }}
-                                  ref={ref}
-                                />
-                            </FormControl>
-                        </div>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
+                
                 <div className="w-full flex justify-between gap-20">
                     <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelEdit()}>Cancel</Button>
                     <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min" disabled={!formState.isDirty}>Save Post</Button>

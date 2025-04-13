@@ -27,15 +27,33 @@ const formSchema = z.object({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
     }),
-    image: z.any().refine(file => file instanceof File, {
-        message: 'A file is required',
-    }),
+    image: z.any()
+        .refine(file => file instanceof File, {
+            message: 'A file is required',
+        })
+        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+            message: 'File size must be 5MB or less',
+        })
+        .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Only JPG or PNG files are allowed',
+        }),
     aspectRatio: z.string(),
     description: z.string().optional(),
-    postType: z.string(),
-    content: z.any().refine(file => file instanceof File || file === undefined, {
-        message: 'A file is required',
-    }),
+    content: z.any()
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => {
+            if (file === undefined) return true;
+            if (file.type.startsWith('audio/') && file.size <= 10 * 1024 * 1024) return true; // 10MB for audio
+            if (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) return true; // 50MB for video
+            return false;
+        }, {
+            message: 'Audio files must be 10MB or less, and video files must be 50MB or less.',
+        })
+        .refine(file => file === undefined || ['audio/mp3', 'audio/wav', 'video/mp4', 'video/quicktime'].includes(file.type), {
+            message: 'Only MP3, WAV, MP4, or MOV files are allowed.',
+        }),
     
 })
 
@@ -52,31 +70,33 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
             description: '',
             image: null,
             aspectRatio: '1:1',
-            postType: 'default',
             content: undefined,
         },
     });
     const { formState } = form;
-    const postTypeWatch = form.watch('postType');
     
     //* Submit handler calls db and cloud storage
     async function onSubmit(values) {
-        // TODO: Additionally make sure the file extensions match the content type 
-        if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
-            form.setError('content', {
-                type: 'manual',
-                message: 'A file is required',
-            });
-            return;
+        // Determine the post type based on the content file's MIME type
+        let postType = null;
+        if (values.content instanceof File) {
+        const mimeType = values.content.type;
+        if (mimeType.startsWith('audio/')) {
+            postType = 'audio';
+        } else if (mimeType.startsWith('video/')) {
+            postType = 'video';
+        }
+        } else {
+        postType = 'default';
         }
         
         const updatedData = {}; //* Prune data of unchanged fields before updating
 
-        if (values.title) updatedData.title = values.title;
+        updatedData.title = values.title;
         if (values.description) updatedData.description = values.description;
-        if (values.image) updatedData.imageFile = values.image;
-        if (values.aspectRatio) updatedData.aspectRatio = values.aspectRatio;
-        if (values.postType) updatedData.postType = values.postType;
+        updatedData.imageFile = values.image;
+        updatedData.aspectRatio = values.aspectRatio;
+        updatedData.postType = postType;
         if (values.content) updatedData.contentFile = values.content;
         
         if(updatedData) {   //* Create a new post with the form input data, through postService.js
@@ -143,8 +163,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                                 Image
                             </FormLabel>
                             <FormControl>
-                                <Input 
-                                    type="file"
+                                <Input type="file"
                                     className="file-input-ghost"
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); // store file
@@ -179,35 +198,12 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                     </FormItem>
                 )}
                 />
-                <FormField name="postType"
-                control={form.control}
-                render={({ field }) => (
-                    <FormItem className='w-[60%]'>
-                        <FormLabel>
-                            Post Type
-                        </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
-                            <SelectValue placeholder="Default" />
-                        </SelectTrigger>
-                        <SelectContent className="font-semibold">
-                            <SelectItem value="default">No Content </SelectItem>
-                            <SelectItem value="mp4">+ Video Content</SelectItem>
-                            <SelectItem value="mp3">+ Audio Content</SelectItem>
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                </div>
-
                 <Controller name="content"
                 control={form.control}
                 render={({ field: { onChange, ref } }) => (
-                    <FormItem>
-                        <div className="grid gap-1.5">
-                            <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'text-slate-500' }`}>
+                    <FormItem className={`${form.watch('image') ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
+                        
+                        <FormLabel className={`${form.watch('image') ? '' : 'opacity-50'}`}>
                                 Additional Content
                             </FormLabel>
                             <FormControl>
@@ -216,15 +212,18 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); 
                                     }}
-                                    disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
+                                    disabled={!form.watch('image')}
                                     ref={ref}
                                 />
                             </FormControl>
-                        </div>
+                        
                         {form.formState.errors.content && <FormMessage>{form.formState.errors.content.message}</FormMessage>}
                     </FormItem>
                 )}
                 />
+                </div>
+
+                
                 <div className="w-full flex justify-between gap-20">
                     <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelCreate()}>Cancel</Button>
                     <Button type="submit" variant="secondary" className="mt-12 w-1/2 sm:w-min" disabled={!formState.isDirty}>Save Post</Button>

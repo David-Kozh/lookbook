@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
  
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -15,14 +15,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select"
+  } from "@/components/ui/select";
 import LeftButtonGroup from "./LeftButtons";
 import RightButtonGroup from "./RightButtons";
 
@@ -31,9 +31,17 @@ const formSchema = z.object({
       message: "Title must be at least 2 characters.",
     }),
     subtitle: z.string().optional(),
-    thumbnailFile: z.any().refine(file => file instanceof File, {
-        message: 'A file is required',
-    }).optional(),
+    thumbnailFile: z.any()
+        .refine(file => file instanceof File || file === undefined, {
+            message: 'A file is required',
+        })
+        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+            message: 'File size must be 5MB or less',
+        })
+        .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Only JPG or PNG files are allowed',
+        })
+        .optional(),
     displaySettings: z.object({
         font: z.string(),
         theme: z.string(),
@@ -151,7 +159,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             <FormField name="subtitle"
                 control={form.control}
                 render={({ field }) => (
-                    <FormItem className="w-full">
+                    <FormItem className="w-full opacity-60 hover:opacity-100">
                         <div className="flex gap-4 items-center">
                         <FormLabel>Subtitle</FormLabel>
                         <FormDescription>
@@ -212,10 +220,12 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 <Controller name="thumbnailFile"
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
-                        <FormItem>
+                        <FormItem className={`${
+                            form.watch('thumbnailFile') ? 'opacity-100' : 'opacity-60'
+                          } hover:opacity-100`}>
                             <div className="grid gap-1.5">
                                 <FormLabel>
-                                    Thumbnail
+                                    Optional Thumbnail
                                 </FormLabel>
                                 <FormControl>
                                     <Input type="file"

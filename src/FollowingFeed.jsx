@@ -108,14 +108,14 @@ export function FollowingFeed({ currentUserId }) {
   }, [hasMore, loading, fetchCollections]);
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex w-full h-[4%] justify-between items-start">
-        <p className="text-foreground font-mono ml-4 text-lg">Recent from Followed Users</p>
+    <div className="w-full h-full flex flex-col items-center">
+      <div className="flex w-[92%] h-[5%] justify-between items-center bg-card rounded-xl">
+        <p className="text-card-foreground font-mono ml-4 text-lg select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
         <Select 
           defaultValue="Following"
           onValueChange={(value) => setSelectedFeed(value)} // Update selected feed
         >
-          <SelectTrigger className="w-[22%] h-min bg-popover mr-2 font-mono text-xs">
+          <SelectTrigger className="w-[24%] max-w-32 h-min bg-input text-card-foreground mr-2 sm:mr-4 font-mono text-xs md:text-sm">
             <SelectValue placeholder="Following"/>
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +132,7 @@ export function FollowingFeed({ currentUserId }) {
         ) : (
           <ParallaxScroll 
             ref={parallaxScrollRef}
-            className='h-[81.5%] sm:h-[87.5%]' 
+            className='h-[80.5%] sm:h-[87%]' 
             images={thumbnails.map((thumb) => ({
               thumbnailUrl: thumb.thumbnailUrl,
               userId: thumb.userId,

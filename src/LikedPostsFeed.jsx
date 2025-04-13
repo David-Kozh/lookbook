@@ -82,15 +82,24 @@ export function LikedPostsFeed({ currentUserId }) {
     }, [hasMore, loading, fetchLikedPosts]);
 
     return (
-        <ParallaxScroll
-            ref={parallaxScrollRef}
-            className='h-[81.5%] sm:h-[87.5%]'
-            images={thumbnails.map((thumb) => ({
-                thumbnailUrl: thumb.thumbnailUrl,
-                userId: thumb.userId,
-                collectionId: thumb.collectionId,
-            }))}
-            onClick={handleImageClick}
-        />
+        <div className="w-full h-full flex flex-col">
+        {thumbnails.length > 0 ? (
+            <ParallaxScroll
+                ref={parallaxScrollRef}
+                className='h-[81.5%] sm:h-[87.5%]'
+                images={thumbnails.map((thumb) => ({
+                    thumbnailUrl: thumb.thumbnailUrl,
+                    userId: thumb.userId,
+                    collectionId: thumb.collectionId,
+                }))}
+                onClick={handleImageClick}
+            />
+        ) : (
+            <div className="flex w-full h-[50%] items-center justify-center">
+                <p className="w-[70%] text-xl font-bold font-mono text-center">Like some posts!</p>
+            </div>
+        )}
+        </div>
+        
     );
 }

@@ -26,14 +26,32 @@ const formSchema = z.object({
     message: "Title must be at least 2 characters.",
   }),
   description: z.string().optional(),
-  image: z.any().refine(file => file instanceof File, {
-    message: 'A file is required',
-  }),
+  image: z.any()        
+    .refine(file => file instanceof File, {
+      message: 'A file is required',
+    })
+    .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
+      message: 'File size must be 5MB or less',
+    })
+    .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+      message: 'Only JPG or PNG files are allowed',
+    }),
   aspectRatio: z.string(),
-  postType: z.string(),
-  content: z.any().refine(file => file instanceof File || file === undefined, {
-    message: 'A file is required',
-  }),
+  content: z.any()        
+    .refine(file => file instanceof File || file === undefined, {
+      message: 'A file is required',
+    })
+    .refine(file => {
+      if (file === undefined) return true;
+      if (file.type.startsWith('audio/') && file.size <= 10 * 1024 * 1024) return true; // 10MB for audio
+      if (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) return true; // 50MB for video
+      return false;
+    }, {
+      message: 'Audio files must be 10MB or less, and video files must be 50MB or less.',
+    })
+    .refine(file => file === undefined || ['audio/mp3', 'audio/wav', 'video/mp4', 'video/quicktime'].includes(file.type), {
+      message: 'Only MP3, WAV, MP4, or MOV files are allowed.',
+    }),
 })
 
 //* ✅ Ready for testing with firebase db and storage
@@ -47,26 +65,29 @@ export default function CreatePostForm({ addPost, dismiss }) {
       description: '',
       image: null,
       aspectRatio: '1:1',
-      postType: 'default',
       content: undefined,
       createdAt: new Date(),
     },
   });
   const { formState } = form;
-  const postTypeWatch = form.watch('postType');
       
   //* Submit handler passes the post to CreateCollection.jsx,
   //* which will process the final set of posts when the collection is submitted.
   //* This allows this post to be edited or deleted, before being uploaded, preserving resources
   function onSubmit(values) {
     console.log('submitting form', values);
-    //TODO: Additionally make sure the file extensions match the content type 
-    if ((values.postType === 'mp4' || values.postType === 'mp3') && !(values.content instanceof File)) {
-      form.setError('content', {
-          type: 'manual',
-          message: 'A file is required',
-      });
-      return;
+
+    // Determine the post type based on the content file's MIME type
+    let postType = null;
+    if (values.content instanceof File) {
+      const mimeType = values.content.type;
+      if (mimeType.startsWith('audio/')) {
+        postType = 'audio';
+      } else if (mimeType.startsWith('video/')) {
+        postType = 'video';
+      }
+    } else {
+      postType = 'default';
     }
 
     //* Create a new post object with the form input data
@@ -75,12 +96,14 @@ export default function CreatePostForm({ addPost, dismiss }) {
       description: values.description,
       imageFile: values.image,
       aspectRatio: values.aspectRatio,
-      postType: values.postType,
+      postType,
     };
+    
     // Conditionally add contentFile if it exists
     if (values.content) {
       newPost.contentFile = values.content;
-    }
+    };
+
     addPost(newPost);
     dismiss('create');
   }
@@ -153,9 +176,10 @@ export default function CreatePostForm({ addPost, dismiss }) {
         control={form.control}
         render={({ field }) => (
           <FormItem className='w-[35%]'>
+            <FormLabel>Aspect Ratio</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
-
-              <SelectTrigger className="w-full bg-input mt-2 font-semibold">
+              
+              <SelectTrigger className="w-full bg-input font-semibold">
                 <SelectValue placeholder="Aspect Ratio" />
               </SelectTrigger>
 
@@ -169,50 +193,29 @@ export default function CreatePostForm({ addPost, dismiss }) {
           </FormItem>
         )}
         />
-
-        <FormField name="postType"
-        control={form.control}
-        render={({ field }) => (
-            <FormItem className='w-[65%]'>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full bg-input mt-2 font-semibold">
-                    <SelectValue placeholder="Default" />
-                </SelectTrigger>
-                <SelectContent className="font-semibold">
-                    <SelectItem value="default">No Additional Content </SelectItem>
-                    <SelectItem value="mp4">+ Video Content</SelectItem>
-                    <SelectItem value="mp3">+ Audio Content</SelectItem>
-                </SelectContent>
-                </Select>
-                <FormMessage />
-            </FormItem>
-        )}
-        />
-      </div>
-
-      <Controller name="content"
-        control={form.control}
-        render={({ field: { onChange, ref } }) => (
-          <FormItem>
-            <div className="grid gap-1.5">
-              <FormLabel className={`${(postTypeWatch === 'mp4' || postTypeWatch === 'mp3') ? '' : 'opacity-50' }`}>
-                Additional Content
+        <Controller name="content"
+          control={form.control}
+          render={({ field: { onChange, ref } }) => (
+            <FormItem className={`${form.watch('image') ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
+              <FormLabel className={`${form.watch('image') ? '' : 'opacity-50'}`}>
+                Optional Video/Audio
               </FormLabel>
               <FormControl>
               <Input type="file"
                 className="file-input-ghost"
                 onChange={(e) => {
-                  onChange(e.target.files[0]); //? store file
+                  onChange(e.target.files[0]);
                 }}
-                disabled={!(postTypeWatch === 'mp4' || postTypeWatch === 'mp3')}
+                disabled={!form.watch('image')}
                 ref={ref}
               />
               </FormControl>
-            </div>
-            {form.formState.errors.content && <FormMessage>{form.formState.errors.content.message}</FormMessage>}
-          </FormItem>
-        )}
-      />
+            </FormItem>
+          )}
+        />
+      </div>
+
+
 
       <DialogFooter>
         <Button type="submit" variant="secondary" className="mt-8" disabled={!formState.isDirty}>Save Post</Button>

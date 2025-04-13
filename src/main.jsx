@@ -5,16 +5,16 @@ import { createBrowserRouter,  RouterProvider } from "react-router-dom";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebaseConfig';
 import { fetchUserData } from './services/userService';
-import Root from './root.jsx'
-import TrackPage from './TrackPage.jsx'
+import Root from './root.jsx';
+import TrackPage from './TrackPage.jsx';
 import UserDashboard from './UserDashboard';
-import Home from './Home.jsx'
+import Home from './Home.jsx';
 import ProfileSection from './ProfileSection.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import exampleCollections from './data/userCollections.js';
 import Login from './login.jsx';
 import SignUp from './signup.jsx';
-import './App.css'
+import './App.css';
 import { FollowingFeed } from './FollowingFeed';
 import { ParallaxScrollDemo } from './FeedDemo.jsx';
 /*
@@ -24,12 +24,14 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     ✅  Cloud Storage for images and videos
     ✅  Following Feed
   * Current Tasks:
+    Add the extra file restrictions (size/type) to each form
     Test LikedPostsFeed with new like structure
+    Prevent create collection/post buttons from being clickable when the user has reached the max number of collections/posts
+      --> Add feedback to user
   * Functionalies to implement:
-    Add some feedback for when a user reaches the max num posts in a collection, and max num collections for the user
-    Add "carousel" as a additional content type
-
+    Tooltips for 'additional content' field
   ?  Questions:
+  ?   Eliminate the need for a "Content Type" field? Just check the file type?
   ?   Make dark mode a user profile variable, or is it persistent enough with local storage?
   ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view)
   ?   If a collection is made private after it was public, what should be done with it's likes? They will still display in the LikedPostsFeed
