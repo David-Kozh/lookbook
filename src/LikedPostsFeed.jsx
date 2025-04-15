@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
+import { getHandleFromUserId } from "./services/userService.js";
 import { getLikedPosts } from "./services/likeService.js";
 
 export function LikedPostsFeed({ currentUserId }) {
@@ -12,8 +13,13 @@ export function LikedPostsFeed({ currentUserId }) {
     const parallaxScrollRef = useRef(null); // Reference for the ParallaxScroll element
     const navigate = useNavigate();
 
-    const handleImageClick = (userId, collectionId) => {
-        navigate(`/posts/${userId}/${collectionId}`);
+    const handleImageClick = async (userId, collectionId) => {
+        try {
+            const handle = await getHandleFromUserId(userId);
+            navigate(`/posts/${handle}/${collectionId}`);
+        } catch (error) {
+            console.error("Error navigating to post:", error.message);
+        }
     };
 
     // Fetch the list of users the current user is following
@@ -43,7 +49,7 @@ export function LikedPostsFeed({ currentUserId }) {
                     thumbnailUrl: post.image,
                     createdAt: post.createdAt,  //? Should liked posts be ordered by createdAt of post or by timestamp of like?
                     userId: post.userId, //! Old posts do not have userId or collectionId. Needed to navigate to posts
-                    collectionId: post.collection.id,
+                    collectionId: post.collectionId,
                 })),
             ]);
             setLastDoc(newLastDoc); // Update the last document for pagination

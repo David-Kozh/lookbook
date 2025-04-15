@@ -630,7 +630,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
             ) : (
               <span>
                 By{' '}
-                <Link to={`/bio/${userToView.id}`} className="underline">
+                <Link to={`/bio/${userToView.handle}`} className="underline">
                   {userToView.displayName}
                 </Link>
               </span>

@@ -1,5 +1,5 @@
 import { db } from '../config/firebaseConfig';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection, query, orderBy } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection, query, where, orderBy } from "firebase/firestore";
 import { uploadProfilePicture, deleteCollectionThumbnail, deleteAllPostMedia } from './storageService';
 import { deleteAllLikesOnPost, deleteAllOutgoingLikes } from './likeService';
 
@@ -17,6 +17,50 @@ export const fetchUserData = async (uid) => {
     console.error('No such user document!');
     return null;
   }
+};
+
+export const getUserIdFromHandle = async (handle) => {
+  try {
+    const usersRef = collection(db, 'users');
+    const handleQuery = query(usersRef, where('handle', '==', handle));
+    const handleSnapshot = await getDocs(handleQuery);
+
+    if (handleSnapshot.empty) {
+      throw new Error('User not found');
+    }
+
+    const userDoc = handleSnapshot.docs[0];
+    return userDoc.id; // Return the userId (uid)
+  } catch (error) {
+    console.error('Error in getUserIdFromHandle:', error.message);
+    throw error;
+  }
+};
+
+export const getHandleFromUserId = async (userId) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      throw new Error("User not found");
+    }
+
+    const userData = userDoc.data();
+    return userData.handle; // Return the handle
+  } catch (error) {
+    console.error("Error fetching handle from userId:", error.message);
+    throw error;
+  }
+};
+
+export const isHandleUnique = async (handle) => {
+  const usersRef = collection(db, "users");
+  const handleQuery = query(usersRef, where("handle", "==", handle));
+  const snapshot = await getDocs(handleQuery);
+
+  // If the query returns any documents, the handle is not unique
+  return snapshot.empty;
 };
 
 export const updateUser = async (uid, data) => {

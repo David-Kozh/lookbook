@@ -73,7 +73,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             }
           });
         };
-      }, [posts]);
+    }, [posts]);
 
     //* Collection Form
     const form = useForm({

@@ -11,7 +11,7 @@ import { getPosts } from './services/postService.js';
 //      - ViewPost: animates to the selected post in the image track
 //      - DeletePost (modal)
 
-export default function EditCollection({ loggedInUserId, collection, showCreatePost, showEditPost, cancelEdit, showSettings }) {
+export default function EditCollection({ loggedInUser, collection, showCreatePost, showEditPost, cancelEdit, showSettings }) {
     const location = useLocation(); // URL location
     const navigate = useNavigate();
 
@@ -24,11 +24,11 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
     const [posts, setPosts] = useState([defaultPost]);
     const [emptyFlag, setEmptyFlag] = useState(true);
     
-    //* Get posts for loggedInUserId, collection.id. If no posts exist, posts == [defaultPost]
+    //* Get posts for loggedInUser, collection.id. If no posts exist, posts == [defaultPost]
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-            const collectionPosts = await getPosts(loggedInUserId, collection.id);
+            const collectionPosts = await getPosts(loggedInUser.id, collection.id);
             if(collectionPosts.length > 0) {
                 setPosts(collectionPosts);
                 setEmptyFlag(false);
@@ -43,10 +43,12 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
             console.error('Error fetching user collections:', error.message);
             }
         };
-        if (loggedInUserId && (collection.id !== 'default')) {
+
+        if (loggedInUser && (collection.id !== 'default')) {
             fetchCollections();
         }
-    }, [loggedInUserId, collection]);
+
+    }, [loggedInUser, collection]);
 
     /* Button Group State */
     const [selectedButton, setSelectedButton] = useState(null); //? why not referenced & in CollectionsMenu
@@ -69,7 +71,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
             console.log("View Posts Clicked");
             //? Can we animate to the selected post in the image track?
             setTimeout(() => {
-                navigate(`/posts/${loggedInUserId}/${collection.id}`);
+                navigate(`/posts/${loggedInUser.handle}/${collection.id}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
@@ -158,7 +160,7 @@ export default function EditCollection({ loggedInUserId, collection, showCreateP
                 <ButtonGroup onButtonClick={handleButtonClick} selectedIndex={currentIndex} setSelectedIndex={setCurrentIndex} numSlides={posts.length} 
                     selectedItemName={posts[currentIndex].title} itemType={'post'} 
                     itemRef={{
-                        loggedInUserId: loggedInUserId, 
+                        loggedInUser: loggedInUser, 
                         collectionId: collection.id,
                         postId: posts[currentIndex].id
                     }}

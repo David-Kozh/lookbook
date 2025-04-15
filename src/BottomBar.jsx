@@ -5,16 +5,16 @@ export default function BottomBar() {
     const [barTab, setBarTab] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
-    const { userId, collectionId } = useParams();
+    const { handle, collectionName } = useParams();
 
     const handleClick = (tabName) => {
         setBarTab(tabName);
         if(tabName === 'home'){
             navigate('/home');
         } else if(tabName === 'bio'){
-            navigate(`/bio${userId ? `/${userId}` : ''}`);
+            navigate(`/bio${handle ? `/${handle}` : ''}`);
         } else if(tabName === 'posts'){
-            navigate(`/posts${userId ? `/${userId}` : ''}${collectionId ? `/${collectionId}` : ''}`);
+            navigate(`/posts${handle ? `/${handle}` : ''}${collectionName ? `/${collectionName}` : ''}`);
         } else if(tabName === 'feed'){
             navigate('/feed');
         }

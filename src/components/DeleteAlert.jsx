@@ -20,24 +20,29 @@ import { deleteCollection } from "@/services/collectionService";
     itemRef, // {loggedInUserId, collectionId, postId}
     emptyFlag
   }) {
-    const { loggedInUserId, collectionId, postId } = itemRef;
+    const { loggedInUser, collectionId, postId } = itemRef;
     const handleCancel = () => {
       handleClick(null);
     }
     
-    const handleContinue = () => {
+    const handleContinue = async () => {
       handleClick(null);
 
       window.location.hash = '#slide0';
       setSelectedIndex(0);
 
-      if(itemType === 'collection'){
-        //use collection delete function: user.uid and collection.id needed
-        deleteCollection(loggedInUserId, collectionId);
-      } else if(itemType === 'post' && postId){
-        //use post delete function: user.uid, collection.id and post.id needed
-        deletePost(loggedInUserId, collectionId, postId);
-      };
+      try {
+        if (itemType === 'collection') {
+          // Await the collection delete function
+          await deleteCollection(loggedInUser.id, collectionId);
+        } else if (itemType === 'post' && postId) {
+          // Await the post delete function
+          await deletePost(loggedInUser.id, collectionId, postId);
+        }
+        location.reload(); // Reload the page after the deletion is complete
+      } catch (error) {
+        console.error('Error deleting ', itemType, ':', error.message);
+      }
     }
 
     return (

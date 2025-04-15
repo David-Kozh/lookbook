@@ -76,7 +76,8 @@
   }
   .img-panel-wide {
     width: 100vw;
-    height: 50vh;
+    padding-top: 5vh;
+    height: 55vh;
     user-select: none;
     z-index: 0;
   }

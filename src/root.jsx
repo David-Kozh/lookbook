@@ -77,26 +77,36 @@ export default function Root({ isLoggedIn }) {
                         <div className="h-0.5 w-[102%] rounded bg-foreground dark:opacity-50"></div>
                     </Link>
 
-                    <div className=''>
-                        {/* Back button for displayed images (currently unused) */}
+                    <div>
                         <button 
-                            className={`${selectedImage != null ? 'hidden absolute' : 'hidden'} z-10 border border-gray-400 transition bg-gray-100/10 hover:bg-gray-100/50 mt-2 ml-5 sm:ml-6 py-1 sm:py-2 px-4 rounded shadow`}
+                            className={`${selectedImage != null ? 'hidden sm:inline absolute' : 'hidden'} z-10 text-xs md:text-sm font-mono transition bg-card hover:bg-gray-100/50 mt-4 ml-6 py-2 px-3 md:px-4 rounded shadow`}
                             onClick={() => {
                                 closeSelectedImage(selectedImage);
                             }} 
                         >
-                            <img src={BackButtonImage} alt="Back" className="w-4 h-4" />
+                            &lt;
                         </button> 
-       
-                    </div>    
+                    </div>
+
+  
 
                 </div>
                         
-                {/* Navbar is center 1/2 of topBar */}
-                <div className="w-1/2">
+                {/* NavBar is center 1/2 of topBar */}
+                <div className="w-1/2 flex flex-col items-center justify-center">
                     <div className='hidden sm:flex justify-center'>    
-                        <Navbar selectedImage={selectedImage} posts={posts} closeSelectedImage={closeSelectedImage}/>
+                        <Navbar />
                     </div>
+                    <div>
+                        <button 
+                            className={`${selectedImage != null ? 'inline sm:hidden' : 'hidden'} z-10 transition bg-card hover:bg-zinc-500 py-2 px-3 rounded-lg shadow font-mono text-xs text-card-foreground`}
+                            onClick={() => {
+                                closeSelectedImage(selectedImage);
+                            }} 
+                        >
+                         &lt; Back
+                        </button> 
+                    </div>  
                 </div>
                 
                 

@@ -128,7 +128,7 @@ export const getPosts = async (uid, collectionId) => {
   // Firebase does not have a static order?
   const postsQuery = query(postsRef, orderBy('createdAt'));
   try {
-    const snapshot = await getDocs(postsRef);
+    const snapshot = await getDocs(postsQuery);
     const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return posts;
   } catch (error) {

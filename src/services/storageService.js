@@ -30,7 +30,17 @@ export const uploadCollectionThumbnail = async (uid, collectionId, file) => {
 
 export const deleteCollectionThumbnail = async (uid, collectionId) => {
     const storageRef = ref(storage, `users/${uid}/collections/${collectionId}/thumbnail.jpg`);
-    await deleteObject(storageRef);
+    try {
+        await deleteObject(storageRef);
+        console.log(`Thumbnail for collection ${collectionId} deleted successfully.`);
+    } catch (error) {
+        if (error.code === 'storage/object-not-found') {
+            console.log(`Thumbnail for collection ${collectionId} does not exist, skipping deletion.`);
+        } else {
+            console.error(`Error deleting thumbnail for collection ${collectionId}:`, error.message);
+            throw error; // Re-throw the error if it's not a "not found" error
+        }
+    }
 };
 
 

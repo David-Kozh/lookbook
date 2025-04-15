@@ -7,7 +7,7 @@ import { getUserCollections } from './services/collectionService';
 //* If the selected button is null, display default view of collections carousel
 //* Displays corresponding view once a button is selected
 //* ✅ Ready for testing with firebase db and storage
-export default function CollectionsMenu({ loggedInUserId, showCreateCollection, showEditCollection }) {
+export default function CollectionsMenu({ loggedInUser, showCreateCollection, showEditCollection }) {
     const location = useLocation(); // URL location
     const navigate = useNavigate();
     const [currentIndex, setCurrentIndex] = useState(0); // Collection index to edit/delete
@@ -30,37 +30,39 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
     //* Get the user's collections
     useEffect(() => {
         const fetchCollections = async () => {
-          try {
-            const userCollections = await getUserCollections(loggedInUserId);
-            const userThumbnails = await getUserCollectionThumbnails(loggedInUserId);
-            console.log('Setting user collections:', userCollections);
-            if (userCollections.length > 0) {
-                setCollections(userCollections);
-                setThumbnails(userThumbnails);
-                setEmptyFlag(false);
-            } else {
-                setCollections([{
-                    id: 'default',
-                    title: 'No Collections Yet!',
-                    postsArray: [{ aspectRatio: '1:1' }]
-                }]);
+            try {
+                const userCollections = await getUserCollections(loggedInUser.id);
+                const userThumbnails = await getUserCollectionThumbnails(loggedInUser.id);
+                console.log('Setting user collections:', userCollections);
+                if (userCollections.length > 0) {
+                    setCollections(userCollections);
+                    setThumbnails(userThumbnails);
+                    setEmptyFlag(false);
+                } else {
+                    setCollections([{
+                        id: 'default',
+                        title: 'No Collections Yet!',
+                        postsArray: [{ aspectRatio: '1:1' }]
+                    }]);
+                }
+            } catch (error) {
+                console.error('Error fetching user collections:', error.message);
+                setCollections([defaultCollection]);
             }
-          } catch (error) {
-            console.error('Error fetching user collections:', error.message);
-            setCollections([defaultCollection]);
-          }
         };
-        if (loggedInUserId) {
+
+        if (loggedInUser) {
           fetchCollections();
         }
-    }, [loggedInUserId]);
+        
+    }, [loggedInUser]);
 
     useEffect(() => {
         //* Grabs the first post from each collection as a default thumbnail
         if (collections.length > 0) {
             const fetchThumbnails = async () => {
                 try {
-                    const thumbnails = await getUserCollectionThumbnails(loggedInUserId);
+                    const thumbnails = await getUserCollectionThumbnails(loggedInUser.id);
                     setThumbnails(thumbnails);
                 } catch (error) {
                     console.error(error.message);
@@ -79,7 +81,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                 console.log('thumbnails set');
             }
         }
-    }, [collections, loggedInUserId]);
+    }, [collections, loggedInUser]);
 
     /* Button Group State */ //? why not referenced
     const [selectedButton, setSelectedButton] = useState(null); 
@@ -100,7 +102,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
             //?     - Animate dash-bg opacity and pos to take it out of view
             //?     - Animate a TrackPage component into view
             setTimeout(() => {
-                navigate(`/posts/${loggedInUserId}/${collections[currentIndex].id}`);
+                navigate(`/posts/${loggedInUser.handle}/${collections[currentIndex].id}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
@@ -169,7 +171,7 @@ export default function CollectionsMenu({ loggedInUserId, showCreateCollection, 
                 <ButtonGroup onButtonClick={handleButtonClick} selectedIndex={currentIndex} setSelectedIndex={setCurrentIndex} numSlides={thumbnails.length} 
                     selectedItemName={collections[currentIndex].title} itemType={'collection'} 
                     itemRef={{  
-                        loggedInUserId: loggedInUserId, 
+                        loggedInUser: loggedInUser, 
                         collectionId: collections[currentIndex].id,
                         postId: false
                     }}

@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { getPosts } from "./services/postService";
 import { getCollection, getUserCollections } from "./services/collectionService";
 import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeService";
-import { fetchUserData } from "./services/userService.js";
+import { getUserIdFromHandle, fetchUserData } from "./services/userService.js";
 
 //* Component that fetches posts and manages their states for the ImageTrack component
 //TODO  Implement collectionInfo in Track.jsx
@@ -18,7 +18,7 @@ import { fetchUserData } from "./services/userService.js";
     allowing for the image to be displayed in a larger space.
 */
 function TrackPage({ isLoggedIn, loggedInUser}) {
-  const { userId, collectionId } = useParams();
+  const { handle, collectionId } = useParams();
   const [userToView, setUserToView] = useState(null);
   // The collection of posts to display
   const [collection, setCollection] = useState([]);
@@ -29,7 +29,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLike = async (postId) => { //* Function to be called by like button in image info
-    if (!loggedInUser?.uid) {
+    if (!loggedInUser?.id) {
       console.error("No logged-in user found.");
       return;
     }
@@ -42,12 +42,13 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
             : post
         )
       );
-  
+      
       // Perform the server-side update
-      if (await hasLiked(loggedInUser.uid, userId, collectionId, postId)) {
-        await removeLike(loggedInUser.uid, userId, collectionId, postId);
+      const userId = await getUserIdFromHandle(handle);
+      if (await hasLiked(loggedInUser.id, userId, collectionId, postId)) {
+        await removeLike(loggedInUser.id, userId, collectionId, postId);
       } else {
-        await addLike(loggedInUser.uid, userId, collectionId, postId);
+        await addLike(loggedInUser.id, userId, collectionId, postId);
       }
     } catch (error) {
       console.error("Error updating like status:", error);
@@ -66,8 +67,10 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   //* Fetch the collection of posts
   useEffect(() => { 
     const fetchCollection = async () => {
-      if (userId) {
+      console.log('handle:', handle, 'collectionId:', collectionId);
+      if (handle) {
         try {
+          const userId = await getUserIdFromHandle(handle);
           let userCollectionInfo = '';
           let idToUse = collectionId;
           if(!collectionId){ // Use the first collection if no collectionId is provided
@@ -98,13 +101,14 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
 
       } else if (isLoggedIn && loggedInUser) {
         console.log('NO URL PARAMS FOUND');
+        return;
         try {
-          const collections = await getUserCollections(loggedInUser.uid);
+          const collections = await getUserCollections(loggedInUser.id);
           if (collections.length > 0) {
             // Get the first collection by default
-            const userCollection = await getPosts(loggedInUser.uid, collections[1].id);
-            const userCollectionInfo = await getCollection(loggedInUser.uid, collections[1].id);
-            setUserToView({ ...loggedInUser, id: loggedInUser.uid });
+            const userCollection = await getPosts(loggedInUser.id, collections[1].id);
+            const userCollectionInfo = await getCollection(loggedInUser.id, collections[1].id);
+            setUserToView(loggedInUser);
             setCollection(userCollection);
             setCollectionInfo(userCollectionInfo);
             
@@ -134,15 +138,16 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
     }
 
     fetchCollection();
-  }, [isLoggedIn, userId, collectionId]);
+  }, [isLoggedIn, handle, collectionId]);
 
   useEffect(() => { // Check if the user is logged in and if the user has liked any of the posts in the collection
     const updateLikedStatus = async () => {
       if (mode === 'view' && isLoggedIn && loggedInUser) {
         console.log('Checking if user has liked any posts in the collection');
         try {
-          const userLikes = await getUserLikes(loggedInUser.uid);
+          const userLikes = await getUserLikes(loggedInUser.id);
           if (userLikes) {
+            const userId = await getUserIdFromHandle(handle);
             const updatedCollection = collection.map(post => {
               // Check if the post is liked by matching postId, postOwnerId, and collectionId
               const isLiked = userLikes.some(
@@ -164,9 +169,11 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
     updateLikedStatus();
   }, [mode, isLoggedIn, loggedInUser]);
 
-  useEffect(() => {
-    // Get the current theme class on the <html> element
-    const htmlElement = document.documentElement;
+  //* Store the user's original theme and apply the collection's theme
+  //* Apply the original theme again on unmount
+  useEffect(() => { 
+    
+    const htmlElement = document.documentElement;   // Get the current theme class on the <html> element
     const originalTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
   
     if(errorMessage === false) {  // Apply the collection's theme only if no error was detetcted during fetching

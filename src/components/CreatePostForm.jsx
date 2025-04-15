@@ -27,7 +27,7 @@ const formSchema = z.object({
   }),
   description: z.string().optional(),
   image: z.any()        
-    .refine(file => file instanceof File, {
+    .refine(file => file === undefined || file instanceof File, {
       message: 'A file is required',
     })
     .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
@@ -63,7 +63,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
     defaultValues: {
       title: '',
       description: '',
-      image: null,
+      image: undefined,
       aspectRatio: '1:1',
       content: undefined,
       createdAt: new Date(),
@@ -75,6 +75,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
   //* which will process the final set of posts when the collection is submitted.
   //* This allows this post to be edited or deleted, before being uploaded, preserving resources
   function onSubmit(values) {
+    if(!values.image) return;
     console.log('submitting form', values);
 
     // Determine the post type based on the content file's MIME type

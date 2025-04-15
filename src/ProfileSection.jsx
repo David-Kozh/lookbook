@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserCollections } from './services/collectionService';
-import { fetchUserData, getUserCollectionThumbnails } from './services/userService';
+import { fetchUserData, getUserIdFromHandle, getUserCollectionThumbnails } from './services/userService';
 import { followUser, unfollowUser, getFollowers } from './services/userService';
 import exampleThumbnails from './data/exampleThumbnails.js';
 import EditUserSettings from './EditUserSettings';
@@ -18,7 +18,7 @@ import MediaLinks from './components/SocialMediaLinks';
 export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const { userId } = useParams();
+    const { handle } = useParams();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [collections, setCollections] = useState([{
         title: "Loading...",
@@ -51,9 +51,16 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     const viewCollection = (index) => {
         console.log('Viewing collection:', collections[index].title);
         if(mode != 'example') {
-            const userIdToUse = userId || loggedInUser.uid;
+            // Use the handle if it exists, otherwise fall back to loggedInUser.handle
+            const handleToUse = userProfile?.handle || loggedInUser?.handle;
+
+            if (!handleToUse) {
+                console.error('No handle available for navigation');
+                return;
+            }
+
             setTimeout(() => {
-                navigate(`/posts/${userIdToUse}/${collections[index].id}`);
+                navigate(`/posts/${handleToUse}/${collections[index].id}`); //TODO replace id with collection name
             }, 10);
         } else {
             setTimeout(() => {
@@ -93,10 +100,11 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
         const fetchCollections = async () => {
             var isLoading = true;
             try {
-                if (userId) { //* A userId is present in the URL
+                if (handle) { //* A handle is present in the URL
+                    const userId = await getUserIdFromHandle(handle);
                     const profile = await fetchUserData(userId);
                     setUserProfile(profile);
-                    if(loggedInUser && loggedInUser.uid === userId) {
+                    if(loggedInUser && loggedInUser.id === userId) {
                         setMode('self');
                     } else {
                         setMode('user');
@@ -110,13 +118,13 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         setCollections([defaultCollection]);
                         setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
                     }
-                    isLoading = false;
-                } else if (isLoggedIn && loggedInUser) { //* The user is logged in, and there is no userId in the URL
-                    const profile = await fetchUserData(loggedInUser.uid);
+
+                } else if (isLoggedIn && loggedInUser) { //* The user is logged in, and there is no handle in the URL
+                    const profile = await fetchUserData(loggedInUser.id);
                     setUserProfile(profile);
                     setMode('self');
-                    const userCollections = await getUserCollections(loggedInUser.uid);
-                    const userThumbnails = await getUserCollectionThumbnails(loggedInUser.uid);
+                    const userCollections = await getUserCollections(loggedInUser.id);
+                    const userThumbnails = await getUserCollectionThumbnails(loggedInUser.id);
                     if(userCollections.length > 0){
                         setCollections(userCollections);
                         setThumbnails(userThumbnails);
@@ -124,8 +132,8 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         setCollections([defaultCollection]);
                         setThumbnails([{thumbnailUrl: '', aspectRatio: '1:1'}]);
                     }
-                    isLoading = false;
-                } else if (isLoggedIn === false && loggedInUser === false) { //* The user is not logged in, and there is no userId in the URL
+
+                } else if (isLoggedIn === false && loggedInUser === false) { //* The user is not logged in, and there is no handle in the URL
                     console.log(isLoggedIn, loggedInUser);
                     setMode('example');
                     setCollections(exampleCollections);
@@ -136,26 +144,26 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 console.error('Error fetching collections:', error);
                 setCollections([defaultCollection]);
                 setThumbnails([{ thumbnailUrl: '', aspectRatio: '1:1' }]);
-                isLoading = false;
-            } finally {  //* The user is not logged in, and there is no userId in the URL
+
+            } finally {
                 if(isLoading){
                     isLoading = false;
-                    
                 }
             }
         };
 
         fetchCollections();
-    }, [isLoggedIn, loggedInUser, userId]);
+    }, [isLoggedIn, loggedInUser, handle]);
 
     //* Following Functions
     useEffect(() => {
         const checkFollowStatus = async () => {
-          if (loggedInUser && userId && (loggedInUser.uid !== userId)) {
+          if (loggedInUser && handle && (loggedInUser.handle !== handle)) {
             try {
-              const followers = await getFollowers(userId);
+                const userId = await getUserIdFromHandle(handle);
+                const followers = await getFollowers(userId);
               //setFollowersCount(followers.length);
-              setIsFollowing(followers.includes(loggedInUser.uid));
+              setIsFollowing(followers.includes(loggedInUser.id));
             } catch (error) {
               console.error('Error checking follow status:', error.message);
             }
@@ -163,20 +171,21 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
         };
     
         checkFollowStatus();
-      }, [loggedInUser, userId]);
+      }, [loggedInUser, handle]);
 
     const handleFollow = async () => {
-        if (!loggedInUser || !userId) return;
+        if (!loggedInUser || !handle) return;
+        const userId = await getUserIdFromHandle(handle);
 
         try {
             if (isFollowing) {
-            await unfollowUser(loggedInUser.uid, userId);
-            setIsFollowing(false);
-            //setFollowersCount((prev) => prev - 1);
+                await unfollowUser(loggedInUser.id, userId);
+                setIsFollowing(false);
+                //setFollowersCount((prev) => prev - 1);
             } else {
-            await followUser(loggedInUser.uid, userId);
-            setIsFollowing(true);
-            //setFollowersCount((prev) => prev + 1);
+                await followUser(loggedInUser.id, userId);
+                setIsFollowing(true);
+                //setFollowersCount((prev) => prev + 1);
             }
         } catch (error) {
             console.error('Error updating follow status:', error.message);

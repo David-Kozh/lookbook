@@ -1,10 +1,30 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, 
   signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import { auth, db } from '../config/firebaseConfig';
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, getDocs, query, collection, where } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
+
+const generateUniqueHandle = async (baseHandle) => {
+  let handle = baseHandle.toLowerCase().replace(/\s+/g, '-'); // Convert to slug
+  let isUnique = false;
+  let suffix = 0;
+
+  while (!isUnique) {
+    const handleQuery = query(collection(db, 'users'), where('handle', '==', handle));
+    const handleSnapshot = await getDocs(handleQuery);
+
+    if (handleSnapshot.empty) {
+      isUnique = true;
+    } else {
+      suffix += 1;
+      handle = `${baseHandle}-${suffix}`;
+    }
+  }
+
+  return handle;
+};
 
 // TODO: Complete fields for the user document. defaultTheme?
 const createUserDocument = async (user) => {
@@ -13,29 +33,22 @@ const createUserDocument = async (user) => {
   const userDoc = await getDoc(userDocRef);
 
   if (!userDoc.exists()) {
-    const { 
-      email = 'no-email@example.com', 
-      displayName = 'Display Name',
-      handle = 'your-handle',
-      photoURL = 'default',
-      darkModePref = false //* Dark mode prefered?
-    } = user;
-    const createdAt = new Date();
+    const baseHandle = user.displayName || user.email.split('@')[0];
+    const handle = await generateUniqueHandle(baseHandle);
+    
+    const newUser = {
+      email: user.email || 'no-email@example.com',
+      displayName: user.displayName || 'Display Name',
+      handle,
+      photoURL: user.photoURL || 'default',
+      createdAt: new Date(),
+      bio: 'This is your profile bio. Tell the world a little about what kind of works are in your LookBook!',
+      socialMediaLinks: {},
+      darkModePref: false,
+    };
 
-    try {
-      await setDoc(userDocRef, {
-        email,
-        displayName,
-        handle,
-        photoURL,
-        createdAt,
-        bio: 'This is your profile bio. Tell the world a little about what kind of works are in your LookBook!',
-        socialMediaLinks: {}, // Object of social media links (e.g. LinkedIn, Youtube, etc.)
-        darkModePref,
-      });
-    } catch (error) {
-      console.error('Error in createUserDocument:', error.message);
-    }
+    await setDoc(userDocRef, newUser);
+    console.log('User document created:', newUser);
   }
 };
 

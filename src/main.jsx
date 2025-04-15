@@ -21,21 +21,23 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
   * Firebase Tasks:
     ✅  User Authentication
     ✅  Database for users, collections, posts, likes
-      * Max-limits for number of collections and posts is enforced in CollectionButtons.jsx as well as service files
-    ✅  Cloud Storage for images and videos
-    ✅  Following Feed
+      * Max-limits for number of collections & posts is enforced in CollectionButtons.jsx as well as service files
+    ✅  Cloud Storage for images, audio & videos
+    ✅  User Feed
+    -   Hosting
   * Current Tasks:
-    Add the extra file restrictions (size/type) to each form
-    Test LikedPostsFeed with new like structure
-    Prevent create collection/post buttons from being clickable when the user has reached the max number of collections/posts
-      --> Add feedback to user
-  * Functionalies to implement:
+    TODO  Change url param to be collectionName
+    TODO  Enforce unique userHandles (when editing too) and unique collectionNames across users (and no spaces etc in userHandles)
+    Push to production
+  * Functionalies to implement in Production:
     Tooltips for 'additional content' field
+    Adjust expanded-image-dimensions to include padding for wide-image-panels. 
+    --> If no description, force 1:1 to col view and adjust dimensions of image and info panels to roughly 70/30 split
+    Add feedback to user for disabled buttons
+    Remove all likes from collection when made private. Add feedback to user to warn them
   ?  Questions:
-  ?   Eliminate the need for a "Content Type" field? Just check the file type?
   ?   Make dark mode a user profile variable, or is it persistent enough with local storage?
-  ?   Can 1:1 images with short description be displayed better than current row display? --> Wasted whitespace (same for 16:9 in mobile view)
-  ?   If a collection is made private after it was public, what should be done with it's likes? They will still display in the LikedPostsFeed
+  ?   Force col display for 1:1 images with short descriptions? --> Wasted whitespace (same for 16:9 in mobile view)
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */
@@ -81,35 +83,31 @@ function App() {
       element: <Root isLoggedIn={isLoggedIn}/>,
       errorElement: <ErrorPage />,
       children: [
-        { //* Displays example collection for non-logged in users. Displays user's collections for logged in users.
-          //? Drawer/LeftSideBar to swap between available collections.
-          //?   > Viewing collections from bio page works for first iteration.
+        { //* Displays example collection for non-logged in users.
           path: "/posts", 
-          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
+          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={userProfile} />,
         },
         { //* Displays a collection from DB.
-          path: "/posts/:userId",
-          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
-        },
-        { //* Displays a collection from DB.
-          path: "/posts/:userId/:collectionId",
-          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={user} />,
+          //TODO change to lookbook.com/userHandle/collectionName
+          path: "/posts/:handle/:collectionId",
+          element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={userProfile} />,
         },
         { //* Landing page for non-logged in users. Displays UserDashboard for logged in users.
           path: "/home",
-          element: isLoggedIn ? <UserDashboard loggedInUserId={user.uid} /> : <Home />,
+          element: isLoggedIn ? <UserDashboard loggedInUserId={user.uid} loggedInUser={userProfile} /> : <Home />,
         },
         { //* Displays 1) example profile for non-logged in users, or, 2) The user's public facing profile for logged in users.
           path: "/bio",
-          element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={user} exampleCollections={exampleCollections} />,
+          element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={userProfile} exampleCollections={exampleCollections} />,
         },
         { //* Displays profile of a seperate user
-          path: "/bio/:userId",
-          element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={user} exampleCollections={exampleCollections}/>,
+          //TODO change to lookbook.com/userHandle
+          path: "/bio/:handle",
+          element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={userProfile} exampleCollections={exampleCollections}/>,
         },
         { //* Displays user's feed of collections from users they follow
           path: "/feed",
-          element: isLoggedIn ? <FollowingFeed currentUserId={user.uid}/> : <ParallaxScrollDemo/>, //TODO replace Demo with Feed from Jane Doe's following (need to populate some more example collections)
+          element: isLoggedIn ? <FollowingFeed currentUserId={user.uid}/> : <ParallaxScrollDemo/>, //TODO Populate demo with example collections
         }
       ],
     },

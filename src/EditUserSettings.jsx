@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -15,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import ChangePassword from "./components/ChangePassword"
-import { updateUser, deleteUser } from "./services/userService"
+import { updateUser, deleteUser, isHandleUnique } from "./services/userService"
 import { logout } from "./services/authService"
 
 // ** Zod Schema for Form Validation
@@ -59,6 +60,7 @@ const formSchema = z.object({
 //* Component for editing user settings
 //*     Rendered in the /bio page
 export default function EditUserSettings({ loggedInUserId, userProfile, cancelEditSettings }) {
+    const [isHandleValid, setIsHandleValid] = useState(true);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -93,6 +95,19 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
             }
         }
     }
+
+    useEffect(() => {
+        const checkHandle = async () => {
+          if (form.watch("handle") !== userProfile.handle) {
+            const isUnique = await isHandleUnique(form.watch("handle"));
+            setIsHandleValid(isUnique);
+          } else {
+            setIsHandleValid(true); // Reset if the handle hasn't changed
+          }
+        };
+      
+        checkHandle();
+      }, [form.watch("handle")]);
     
     async function onSubmit(values) {
         console.log(values)
@@ -168,7 +183,9 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                 <FormControl>
                                     <Input className='text-md' {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage>
+                                    {!isHandleValid && "This handle is already in use. Please choose a different one."}
+                                </FormMessage>
                             </FormItem>
                         )}
                     />

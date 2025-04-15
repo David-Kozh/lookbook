@@ -10,7 +10,7 @@ import EditPost from './EditPost.jsx';
 //? BreadCrumb for navigation through menu? Collections > Edit MyCollection > Edit Post
 //? Should CollectionSettings be in a dialog box?
 //* User dashboard to manage collections and the posts within them
-export default function UserDashboard({ loggedInUserId }) {
+export default function UserDashboard({ loggedInUserId, loggedInUser }) {
     const [userCollections, setUserCollections] = useState([]);
     const [dashTab, setDashTab] = useState('menu');     // Show CollectionsMenu by default. Then change state based on button in CollectionsMenu
     const [collectionIndexToEdit, setCollectionIndexToEdit] = useState(0);
@@ -133,13 +133,13 @@ export default function UserDashboard({ loggedInUserId }) {
         <div className='w-full body-h flex justify-center'>
             <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-card text-card-foreground rounded-lg shadow-lg px-6 py-4 mt-8 space-y-1'>
                     {dashTab === 'menu' && 
-                        <CollectionsMenu loggedInUserId={loggedInUserId} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} />
+                        <CollectionsMenu loggedInUser={loggedInUser} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} />
                     }
                     {dashTab === 'create-collection' && 
                         <CreateCollection loggedInUserId={loggedInUserId} cancelCreate={cancelCreateCollection} />
                     }
                     {dashTab === 'edit-collection' && 
-                        <EditCollection loggedInUserId={loggedInUserId} collection={userCollections[collectionIndexToEdit]} 
+                        <EditCollection loggedInUser={loggedInUser} collection={userCollections[collectionIndexToEdit]} 
                             showCreatePost={showCreatePost} showEditPost={showEditPost} showSettings={showEditCollectionSettings}
                             cancelEdit={cancelEditCollection} 
                         />

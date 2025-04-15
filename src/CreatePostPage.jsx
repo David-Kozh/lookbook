@@ -77,6 +77,8 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
     
     //* Submit handler calls db and cloud storage
     async function onSubmit(values) {
+        if(!values.image) return;
+        
         // Determine the post type based on the content file's MIME type
         let postType = null;
         if (values.content instanceof File) {
@@ -102,11 +104,13 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
         if(updatedData) {   //* Create a new post with the form input data, through postService.js
             try {
                 await createPost(loggedInUserId, collectionId, updatedData)
+                cancelCreate(); // Close the form (returns the user to EditCollection)
+                location.reload(); // Reload the page to reflect the new post
             } catch (error) {
                 console.error('Error creating post:', error);
             }
         }
-        cancelCreate(); // Close the form (returns the user to EditCollection)
+        
     }
     
     return (

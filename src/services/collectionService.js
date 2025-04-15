@@ -1,7 +1,7 @@
 import { db } from '../config/firebaseConfig';
 import { doc, addDoc, updateDoc, deleteDoc, getDoc, getDocs, collection } from "firebase/firestore";
 import { collectionGroup, query, where, orderBy, limit, startAfter } from "firebase/firestore";
-import { uploadCollectionThumbnail, deleteCollectionThumbnail } from './storageService';
+import { uploadCollectionThumbnail, deleteCollectionThumbnail, deleteAllPostMedia } from './storageService';
 
 //* Returns the ID of the newly created collection
 //* Max number of collections per user limited to 10

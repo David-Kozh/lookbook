@@ -24,8 +24,13 @@ export function FollowingFeed({ currentUserId }) {
   const parallaxScrollRef = useRef(null); // Reference for the ParallaxScroll element
   const navigate = useNavigate();
 
-  const handleImageClick = (userId, collectionId) => {
-    navigate(`/posts/${userId}/${collectionId}`);
+  const handleImageClick = async (userId, collectionId) => {
+    try {
+      const handle = await getHandleFromUserId(userId);
+      navigate(`/posts/${handle}/${collectionId}`);
+    } catch (error) {
+      console.error("Error navigating to post:", error.message);
+    }
   };
 
   // Fetch the list of users the current user is following
