@@ -26,8 +26,8 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     ✅  User Feed
     -   Hosting
   * Current Tasks:
+    !BUG: Close selected image button (under app title) does not disapear on nav away from /posts
     Push to production
-    Dont show private collections in feeds
   * Functionalies to implement in Production:
     Tooltips for 'additional content' field
     Adjust expanded-image-dimensions to include padding for wide-image-panels. 

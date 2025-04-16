@@ -153,31 +153,36 @@ export const getRecentCollectionsFromFollowing = async (following, lastDoc = nul
         // Map the results to an array of collection objects
         const collections = [];
         for (const doc of querySnapshot.docs) {
-        const collectionData = doc.data();
-        let thumbnailUrl = collectionData.thumbnail;
+            const collectionData = doc.data();
+            let thumbnailUrl = collectionData.thumbnail;
 
-        // If the collection does not have a thumbnail, fetch the first post's image
-        if (!thumbnailUrl) {
-            const postsRef = collection(db, "users", collectionData.userId, "collections", doc.id, "posts");
-            const postsSnapshot = await getDocs(query(postsRef, orderBy("createdAt", "asc"), limit(1))); // Fetch the first post
-            if (!postsSnapshot.empty) {
-            const firstPostDoc = postsSnapshot.docs[0];
-            const firstPostData = firstPostDoc.data();
-            thumbnailUrl = firstPostData.image || ""; // Use the first post's image as the thumbnail
+            // Skip collections that are not public
+            if (collectionData.displaySettings?.public === false) {
+                continue;
             }
-        }
 
-        // Skip collections without a valid thumbnail or post for a fallback
-        if (!thumbnailUrl) {
-            console.log(`Skipping collection ${doc.id} (no thumbnail or posts)`);
-            continue;
-        }
+            // If the collection does not have a thumbnail, fetch the first post's image
+            if (!thumbnailUrl) {
+                const postsRef = collection(db, "users", collectionData.userId, "collections", doc.id, "posts");
+                const postsSnapshot = await getDocs(query(postsRef, orderBy("createdAt", "asc"), limit(1))); // Fetch the first post
+                if (!postsSnapshot.empty) {
+                const firstPostDoc = postsSnapshot.docs[0];
+                const firstPostData = firstPostDoc.data();
+                thumbnailUrl = firstPostData.image || ""; // Use the first post's image as the thumbnail
+                }
+            }
 
-        collections.push({
-            id: doc.id,
-            ...collectionData,
-            thumbnail: thumbnailUrl, // Use the fetched thumbnail or fallback
-        });
+            // Skip collections without a valid thumbnail or post for a fallback
+            if (!thumbnailUrl) {
+                console.log(`Skipping collection ${doc.id} (no thumbnail or posts)`);
+                continue;
+            }
+
+            collections.push({
+                id: doc.id,
+                ...collectionData,
+                thumbnail: thumbnailUrl, // Use the fetched thumbnail or fallback
+            });
         }
 
         console.log("Fetched collections:", collections);
