@@ -18,7 +18,8 @@ import { getUserIdFromHandle, fetchUserData } from "./services/userService.js";
     allowing for the image to be displayed in a larger space.
 */
 function TrackPage({ isLoggedIn, loggedInUser}) {
-  const { handle, collectionId } = useParams();
+  const { handle, encodedCollectionName } = useParams(); //! Need to get collectionId from encoded collection title in url
+
   const [userToView, setUserToView] = useState(null);
   // The collection of posts to display
   const [collection, setCollection] = useState([]);
@@ -45,8 +46,9 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
       
       // Perform the server-side update
       const userId = await getUserIdFromHandle(handle);
-      if (await hasLiked(loggedInUser.id, userId, collectionId, postId)) {
-        await removeLike(loggedInUser.id, userId, collectionId, postId);
+
+      if (await hasLiked(loggedInUser.id, userId, collectionInfo.id, postId)) {
+        await removeLike(loggedInUser.id, userId, collectionInfo.id, postId);
       } else {
         await addLike(loggedInUser.id, userId, collectionId, postId);
       }
@@ -67,18 +69,34 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   //* Fetch the collection of posts
   useEffect(() => { 
     const fetchCollection = async () => {
-      console.log('handle:', handle, 'collectionId:', collectionId);
+      console.log('handle:', handle, 'encodedCollectionName:', encodedCollectionName);
       if (handle) {
         try {
           const userId = await getUserIdFromHandle(handle);
           let userCollectionInfo = '';
-          let idToUse = collectionId;
-          if(!collectionId){ // Use the first collection if no collectionId is provided
+          let idToUse = '';
+          if(!encodedCollectionName){ // Use the first collection if no collectionId is provided
             const userCollections = await getUserCollections(userId);
             userCollectionInfo = userCollections[0];
             idToUse = userCollectionInfo.id;
           } else {
-            userCollectionInfo = await getCollection(userId, collectionId);
+            // Decode the collection title from the URL
+            const decodedTitle = decodeCollectionTitle(encodedCollectionName);
+
+            // Fetch all collections for the user and find the one matching the decoded title
+            const userCollections = await getUserCollections(userId);
+            const matchingCollection = userCollections.find(
+              (collection) => collection.title.toLowerCase() === decodedTitle.toLowerCase()
+            );
+
+            if (!matchingCollection) {
+              setErrorMessage('Collection not found');
+              setIsLoading(false);
+              return;
+            }
+
+            userCollectionInfo = matchingCollection;
+            idToUse = matchingCollection.id;
           }
           const userCollection = await getPosts(userId, idToUse);
           
@@ -101,7 +119,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
 
       } else if (isLoggedIn && loggedInUser) {
         console.log('NO URL PARAMS FOUND');
-        return;
+        
         try {
           const collections = await getUserCollections(loggedInUser.id);
           if (collections.length > 0) {
@@ -138,7 +156,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
     }
 
     fetchCollection();
-  }, [isLoggedIn, handle, collectionId]);
+  }, [isLoggedIn, handle, encodedCollectionName]);
 
   useEffect(() => { // Check if the user is logged in and if the user has liked any of the posts in the collection
     const updateLikedStatus = async () => {
@@ -154,7 +172,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
                 like =>
                   like.postId === post.id &&
                   like.postOwnerId === userId &&
-                  like.collectionId === collectionId
+                  like.collectionId === collectionInfo.id
               );
               return { ...post, isLiked }; // Add the isLiked property to the post
             });

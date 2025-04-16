@@ -15,7 +15,7 @@ import { createPost } from './services/postService';
 
 //* This component is rendered in UserDashboard.jsx
 //* ✅ Ready for testing with firebase db and storage
-export default function CreateCollection({ loggedInUserId, cancelCreate }) {
+export default function CreateCollection({ loggedInUserId, cancelCreate, collections }) {
     const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setEditDialogOpen] = useState(false);
     const [posts, setPosts] = useState([]);
@@ -94,6 +94,7 @@ export default function CreateCollection({ loggedInUserId, cancelCreate }) {
 
             <CreateCollectionForm cancelCreate={cancelCreate} openDialog={handleOpenDialog} submitCollection={submitCollection} posts={posts} 
                 selectedButton={selectedBtn} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} removePost={removePost}
+                collections={collections}
             />
             {/* 
                 Dialogs for creating and editing posts are opened by the LeftButtonGroup in CreateCollectionForm.jsx (above)

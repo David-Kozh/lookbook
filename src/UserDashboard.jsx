@@ -136,7 +136,7 @@ export default function UserDashboard({ loggedInUserId, loggedInUser }) {
                         <CollectionsMenu loggedInUser={loggedInUser} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} />
                     }
                     {dashTab === 'create-collection' && 
-                        <CreateCollection loggedInUserId={loggedInUserId} cancelCreate={cancelCreateCollection} />
+                        <CreateCollection loggedInUserId={loggedInUserId} cancelCreate={cancelCreateCollection} collections={userCollections} />
                     }
                     {dashTab === 'edit-collection' && 
                         <EditCollection loggedInUser={loggedInUser} collection={userCollections[collectionIndexToEdit]} 

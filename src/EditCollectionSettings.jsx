@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -21,12 +22,14 @@ import {
     SelectValue,
 } from "@/components/ui/select"   
 import { updateCollection } from "./services/collectionService"
+import { encodeCollectionTitle } from "@/services/collectionService"
 
 // ** Zod Schema for Form Validation
 const formSchema = z.object({
-    title: z.string().min(2, {
-      message: "Title must be at least 2 characters.",
-    }),
+    title: z.string()
+        .min(2, { message: "Title must be at least 2 characters." })
+        .max(50, { message: "Title must be 50 characters or less." })
+        .regex(/^[a-zA-Z0-9\s-_]+$/, { message: "Title can only contain letters, numbers, spaces, hyphens, and underscores." }),
     subtitle: z.string().optional(),
     thumbnail: z.any()
         .refine(file => file instanceof File || file === undefined, {
@@ -65,8 +68,27 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
     });
 
     const { formState } = form;
+    const [isTitleValid, setIsTitleValid] = useState(true);
+
+    useEffect(() => {
+        const checkTitle = async () => {
+            const encodedTitle = encodeCollectionTitle(form.watch("title"));
+            const isUnique = !collections.some(
+                (collection) => encodeCollectionTitle(collection.title) === encodedTitle
+            );
+            setIsTitleValid(isUnique);
+        };
+    
+        if (form.watch("title")) {
+            checkTitle();
+        }
+    }, [form.watch("title")]);
     
     async function onSubmit(values) {
+        if(!isTitleValid) {
+            console.log('Title is not valid');
+            return;
+        }
         console.log(values);
         const updatedData = {}; //* Prune data of unchanged fields before updating
 
@@ -122,7 +144,9 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 <FormControl>
                                     <Input {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage>
+                                    {!isTitleValid && "This title is already in use. Please choose a different one."}
+                                </FormMessage>
                             </FormItem>
                         )}
                     />

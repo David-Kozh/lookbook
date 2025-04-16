@@ -25,11 +25,13 @@ import {
   } from "@/components/ui/select";
 import LeftButtonGroup from "./LeftButtons";
 import RightButtonGroup from "./RightButtons";
+import { encodeCollectionTitle } from "@/services/collectionService";
 
 const formSchema = z.object({
-    title: z.string().min(2, {
-      message: "Title must be at least 2 characters.",
-    }),
+    title: z.string()
+        .min(2, { message: "Title must be at least 2 characters." })
+        .max(50, { message: "Title must be 50 characters or less." })
+        .regex(/^[a-zA-Z0-9\s-_]+$/, { message: "Title can only contain letters, numbers, spaces, hyphens, and underscores." }),
     subtitle: z.string().optional(),
     thumbnailFile: z.any()
         .refine(file => file instanceof File || file === undefined, {
@@ -51,10 +53,41 @@ const formSchema = z.object({
 
 //* Form rendered in CreateCollection.jsx
 //* ✅ Ready for testing with firebase db and storage
-export default function CreateCollectionForm({ selectedButton, currentIndex, setCurrentIndex, cancelCreate, openDialog, submitCollection, posts, removePost }) {
+export default function CreateCollectionForm({ selectedButton, currentIndex, setCurrentIndex, cancelCreate, openDialog, submitCollection, posts, removePost, collections }) {
     const location = useLocation(); // URL location
     const [imageUrls, setImageUrls] = useState([]); // URLs for images in the carousel
+    const [isTitleValid, setIsTitleValid] = useState(true);
 
+    //* Collection Form
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: "",
+            subtitle: "",
+            thumbnailFile: undefined,
+            displaySettings: {
+                font: "sans",
+                theme: "light",
+                public: true,
+            },
+        }
+    });
+    const { formState } = form;
+    
+    useEffect(() => {
+        const checkTitle = async () => {
+            const encodedTitle = encodeCollectionTitle(form.watch("title"));
+            const isUnique = !collections.some(
+                (collection) => encodeCollectionTitle(collection.title) === encodedTitle
+            );
+            setIsTitleValid(isUnique);
+        };
+    
+        if (form.watch("title")) {
+            checkTitle();
+        }
+    }, [form.watch("title")]);
+    
     //* Create a URL for each image file in the posts array, to be displayed in the carousel
     useEffect(() => {
         const urls = posts.map(post => {
@@ -75,29 +108,13 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
         };
     }, [posts]);
 
-    //* Collection Form
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            subtitle: "",
-            thumbnailFile: undefined,
-            displaySettings: {
-                font: "sans",
-                theme: "light",
-                public: true,
-            },
-        }
-    });
-    const { formState } = form;
-    
     //* Submit Handler takes the data for the Collection, and calls the submitCollection function,
     //* which will process the final set of posts when the collection is submitted.
     function onSubmit(values) {
         console.log(values)
 
         //* Submit the collection
-        if(posts.length > 0){ 
+        if(posts.length > 0 && isTitleValid) { 
             submitCollection({
                 title: values.title,
                 subtitle: values.subtitle,
@@ -123,8 +140,8 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
       console.log("selected carousel item changed to:", index);
     }, [location]);
 
-    useEffect(() => { 
     //* Set current index to 0 when the page loads.
+    useEffect(() => {  
     //  > Necessary since URL doesn't change when page is refreshed
     //  but selectedIndex state returns to default state causing error
         window.onload = () => {
@@ -145,13 +162,15 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         <div className="flex gap-4 items-center">
                         <FormLabel>Title</FormLabel>
                         <FormDescription>
-                            Displayed on image track.
+                            Displayed next to posts.
                         </FormDescription>
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage>
+                            {!isTitleValid && "This title is already in use. Please choose a different one."}
+                        </FormMessage>
                     </FormItem>
                 )}
             />
@@ -269,7 +288,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                     render={({ field }) => (
                         <div className="grid gap-1.5">
                         <FormLabel>
-                            Theme
+                            Font
                         </FormLabel>
                         <FormItem>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>

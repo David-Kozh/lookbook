@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
 import { getHandleFromUserId } from "./services/userService.js";
 import { getLikedPosts } from "./services/likeService.js";
+import { getCollection, encodeCollectionTitle } from "./services/collectionService.js";
 
 export function LikedPostsFeed({ currentUserId }) {
     const [thumbnails, setThumbnails] = useState([]);
@@ -16,7 +17,10 @@ export function LikedPostsFeed({ currentUserId }) {
     const handleImageClick = async (userId, collectionId) => {
         try {
             const handle = await getHandleFromUserId(userId);
-            navigate(`/posts/${handle}/${collectionId}`);
+            // get collection name from collectionId
+            const collection = await getCollection(userId, collectionId);
+            const encodedCollectionName = encodeCollectionTitle(collection.title);
+            navigate(`/${handle}/${encodedCollectionName}`);
         } catch (error) {
             console.error("Error navigating to post:", error.message);
         }
@@ -88,11 +92,11 @@ export function LikedPostsFeed({ currentUserId }) {
     }, [hasMore, loading, fetchLikedPosts]);
 
     return (
-        <div className="w-full h-full flex flex-col">
+        <div className="h-[80.5%] sm:h-[87%] w-full flex flex-col">
         {thumbnails.length > 0 ? (
             <ParallaxScroll
                 ref={parallaxScrollRef}
-                className='h-[81.5%] sm:h-[87.5%]'
+                className='w-full h-full'
                 images={thumbnails.map((thumb) => ({
                     thumbnailUrl: thumb.thumbnailUrl,
                     userId: thumb.userId,

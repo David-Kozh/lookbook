@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ButtonGroup from './components/CollectionsButtons.jsx';
 import { getUserCollectionThumbnails } from './services/userService';
-import { getUserCollections } from './services/collectionService';
+import { getUserCollections, encodeCollectionTitle } from './services/collectionService';
 
 //* If the selected button is null, display default view of collections carousel
 //* Displays corresponding view once a button is selected
@@ -28,7 +28,7 @@ export default function CollectionsMenu({ loggedInUser, showCreateCollection, sh
     const [emptyFlag, setEmptyFlag] = useState(true);
     
     //* Get the user's collections
-    useEffect(() => {
+    useEffect(() => { //! Should be merged into parent component (userDashboard) then pass down collections with populated thumbnails
         const fetchCollections = async () => {
             try {
                 const userCollections = await getUserCollections(loggedInUser.id);
@@ -101,8 +101,9 @@ export default function CollectionsMenu({ loggedInUser, showCreateCollection, sh
             //? Animate to the selected Collection using a callback function to dashboard instead of redirect
             //?     - Animate dash-bg opacity and pos to take it out of view
             //?     - Animate a TrackPage component into view
+            const encodedCollectionName = encodeCollectionTitle(collections[currentIndex].title);
             setTimeout(() => {
-                navigate(`/posts/${loggedInUser.handle}/${collections[currentIndex].id}`);
+                navigate(`/${loggedInUser.handle}/${encodedCollectionName}`);
             }, 10);
         }
         else if(buttonName === 'delete'){

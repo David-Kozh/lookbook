@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/select";
 import { ParallaxScroll } from "./components/ui/parallax-scroll.jsx";
 import { LikedPostsFeed } from "./LikedPostsFeed.jsx";
-import { getFollowing } from "./services/userService.js";
-import { getRecentCollectionsFromFollowing } from "./services/collectionService.js";
+import { getFollowing, getHandleFromUserId } from "./services/userService.js";
+import { getCollection, getRecentCollectionsFromFollowing, encodeCollectionTitle } from "./services/collectionService.js";
 
 //TODO "no more collections to load" message does not display when end of page reached. Move to inside parallax-scroll component?
 export function FollowingFeed({ currentUserId }) {
@@ -27,7 +27,10 @@ export function FollowingFeed({ currentUserId }) {
   const handleImageClick = async (userId, collectionId) => {
     try {
       const handle = await getHandleFromUserId(userId);
-      navigate(`/posts/${handle}/${collectionId}`);
+      // get collection name from collectionId
+      const collection = await getCollection(userId, collectionId);
+      const encodedCollectionName = encodeCollectionTitle(collection.title);
+      navigate(`/${handle}/${encodedCollectionName}`);
     } catch (error) {
       console.error("Error navigating to post:", error.message);
     }

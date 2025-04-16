@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { getUserCollections } from './services/collectionService';
+import { getCollection, getUserCollections, encodeCollectionTitle } from './services/collectionService';
 import { fetchUserData, getUserIdFromHandle, getUserCollectionThumbnails } from './services/userService';
 import { followUser, unfollowUser, getFollowers } from './services/userService';
 import exampleThumbnails from './data/exampleThumbnails.js';
@@ -48,23 +48,30 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     };
 
     //* Function to view a collection from profile
-    const viewCollection = (index) => {
+    const viewCollection = async (index) => {
         console.log('Viewing collection:', collections[index].title);
         if(mode != 'example') {
             // Use the handle if it exists, otherwise fall back to loggedInUser.handle
             const handleToUse = userProfile?.handle || loggedInUser?.handle;
-
+            const idToUse = userProfile?.id || loggedInUser?.id;
             if (!handleToUse) {
                 console.error('No handle available for navigation');
                 return;
             }
 
-            setTimeout(() => {
-                navigate(`/posts/${handleToUse}/${collections[index].id}`); //TODO replace id with collection name
-            }, 10);
+            try {
+                const collection = await getCollection(idToUse, collections[index].id);
+                const encodedCollectionName = encodeCollectionTitle(collection.title);
+            
+                setTimeout(() => {
+                    navigate(`/${handleToUse}/${encodedCollectionName}`); //TODO replace id with collection name
+                }, 10);
+            } catch (error) {
+                console.error('Error fetching collection:', error);
+            }
         } else {
             setTimeout(() => {
-                navigate('/posts');
+                navigate('/example');
             }, 10);
         }
     }

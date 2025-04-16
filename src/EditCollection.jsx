@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import ButtonGroup from './components/CollectionsButtons.jsx';
 import { getPosts } from './services/postService.js';
+import { encodeCollectionTitle } from './services/collectionService.js';
 
 //  If the selected button is null, display default view of posts carousel
 //  Once a button is selected, display the corresponding element from below:
@@ -70,8 +71,9 @@ export default function EditCollection({ loggedInUser, collection, showCreatePos
         else if(buttonName === 'view'){
             console.log("View Posts Clicked");
             //? Can we animate to the selected post in the image track?
+            const encodedCollectionName = encodeCollectionTitle(collection.title);
             setTimeout(() => {
-                navigate(`/posts/${loggedInUser.handle}/${collection.id}`);
+                navigate(`/${loggedInUser.handle}/${encodedCollectionName}`);
             }, 10);
         }
         else if(buttonName === 'delete'){
