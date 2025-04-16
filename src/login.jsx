@@ -32,7 +32,7 @@ export default function Login({isLoggedIn}) {
     useEffect(() => {
         if (isLoggedIn) {
             console.log('Navigating to home...');
-            navigate('/home');
+            navigate('/');
         }
     }, [isLoggedIn]);
 
