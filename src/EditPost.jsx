@@ -25,9 +25,9 @@ import { updatePost, getPosts } from "./services/postService.js"
 
 // ** Zod Schema for Form Validation
 const formSchema = z.object({
-    title: z.string().min(2, {
-        message: "Title must be at least 2 characters.",
-    }),
+    title: z.string()
+        .min(2, { message: "Title must be at least 2 characters." })
+        .max(50, { message: "Title must be 50 characters or less." }),
     image: z.any()
         .refine(file => file instanceof File || file === undefined, {
             message: 'A file is required',
@@ -40,7 +40,9 @@ const formSchema = z.object({
         })
         .optional(),
     aspectRatio: z.string(),
-    description: z.string().optional(),
+    description: z.string()
+        .max(250, { message: "Description must be 250 characters or less." })
+        .optional(),
     content: z.any()    
         .refine(file => file instanceof File || file === undefined, {
             message: 'A file is required',
@@ -107,7 +109,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     }, [post, form]);
 
     async function onSubmit(values) {
-        console.log(values)
+        console.log("Submitting eddited post");
         
         // Determine the post type based on the content file's MIME type
         let postType = null;
@@ -201,18 +203,21 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 />
                 <Controller name="image"
                     control={form.control}
-                    render={({ field: { onChange, ref } }) => (
+                    render={({ field: { onChange, ref }, fieldState: { error } }) => (
                     <FormItem className={`${
                         form.watch('image') ? 'opacity-100' : 'opacity-50'
                       } hover:opacity-100`}>
                         <div className="grid gap-1.5">
-                        <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
+                        <FormLabel className={`${error ? 'text-red-500' : ''}`}>
                             New Image
                         </FormLabel>
                         <FormControl>
                             <Input id="image"
                             type="file"
-                            className="file-input-ghost bg-input"
+                            className={`file-input-ghost bg-input text-foreground ${
+                                error ? 'border-red-500' : ''
+                            }`}
+                            accept="image/*"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
                                     onChange(e.target.files[0]); // store file
@@ -222,7 +227,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             />
                         </FormControl>
                         </div>
-                        <FormMessage/>
+                        <FormMessage>{error?.message}</FormMessage>
                     </FormItem>
                     )}
                 />
@@ -249,7 +254,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 />
                 <Controller name="content"
                 control={form.control}
-                render={({ field: { onChange, ref } }) => (
+                render={({ field: { onChange, ref }, fieldState: { error } }) => (
                     <FormItem className={`${
                         form.watch('content') ? 'opacity-100' : 'opacity-50'
                       } hover:opacity-100 w-[65%]`}>
@@ -259,7 +264,10 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                         <FormControl>
                             <Input id="content" 
                             type="file" 
-                            className="file-input-ghost bg-input text-foreground"
+                            className={`file-input-ghost bg-input text-foreground ${
+                                error ? 'border-red-500' : ''
+                            }`}
+                            accept="audio/*,video/*"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
                                     onChange(e.target.files[0]); // Store the selected file
@@ -268,7 +276,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             ref={ref}
                             />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage>{error?.message}</FormMessage>
                     </FormItem>
                 )}
                 />

@@ -22,10 +22,12 @@ import {
 } from "@/components/ui/form"
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
-  description: z.string().optional(),
+  title: z.string()
+    .min(2, { message: "Title must be at least 2 characters." })
+    .max(50, { message: "Title must be 50 characters or less." }),
+  description: z.string()
+    .max(250, { message: "Description must be 250 characters or less." })
+    .optional(),
   image: z.any()        
     .refine(file => file === undefined || file instanceof File, {
       message: 'A file is required',
@@ -151,15 +153,18 @@ export default function CreatePostForm({ addPost, dismiss }) {
 
       <Controller name="image"
         control={form.control}
-        render={({ field: { onChange, ref } }) => (
+        render={({ field: { onChange, ref }, fieldState: { error } }) => (
           <FormItem>
             <div className="grid gap-1.5">
-              <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
+              <FormLabel className={`${error ? 'text-red-500' : ''}`}>
                 Image
               </FormLabel>
               <FormControl>
                 <Input type="file"
-                  className="file-input-ghost"
+                  className={`file-input-ghost ${
+                    error ? 'border-red-500' : ''
+                  }`}
+                  accept="image/*"
                   onChange={(e) => {
                     onChange(e.target.files[0]); // store file
                   }}
@@ -167,7 +172,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
                 />
               </FormControl>
             </div>
-            {form.formState.errors.image && <FormMessage>{form.formState.errors.image.message}</FormMessage>}
+            <FormMessage>{error?.message}</FormMessage>
           </FormItem>
         )}
       />
@@ -196,14 +201,17 @@ export default function CreatePostForm({ addPost, dismiss }) {
         />
         <Controller name="content"
           control={form.control}
-          render={({ field: { onChange, ref } }) => (
+          render={({ field: { onChange, ref }, fieldState: { error } }) => (
             <FormItem className={`${form.watch('image') ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
               <FormLabel className={`${form.watch('image') ? '' : 'opacity-50'}`}>
                 Optional Video/Audio
               </FormLabel>
               <FormControl>
               <Input type="file"
-                className="file-input-ghost"
+                className={`file-input-ghost ${
+                  error ? 'border-red-500' : ''
+                }`}
+                accept="audio/*,video/*"
                 onChange={(e) => {
                   onChange(e.target.files[0]);
                 }}
@@ -211,6 +219,7 @@ export default function CreatePostForm({ addPost, dismiss }) {
                 ref={ref}
               />
               </FormControl>
+              <FormMessage>{error?.message}</FormMessage>
             </FormItem>
           )}
         />

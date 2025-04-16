@@ -24,9 +24,9 @@ import { createPost } from "./services/postService";
 
 //* Zod Schema for Form Validation
 const formSchema = z.object({
-    title: z.string().min(2, {
-        message: "Title must be at least 2 characters.",
-    }),
+    title: z.string()
+        .min(2, { message: "Title must be at least 2 characters." })
+        .max(50, { message: "Title must be 50 characters or less." }),
     image: z.any()
         .refine(file => file instanceof File, {
             message: 'A file is required',
@@ -38,7 +38,9 @@ const formSchema = z.object({
             message: 'Only JPG or PNG files are allowed',
         }),
     aspectRatio: z.string(),
-    description: z.string().optional(),
+    description: z.string()
+        .max(250, { message: "Description must be 250 characters or less." })
+        .optional(),
     content: z.any()
         .refine(file => file instanceof File || file === undefined, {
             message: 'A file is required',
@@ -160,15 +162,18 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 />
                 <Controller name="image"
                 control={form.control}
-                render={({ field: { onChange, ref } }) => (
+                render={({ field: { onChange, ref }, fieldState: { error } }) => (
                     <FormItem>
                         <div className="grid gap-1.5">
-                            <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
+                            <FormLabel className={`${error ? 'text-red-500' : ''}`}>
                                 Image
                             </FormLabel>
                             <FormControl>
                                 <Input type="file"
-                                    className="file-input-ghost"
+                                    className={`file-input-ghost ${
+                                        error ? 'border-red-500' : ''
+                                    }`}
+                                    accept="image/*"
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); // store file
                                     }}
@@ -204,7 +209,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                 />
                 <Controller name="content"
                 control={form.control}
-                render={({ field: { onChange, ref } }) => (
+                render={({ field: { onChange, ref }, fieldState: { error } }) => (
                     <FormItem className={`${form.watch('image') ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
                         
                         <FormLabel className={`${form.watch('image') ? '' : 'opacity-50'}`}>
@@ -212,7 +217,10 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                             </FormLabel>
                             <FormControl>
                                 <Input type="file"
-                                    className="file-input-ghost"
+                                    className={`file-input-ghost ${
+                                        error ? 'border-red-500' : ''
+                                    }`}
+                                    accept="audio/*,video/*"
                                     onChange={(e) => {
                                       onChange(e.target.files[0]); 
                                     }}
@@ -221,7 +229,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
                                 />
                             </FormControl>
                         
-                        {form.formState.errors.content && <FormMessage>{form.formState.errors.content.message}</FormMessage>}
+                            <FormMessage>{error?.message}</FormMessage>
                     </FormItem>
                 )}
                 />

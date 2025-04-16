@@ -25,9 +25,9 @@ import * as z from 'zod';
 // Default Values not supported for file inputs
 // Will require consideration to implement cloud storage
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
+  title: z.string()
+    .min(2, { message: "Title must be at least 2 characters." })
+    .max(50, { message: "Title must be 50 characters or less." }),
   image: z.any()
     .refine(file => file instanceof File || file === undefined, {
       message: 'A file is required',
@@ -40,7 +40,9 @@ const formSchema = z.object({
     })
     .optional(),
   aspectRatio: z.string(),
-  description: z.string().optional(),
+  description: z.string()
+    .max(250, { message: "Description must be 250 characters or less." })
+    .optional(),
   content: z.any()
     .refine(file => file instanceof File || file === undefined, {
       message: 'A file is required',
@@ -148,15 +150,18 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
 
       <Controller name="image"
         control={form.control}
-        render={({ field: { onChange, ref } }) => (
+        render={({ field: { onChange, ref }, fieldState: { error } }) => (
           <FormItem>
             <div className="grid gap-1.5">
-              <FormLabel className={`${form.formState.errors.image && 'text-red-500'}`}>
+              <FormLabel >
                 New Image
               </FormLabel>
               <FormControl>
                 <Input type="file"
-                  className="file-input-ghost"
+                  className={`file-input-ghost ${
+                    error ? 'border-red-500' : ''
+                  }`}
+                  accept="image/*"
                   onChange={(e) => {
                     if (e.target.files.length > 0) {
                       onChange(e.target.files[0]); // store file
@@ -171,7 +176,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                 </p>
               )}
             </div>
-            <FormMessage/>
+            <FormMessage>{error?.message}</FormMessage>
           </FormItem>
         )}
       />
@@ -200,7 +205,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
         />
         <Controller name="content"
           control={form.control}
-          render={({ field: { onChange, ref } }) => (
+          render={({ field: { onChange, ref }, fieldState: { error } }) => (
             <FormItem className={`${(form.watch('image') || post.imageFile !== undefined) ? 'opacity-50 hover:opacity-100' : ''} w-[65%]`}>
                 <FormLabel className={`${(form.watch('image') || post.imageFile !== undefined) ? '' : 'opacity-50'}`}>
                   Optional Video/Audio
@@ -210,7 +215,10 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                   onChange={(e) => {
                     onChange(e.target.files[0]); // store file
                   }}
-                  className="file-input-ghost"
+                  className={`file-input-ghost ${
+                    error ? 'border-red-500' : ''
+                  }`}
+                  accept="audio/*,video/*"
                   disabled={!form.watch('image') && post.imageFile === undefined}
                   ref={ref}
                 />
@@ -220,7 +228,7 @@ export default function EditPostForm({ post, updatePost, dismiss }) {
                     Current Content: {post.contentFile.name || 'Uploaded Content'}
                   </p>
                 )}
-              <FormMessage />
+              <FormMessage>{error?.message}</FormMessage>
             </FormItem>
           )}
         />
