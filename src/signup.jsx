@@ -21,10 +21,10 @@ import { updateUser } from "./services/userService"
 
 const signUpSchema = z.object({
   displayName: z.string().min(2, { message: "Display Name must be at least 2 characters." }),
-  handle: z
-    .string()
+  handle: z.string()
     .min(2, { message: "Handle must be at least 2 characters." })
-    .regex(/^[a-zA-Z0-9_]+$/, { message: "Handle can only contain letters, numbers, and underscores." }),
+    .max(30, { message: "Handle must be 30 characters or less." })
+    .regex(/^[a-zA-Z0-9-_]+$/, { message: "Handle can only contain letters, numbers, hyphens, and underscores." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters long." }),
   passwordConfirmation: z.string().min(1, "Password confirmation is required"),
@@ -42,6 +42,7 @@ const signUpSchema = z.object({
 //? Draft a privacy policy and terms and conditions
 export default function SignUp() {
   const navigate = useNavigate();
+  const [isHandleValid, setIsHandleValid] = useState(true);
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -54,6 +55,19 @@ export default function SignUp() {
     },
   });
 
+  useEffect(() => {
+    const checkHandle = async () => {
+      if (form.watch("handle") !== userProfile.handle) {
+        const isUnique = await isHandleUnique(form.watch("handle"));
+        setIsHandleValid(isUnique);
+      } else {
+        setIsHandleValid(true); // Reset if the handle hasn't changed
+      }
+    };
+  
+    checkHandle();
+  }, [form.watch("handle")]);
+
   const onSubmit = async (data) => {
     try {
       const userData = {}
@@ -61,6 +75,10 @@ export default function SignUp() {
         userData.displayName = data.displayName
       }
       if(data.handle) {
+        if(!isHandleValid) {
+          console.error("Handle is not unique");
+          return;
+        }
         userData.handle = data.handle
       }
       if(data.marketingAccept) {
@@ -154,7 +172,9 @@ return (
                   <FormControl>
                     <Input className="h-min" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {!isHandleValid && "This handle is already in use. Please choose a different one."}
+                  </FormMessage>
                 </FormItem>
               )}
             />            

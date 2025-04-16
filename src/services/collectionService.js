@@ -190,3 +190,11 @@ export const getRecentCollectionsFromFollowing = async (following, lastDoc = nul
         throw new Error("Failed to fetch recent collections");
     }
 };
+
+export const encodeCollectionTitle = (title) => {
+    return encodeURIComponent(title.trim().toLowerCase().replace(/\s+/g, '-'));
+};
+
+export const decodeCollectionTitle = (encodedTitle) => {
+    return decodeURIComponent(encodedTitle.replace(/-/g, ' '));
+};

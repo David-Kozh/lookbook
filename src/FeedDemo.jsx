@@ -43,7 +43,7 @@ export function ParallaxScrollDemo() {
     const navigate = useNavigate();
 
     const handleDemoClick = () => {
-      navigate("/posts"); // Navigate to /posts when an image is clicked
+      navigate("/example"); // Navigate to /posts when an image is clicked
     };
 
     return (

@@ -21,12 +21,13 @@ import { logout } from "./services/authService"
 
 // ** Zod Schema for Form Validation
 const formSchema = z.object({
-    displayName: z.string().min(2, {
-      message: "Display name must be at least 2 characters.",
-    }),
-    handle: z.string().min(2, {
-        message: "Display name must be at least 2 characters.",
-      }),
+    displayName: z.string()
+        .min(2, { message: "Display name must be at least 2 characters." })
+        .max(30, { message: "Display name must be 30 characters or less." }),
+    handle: z.string()
+        .min(2, { message: "Handle must be at least 2 characters." })
+        .max(30, { message: "Handle must be 30 characters or less." })
+        .regex(/^[a-zA-Z0-9-_]+$/, { message: "Handle can only contain letters, numbers, hyphens, and underscores." }),
     bio: z.string()
         .max(230, { message: "Bio must be at most 230 characters." })
         .optional(),
@@ -107,7 +108,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
         };
       
         checkHandle();
-      }, [form.watch("handle")]);
+    }, [form.watch("handle")]);
     
     async function onSubmit(values) {
         console.log(values)
@@ -117,6 +118,10 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
             updatedData.displayName = values.displayName;
         }
         if (values.handle !== userProfile.handle) {
+            if (!isHandleValid) {
+                alert("Handle is not unique. Please choose a different one.");
+                return;
+            }
             updatedData.handle = values.handle;
         }
         if (values.bio !== userProfile.bio) {
