@@ -193,14 +193,15 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 )}
             />
 
-            <div id="create-collection-carousel" className="w-full flex justify-between sm:justify-center">
+            <div id="create-collection-carousel" className="w-full flex justify-between sm:justify-center sm:gap-2">
                 
                 <div className="w-[15%] flex items-center justify-center">
                     <LeftButtonGroup 
                         selectedButton={selectedButton}
                         selectedItemName={posts.length > 0 ? posts[currentIndex].title : null} 
                         openDialog={openDialog}
-                        removePost={removePost} 
+                        removePost={removePost}
+                        maxPostsFlag={posts.length >= 10}
                     />
                 </div>
 
@@ -231,7 +232,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                 )
                 }
                 <div className="w-[14%] flex items-center justify-center ">
-                    <RightButtonGroup selectedIndex={currentIndex} postsLength={posts.length}/>
+                    <RightButtonGroup selectedIndex={currentIndex} postsLength={posts.length} emptyFlag={posts.length == 0} />
                 </div>
             </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from 'react';
 import Logo from './components/Firefly lookbook logo 2.png'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -88,7 +89,7 @@ export default function SignUp() {
       const user = await signup(data.email, data.password);
       await updateUser(user.uid, userData);
       console.log("User signed up successfully:", user);
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.error("Error signing up:", error);
     }
@@ -112,7 +113,7 @@ return (
       <div className="max-w-xl lg:max-w-3xl">
         <div className="relative -mt-16 block lg:hidden">
           <a className="inline-flex size-16 items-center justify-center rounded-full bg-white text-blue-600 sm:size-20"
-            href="/home"
+            href="/"
           >
             <span className="sr-only">Link to Home</span>
             <svg className="h-8 sm:h-10"

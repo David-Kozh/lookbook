@@ -26,16 +26,10 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     ✅  User Feed
     -   Hosting
   * Current Tasks:
-    !BUG: Close selected image button (under app title) does not disapear on nav away from /posts
     Push to production
   * Functionalies to implement in Production:
-    Tooltips for 'additional content' field
-    Adjust expanded-image-dimensions to include padding for wide-image-panels. 
-    --> If no description, force 1:1 to col view and adjust dimensions of image and info panels to roughly 70/30 split
-    Add feedback to user for disabled buttons
-  ?  Questions:
-  ?   Make dark mode a user profile variable, or is it persistent enough with local storage?
-  ?   Force col display for 1:1 images with short descriptions? --> Wasted whitespace (same for 16:9 in mobile view)
+    Tooltips for 'additional content' field and feedback for disabled buttons
+    ? Force col display for 1:1 images with short descriptions? --> Wasted whitespace (same for 16:9 in mobile view)
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */
@@ -65,6 +59,14 @@ function App() {
         const profile = await fetchUserData(user.uid);
         setUserProfile(profile);
         console.log('User profile:', profile);
+
+        // Apply the theme based on the user's profile
+        const htmlElement = document.documentElement;
+        if (profile.themePref === "dark") {
+          htmlElement.classList.add("dark");
+        } else {
+          htmlElement.classList.remove("dark");
+        }
       } catch (error) {
         console.error('Unable to fetch user profile:', error.message);
       }
@@ -78,7 +80,7 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Root isLoggedIn={isLoggedIn}/>,
+      element: <Root isLoggedIn={isLoggedIn} userProfile={userProfile} />,
       errorElement: <ErrorPage />,
       children: [
         { //* Landing page for non-logged in users. Displays UserDashboard for logged in users.

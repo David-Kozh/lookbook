@@ -31,8 +31,8 @@ const formSchema = z.object({
         .refine(file => file instanceof File, {
             message: 'A file is required',
         })
-        .refine(file => file === undefined || file.size <= 5 * 1024 * 1024, {
-            message: 'File size must be 5MB or less',
+        .refine(file => file === undefined || file.size <= 8 * 1024 * 1024, {
+            message: 'File size must be 8MB or less',
         })
         .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
             message: 'Only JPG or PNG files are allowed',

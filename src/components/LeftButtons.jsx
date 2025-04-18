@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,15 +11,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-// TODO: Delete btn should bring up a modal to confirm deletion
-// TODO:      - Should dynamically obtain/display the name of collection/post to be deleted 
-
-const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selectedItemName, setPosts, openDialog, removePost }) => {
+// Only used on posts within the CreateCollectionForm.jsx
+const LeftButtonGroup = ({ selectedButton, selectedItemName, openDialog, removePost, maxPostsFlag }) => {
 
   const handleClick = (buttonName) => {
-    if (onButtonClick) {
-      onButtonClick(buttonName);
-    }
     if(buttonName === 'create') {
       openDialog('create');
     }
@@ -28,12 +23,7 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
     }
   };
 
-  const handleCancel = () => {
-    handleClick(null);
-  };
-
   const handleContinue = () => {
-    handleClick(null);
     removePost();
   };
 
@@ -46,7 +36,8 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
       onClick={() => handleClick('create')}
       className={`h-1/3 flex items-center justify-center rounded-t-lg px-4 
         ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' 
-        : 'hover:bg-zinc-500 hover:text-blue-100 text-white'}`}
+        : !maxPostsFlag ? 'hover:bg-zinc-500 hover:text-blue-100 text-white' : 'text-zinc-400'}`}
+      disabled={maxPostsFlag} // Disable the button when maxPostsFlag is true
     >
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
@@ -68,7 +59,7 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
       onClick={() => handleClick('edit')}
       className={`h-1/3 flex items-center justify-center px-4 text-white
         ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' 
-        : selectedItemName !== null ? 'hover:bg-zinc-500 hover:text-blue-100' : 'text-white'}`}
+        : selectedItemName !== null ? 'hover:bg-zinc-500 hover:text-blue-100' : 'text-zinc-400'}`}
       disabled={selectedItemName == null} // Disable the button when selectedItem is null
     >
       <svg
@@ -96,7 +87,7 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
           onClick={() => handleClick('delete')}
           className={`h-1/3 inline-flex items-center sm:gap-2 justify-around rounded-b-lg px-4 text-white
             ${selectedButton === 'delete' ? 'text-blue-500 bg-gray-200 shadow-sm' 
-            : selectedItemName !== null ? 'hover:bg-zinc-500 hover:text-blue-100' : 'text-white'}`}
+            : selectedItemName !== null ? 'hover:bg-zinc-500 hover:text-blue-100' : 'text-zinc-400'}`}
           disabled={selectedItemName == null} // Disable the button when selectedItem is null
         >
           <svg
@@ -123,7 +114,7 @@ const LeftButtonGroup = ({ selectedButton, onButtonClick, selectedIndex, selecte
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleContinue}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

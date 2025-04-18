@@ -1,42 +1,61 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { SelectedImgContext } from './contexts/SelectedImageContext';
-
-import posts from './data/posts.js';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "./config/firebaseConfig";
 import Navbar from './NavBar.jsx';
-import BackButtonImage from './components/back.png'
 import LogoutButton from './components/LogoutButton.jsx';
 import BottomBar from './BottomBar.jsx';
 
 // Top bar to be rendered in any page
 // Consists of centered NavBar (1/2) and 2 spaces to the left and right of NavBar (1/4 each).
 // Content is rendered below topBar, within the Outlet.
-export default function Root({ isLoggedIn }) {
+export default function Root({ isLoggedIn, userProfile }) {
     const [selectedImage, setSelectedImage] = useState(null); // Index of the selected image, null if no image is selected
     const [closeSelectedImage, setCloseSelectedImage] = useState(() => () => {}); // Function from Track to close the selected image.
+    const location = useLocation(); // Hook to get the current route
+
+    useEffect(() => {
+        // Reset selectedImage when navigating away from /posts
+        if (!location.pathname.startsWith('/posts')) {
+            setSelectedImage(null);
+        }
+    }, [location]);
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Initialize state from localStorage or default to false
         return localStorage.getItem('theme') === 'dark';
     });
 
-    const toggleDarkMode = () => {
+    const toggleDarkMode = async () => {
         const htmlElement = document.documentElement;
-        if (htmlElement.classList.contains('dark')) {
+        const isCurrentlyDarkMode = htmlElement.classList.contains("dark");
+        const newTheme = isCurrentlyDarkMode ? "light" : "dark";
+
+        if (isCurrentlyDarkMode) {
           htmlElement.classList.remove('dark');
-          setIsDarkMode(false);
-          localStorage.setItem('theme', 'light'); // Save preference
         } else {
           htmlElement.classList.add('dark');
-          setIsDarkMode(true);
-          localStorage.setItem('theme', 'dark'); // Save preference
+        }
+        // Update local state and localStorage
+        setIsDarkMode(!isCurrentlyDarkMode);
+        localStorage.setItem("theme", newTheme);
+
+        // Update Firebase if the user is logged in
+        if (isLoggedIn && userProfile) {
+            try {
+                const userDocRef = doc(db, "users", userProfile.id); // Replace `userProfile.id` with the correct user ID field
+                await updateDoc(userDocRef, { themePref: newTheme });
+                console.log("Theme updated in Firebase:", newTheme);
+            } catch (error) {
+                console.error("Failed to update theme in Firebase:", error);
+            }
         }
     };
 
     useEffect(() => {
         const htmlElement = document.documentElement;
-    
         // Apply the saved theme from localStorage on initial load
         const savedTheme = localStorage.getItem('theme'); //! Bug: When page is reloaded at /posts then navigated away, localStorage is cleared?
         if (savedTheme === 'dark') {
@@ -67,24 +86,26 @@ export default function Root({ isLoggedIn }) {
                 <div className="w-1/4 h-full flex flex-col items-start justify-center">
 
                     <Link 
-                        reloadDocument to="/home" 
-                        className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold font-sans ml-4 mb-1 select-none
+                        reloadDocument to="/" 
+                        className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold font-sans ml-3 mb-1 select-none
                         bg-clip-text text-transparent opacity-100 hover:opacity-85 shadow-lg
                         bg-gradient-to-r from-[#481a12] via-[#2961bc] to-[#6855f7] 
                         dark:from-rose-500 dark:via-red-600 dark:to-rose-700"
                     >
                         LookBook
-                        <div className="h-0.5 w-[102%] rounded bg-foreground dark:opacity-50"></div>
+                        <div className="h-0.5 w-[101%] rounded bg-foreground dark:opacity-50"></div>
                     </Link>
 
                     <div>
                         <button 
-                            className={`${selectedImage != null ? 'hidden sm:inline absolute' : 'hidden'} z-10 text-xs md:text-sm font-mono transition bg-card hover:bg-gray-100/50 mt-4 ml-6 py-2 px-3 md:px-4 rounded shadow`}
+                            className={`${selectedImage != null ? 'hidden sm:inline absolute' : 'hidden'} z-10 text-xs md:text-sm font-mono transition bg-card hover:bg-gray-100/50 mt-4 ml-6 py-0.5 px-1 md:px-2 rounded shadow`}
                             onClick={() => {
                                 closeSelectedImage(selectedImage);
                             }} 
                         >
-                            &lt;
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="back" width="24" height="24">
+                                <path className="fill-[#3f424a] dark:fill-[#ffffff]" d="M22 10H8l1.6-1.2a1 1 0 1 0-1.2-1.6l-4 3a1 1 0 0 0 0 1.6l4 3a1 1 0 0 0 .6.2 1 1 0 0 0 .8-.4 1 1 0 0 0-.2-1.4L8 12h14a4 4 0 0 1 0 8H5a1 1 0 0 0 0 2h17a6 6 0 0 0 0-12Z"></path>
+                            </svg>
                         </button> 
                     </div>
 
@@ -99,12 +120,14 @@ export default function Root({ isLoggedIn }) {
                     </div>
                     <div>
                         <button 
-                            className={`${selectedImage != null ? 'inline sm:hidden' : 'hidden'} z-10 transition bg-card hover:bg-zinc-500 py-2 px-3 rounded-lg shadow font-mono text-xs text-card-foreground`}
+                            className={`${selectedImage != null ? 'inline sm:hidden' : 'hidden'} z-10 transition bg-card hover:bg-zinc-500 py-0.5 px-1.5 mt-2 rounded-lg shadow font-mono text-xs text-card-foreground`}
                             onClick={() => {
                                 closeSelectedImage(selectedImage);
                             }} 
                         >
-                         &lt; Back
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="back" width="24" height="24">
+                                <path className="fill-[#3f424a] dark:fill-[#ffffff]" d="M22 10H8l1.6-1.2a1 1 0 1 0-1.2-1.6l-4 3a1 1 0 0 0 0 1.6l4 3a1 1 0 0 0 .6.2 1 1 0 0 0 .8-.4 1 1 0 0 0-.2-1.4L8 12h14a4 4 0 0 1 0 8H5a1 1 0 0 0 0 2h17a6 6 0 0 0 0-12Z"></path>
+                            </svg>
                         </button> 
                     </div>  
                 </div>
@@ -117,7 +140,7 @@ export default function Root({ isLoggedIn }) {
                         https://ui.shadcn.com/docs/components/dropdown-menu
                     */}
 
-                    <div className='flex mr-2 sm:mr-4 gap-2'>
+                    <div className='flex mr-3 gap-2'>
                         <a onClick={toggleDarkMode}
                             className="cursor-pointer bg-background p-2 sm:p-2 lg:px-5 
                             text-foreground hover:bg-white/30 rounded-xl

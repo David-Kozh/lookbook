@@ -53,11 +53,11 @@ function Home() {
                         <path d="M20.08,2.25H9.92A1.72,1.72,0,0,0,8.25,4V7a.75.75,0,0,0,1.5,0V4c0-.15.09-.25.17-.25H20.08c.08,0,.17.1.17.25V20c0,.15-.09.25-.17.25H9.92c-.08,0-.17-.1-.17-.25V17a.75.75,0,0,0-1.5,0v3a1.72,1.72,0,0,0,1.67,1.75H20.08A1.72,1.72,0,0,0,21.75,20V4A1.72,1.72,0,0,0,20.08,2.25Z"></path>
                     </g>
                     </svg>
-                    <p className='text-base md:text-lg font-semibold text-center mr-0.5' >Log&nbsp;in</p>
+                    <p className='text-base md:text-lg font-mono font-semibold text-center mr-0.5' >Login</p>
                   </a>
                   <div className='mt-12'>
                     <ContainerTextFlip
-                      words={["programmers", "animation", "illustrators", "actors", "designers"]}
+                      words={["programmers", "animators", "illustrators", "actors", "designers"]}
                       interval={3000}
                     />
                   </div>

@@ -156,19 +156,33 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
         }, 10);
 
         setTimeout(() => {    //* Wait for image to be revealed, then translate
-          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) ){
+          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) || posts[i].description.length == 0 ) {
             let rect = image.getBoundingClientRect();
-            let centerX = rect.left + rect.width / 2;
-            let centerY = rect.top + rect.height / 2;
-            const targetX = (window.innerWidth / 2);
-            const targetY = (window.innerHeight * 0.33);
-            const deltaX = targetX - centerX;
-            const deltaY = targetY - centerY;
+            let currentX = rect.left + rect.width / 2; // Center of the image
+            
+            let targetY, currentY;
+            if (posts[i].aspectRatio == '16:9') { // Calculate targetY and currentY based on the bottom for 16:9 images
+              // Calculate available height and excess space
+              const availableHeight = window.innerHeight * 0.45; // Height of img-panel-wide
+              const excessSpace = availableHeight - rect.height; // Difference between available height and image height
+
+              // Calculate targetY with 2/3 of excess space above the image
+              targetY = (window.innerHeight * 0.08) + (window.innerHeight * 0.05) + (2 / 3) * excessSpace;
+
+              // Use the top of the image for currentY
+              currentY = rect.top; // Top of the image
+            } else {
+              targetY = (window.innerHeight * 0.08) + (window.innerHeight * 0.05) + ((window.innerHeight * 0.45) / 2); // Center of img-panel-wide
+              currentY = rect.top + rect.height / 2; // Center of the image
+            }
+
+            const targetX = (window.innerWidth / 2); // Center of the screen
+            const deltaX = targetX - currentX;
+            const deltaY = targetY - currentY;
             image.animate({
               transform: [`translate( ${deltaX}px, ${deltaY}px)`]
             }, {duration: 600, fill: 'forwards', easing: 'ease-in-out'});
-          }
-          else{ 
+          } else { 
             const targetX = (window.innerWidth / 2) - (window.innerWidth * 0.02); // Center minus 2% of screen width
             const currentX = image.getBoundingClientRect().right; // Get the current position of the image
             const deltaX = targetX - currentX;
@@ -184,13 +198,13 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
     //* Animate the image info after other animations are complete
     setTimeout(() => {
       var imageInfoElements = document.querySelectorAll('.image-info');
-      if(posts[index].aspectRatio == '16:9' || (aspectRatio < 1) ){
+      if(posts[index].aspectRatio == '16:9' || (aspectRatio < 1) || posts[index].description.length == 0){
         imageInfoElements = document.querySelectorAll('.image-info-wide');
       }
       if (imageInfoElements) {
         imageInfoElements.forEach((element) => {
-          if(posts[index].aspectRatio == '16:9' || (aspectRatio < 1)){
-            element.style.width = `${imageDimensions.width}px`;
+          if(posts[index].aspectRatio == '16:9' || (aspectRatio < 1) || posts[index].description.length == 0){
+            element.style.width = `${imageDimensions.width}px`; //* Height is min
           }
           else {
             element.style.height = `${imageDimensions.height}px`; //* Height of the 1:1 image-info when in row-view with image
@@ -206,7 +220,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
           console.log('animated image info')
         });
       }
-    }, 1000);
+    }, 1500);
 
     setTimeout(() => { //* Show media if applicable
       showMedia(index);
@@ -318,7 +332,9 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
 
   const selectedImageDimensions = (index) => {  //* Returns dimensions for a selected image based on the aspect ratio and available space
     var ImgDim = { width: 0, height: 0 };
-    if(posts[index].aspectRatio == '1:1' && (getAspectRatio() >= 1)){
+    if(posts[index].aspectRatio == '1:1' && (getAspectRatio() >= 1) && posts[index].description.length > 0){
+      console.log("TEST 1");
+      //* Determine which dimension is the limiting factor, return square dimensions
       if(((window.innerWidth / 2) - (window.innerWidth / 10)) < (window.innerHeight - (window.innerHeight/5))){
         ImgDim.width = (window.innerWidth / 2) - (window.innerWidth / 10);
         ImgDim.height = ImgDim.width;
@@ -326,9 +342,9 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
         ImgDim.height = window.innerHeight - (window.innerHeight/5);
         ImgDim.width = ImgDim.height;
       }
-    } else if(posts[index].aspectRatio == '16:9'){
+    } else if(posts[index].aspectRatio == '16:9'){ // 16:9 image
       const maxWidth = window.innerWidth - (window.innerWidth / 10);   // 5% padding on each side
-      const maxHeight = window.innerHeight/2;         // Top 50% of screen
+      const maxHeight = (window.innerHeight * (50 / 100)) - (window.innerHeight * (5 / 100)); // 50% of screen (-5% padding for closeSelectedImage button in root)
       if(maxWidth/maxHeight > 16/9){
         ImgDim.width = maxHeight * (16/9);
         ImgDim.height = maxHeight;
@@ -339,9 +355,12 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
         ImgDim.width = maxWidth;
         ImgDim.height = maxHeight;
       }
-    } else { //* 1:1 aspect ratio, VerticalOrientation
+    } else { //* 1:1 aspect ratio, VerticalOrientation (because of aspectRatio or because of lack of description)
+      console.log('TEST');
       const maxWidth = window.innerWidth - (window.innerWidth / 10);   // 5% padding on each side
-      const maxHeight = window.innerHeight/2 - (window.innerHeight / 50);         // Top 50% of screen (-2% padding)
+      const maxHeight = (window.innerHeight * (50 / 100)) - (window.innerHeight * (5 / 100));   // 50% of screen (-5% padding)
+      
+      //* Determine which dimension is the limiting factor, return square dimensions
       if(maxWidth/maxHeight > 1){
         ImgDim.width = maxHeight;
         ImgDim.height = maxHeight;
@@ -397,7 +416,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
   handleResizeRef.current = async () => {  //* Handle resizing of window while image is expanded
     // TODO: Apply to mp4 elements
     if(selectedImageRef.current == null) return;
-    const imageDimensions = selectedImageDimensions(selectedImageRef.current);
+    const imageDimensions = selectedImageDimensions(selectedImageRef.current); // Get the new dimensions of the image
     const images = document.querySelectorAll('.image');
     const aspectRatio = getAspectRatio();
     console.log('Window was resized ' + aspectRatio, isVerticalOrientation);
@@ -422,14 +441,29 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
         }
 
         setTimeout(() => {    // Wait for image to be resized, then center in space
-          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1)){ //* Center the image in the top half of the screen
+          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) || posts[i].description.length == 0){
             let rect = image.getBoundingClientRect();
-            let centerX = rect.left + rect.width / 2;
-            let centerY = rect.top + rect.height / 2;
-            const targetX = (window.innerWidth / 2);
-            const targetY = (window.innerHeight * 0.33);
-            const deltaX = targetX - centerX;
-            const deltaY = targetY - centerY;
+            let currentX = rect.left + rect.width / 2; // Center of the image
+            
+            let targetY, currentY;
+            if (posts[i].aspectRatio == '16:9') { // Calculate targetY and currentY based on the bottom for 16:9 images
+              // Calculate available height and excess space
+              const availableHeight = window.innerHeight * 0.45; // Height of img-panel-wide
+              const excessSpace = availableHeight - rect.height; // Difference between available height and image height
+
+              // Calculate targetY with 2/3 of excess space above the image
+              targetY = (window.innerHeight * 0.08) + (window.innerHeight * 0.05) + (2 / 3) * excessSpace;
+
+              // Use the top of the image for currentY
+              currentY = rect.top; // Top of the image
+            } else {
+              targetY = (window.innerHeight * 0.08) + (window.innerHeight * 0.05) + ((window.innerHeight * 0.45) / 2); // Center of img-panel-wide
+              currentY = rect.top + rect.height / 2; // Center of the image
+            }
+
+            const targetX = (window.innerWidth / 2); // Center of the screen
+            const deltaX = targetX - currentX;
+            const deltaY = targetY - currentY;
             image.animate({
               transform: [`translate( ${e + deltaX}px, ${f + deltaY}px)`]
             }, {duration: 0, fill: 'forwards', easing: 'ease-in-out'});
@@ -451,12 +485,12 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
         //* Update image info dimensions
         setTimeout(() => {
           var imageInfoElements = document.querySelectorAll('.image-info');
-          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1)){
+          if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) || posts[i].description.length == 0){
             imageInfoElements = document.querySelectorAll('.image-info-wide');
           }
           if (imageInfoElements) {
             imageInfoElements.forEach((element) => {
-              if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1)){ // Vertical orientation, else Horizontal
+              if(posts[i].aspectRatio == '16:9' || (aspectRatio < 1) || posts[i].description.length == 0){ // Vertical orientation, else Horizontal
                 element.style.width = `${imageDimensions.width}px`;
                 console.log('updated info width: ', imageDimensions.width);
                 element.style.opacity = '1';  // Show the image info
@@ -538,7 +572,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
   }, []);
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-[92vh]'>
       <div id="image-track">
         {posts.map((post, index) => ( 
           (post.aspectRatio == '16:9') ? (
@@ -570,12 +604,14 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
 
       {/* Image Info */}
       {selectedImage !== null ? (
-      <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) ? 'info-container-col info-container' : 'info-container-col'}`}>
+      <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation && posts[selectedImage].description.length > 0) 
+        ? 'info-container-col info-container' : 'info-container-col'}`}>
 
-        <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) ? 'img-panel-wide img-panel' : 'img-panel-wide'}`}/>
+        <div className={`${((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation && posts[selectedImage].description.length > 0) 
+          ? 'img-panel-wide img-panel' : 'img-panel-wide'}`}/>
 
           {/* Vertically Stacked Orientation */}
-          {((posts[selectedImage].aspectRatio == '16:9') || isVerticalOrientation) &&  
+          {((posts[selectedImage].aspectRatio == '16:9') || isVerticalOrientation || posts[selectedImage].description.length == 0) &&  
           (<div key="vertical" className='info-panel-wide flex flex-col items-center justify-start p-4'>
             <div className='bg-card text-card-foreground image-info-wide px-6 py-4 mx-3 rounded-xl flex flex-col justify-around'>
               <div className='flex flex-row justify-between items-center'>
@@ -596,7 +632,7 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
           </div>)}
 
           {/* Side by Side Orientation */}
-          {((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation) &&  
+          {((posts[selectedImage].aspectRatio == '1:1') && !isVerticalOrientation && posts[selectedImage].description.length > 0) &&  
           (<div key="horizontal" className='info-panel flex pl-[2%] pr-[4%]'>
             <div className='bg-card text-card-foreground image-info px-10 py-4 rounded-xl flex flex-col justify-around'>
               <div className='flex flex-row justify-between items-center'>

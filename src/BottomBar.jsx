@@ -27,7 +27,7 @@ export default function BottomBar() {
     }, [location]);
 
     return (
-        <div className="btm-nav btm-nav-md bottom-bar sm:hidden text-white/70 bg-zinc-900 dark:bg-card font-mono leading-none">
+        <div className="btm-nav btm-nav-md h-[6.5vh] bottom-bar sm:hidden text-white/70 bg-zinc-900 dark:bg-card font-mono leading-none">
             <button 
                 className={`${barTab === 'home' ? 'active bg-transparent' : ''}`}
                 onClick={() => handleClick('home')}

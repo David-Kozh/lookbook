@@ -44,7 +44,7 @@ const createUserDocument = async (user) => {
       createdAt: new Date(),
       bio: 'This is your profile bio. Tell the world a little about what kind of works are in your LookBook!',
       socialMediaLinks: {},
-      darkModePref: false,
+      themePref: 'default',
     };
 
     await setDoc(userDocRef, newUser);

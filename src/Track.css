@@ -70,21 +70,21 @@
     justify-content: space-between;
     position: absolute;
     width: 100vw;
-    height: 84vh;
+    height: 85.5vh;
     top: 8%; /* top 8% is topbar */
     user-select: none;
   }
   .img-panel-wide {
     width: 100vw;
     padding-top: 5vh;
-    height: 55vh;
+    height: 50vh;
     user-select: none;
     z-index: 0;
   }
   .info-panel-wide {
     display: flex;
     width: 100vw;
-    height: 34vh;
+    height: 35.5vh;
     user-select: none;
     z-index: 11;
     justify-content: center;
@@ -105,7 +105,7 @@
     position: absolute;
     top: 8%;
     width: 100%;
-    height: 85%;
+    height: 85.5%;
     user-select: none;
   }
   .img-panel {
