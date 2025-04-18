@@ -163,9 +163,6 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                             <FormItem className="w-full">
                                 <div className="flex gap-4 items-center">
                                 <FormLabel className='text-md'>Display Name</FormLabel>
-                                <FormDescription className='mt-0.5'>
-                                    Displayed on your profile.
-                                </FormDescription>
                                 </div>
                                 <FormControl>
                                     <Input className='text-md' {...field} />
@@ -182,7 +179,7 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                                 <div className="flex gap-4 items-center">
                                 <FormLabel className='text-md'>Handle</FormLabel>
                                 <FormDescription className='mt-0.5'>
-                                    Displayed on your profile.
+                                    Must be unique.
                                 </FormDescription>
                                 </div>
                                 <FormControl>
@@ -244,63 +241,63 @@ export default function EditUserSettings({ loggedInUserId, userProfile, cancelEd
                         />
                         
                         {/* Social Media links */}
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button type="button" className="">Social Media Links</Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="p-4">
-                                    <div className="grid gap-4">
-                                        <FormField name="socialMediaLinks.linkedin"
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>LinkedIn</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} placeholder="LinkedIn URL" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField name="socialMediaLinks.youtube"
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>YouTube</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} placeholder="YouTube URL" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField name="socialMediaLinks.instagram"
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Instagram</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} placeholder="Instagram URL" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField name="socialMediaLinks.twitter"
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Twitter</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} placeholder="Twitter URL" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button type="button">Social Media Links</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-4">
+                                <div className="grid gap-4">
+                                    <FormField name="socialMediaLinks.linkedin"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>LinkedIn</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} placeholder="LinkedIn URL" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField name="socialMediaLinks.youtube"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>YouTube</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} placeholder="YouTube URL" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField name="socialMediaLinks.instagram"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Instagram</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} placeholder="Instagram URL" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField name="socialMediaLinks.twitter"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Twitter</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} placeholder="Twitter URL" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     <div className="h-0.5 w-full rounded-lg bg-card-foreground dark:opacity-50 mb-1 mt-10"></div>
