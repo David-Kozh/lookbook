@@ -13,13 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { updatePost, getPosts } from "./services/postService.js"
 
 
@@ -36,10 +30,9 @@ const formSchema = z.object({
             message: 'File size must be 8MB or less',
         })
         .refine(file => file === undefined || ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
-            message: 'Only JPG or PNG files are allowed',
+            message: 'Only JPG or PNG files are supported',
         })
         .optional(),
-    aspectRatio: z.string(),
     description: z.string()
         .max(250, { message: "Description must be 250 characters or less." })
         .optional(),
@@ -49,14 +42,14 @@ const formSchema = z.object({
         })
         .refine(file => {
             if (file === undefined) return true;
-            if (file.type.startsWith('audio/') && file.size <= 10 * 1024 * 1024) return true; // 10MB for audio
-            if (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024) return true; // 50MB for video
+            if (file.type.startsWith('audio/') && file.size <= 20 * 1024 * 1024) return true; // 10MB for audio
+            if (file.type.startsWith('video/') && file.size <= 80 * 1024 * 1024) return true; // 50MB for video
             return false;
         }, {
-            message: 'Audio files must be 10MB or less, and video files must be 50MB or less.',
+            message: 'Audio files must be 20MB or less, and video files must be 80MB or less.',
         })
         .refine(file => file === undefined || ['audio/mp3', 'audio/wav', 'video/mp4', 'video/quicktime'].includes(file.type), {
-            message: 'Only MP3, WAV, MP4, or MOV files are allowed.',
+            message: 'Only MP3, WAV, MP4, or MOV files are supported.',
         }),
 })
 
@@ -68,7 +61,6 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
         title: 'Loading...',
         description: '', 
         image: undefined, 
-        aspectRatio: '', 
         content: undefined 
     });
 
@@ -91,7 +83,6 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             title: post.title,
             description: post.description,
             image: undefined,       //! How should default file be handled?
-            aspectRatio: post.aspectRatio,
             content: undefined,     //! How should default file be handled?
         }
     });
@@ -103,7 +94,6 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
             title: post.title,
             description: post.description,
             image: undefined,               //?
-            aspectRatio: post.aspectRatio,
             content: undefined,             //?
         });
     }, [post, form]);
@@ -111,18 +101,27 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
     async function onSubmit(values) {
         console.log("Submitting eddited post");
         
-        // Determine the post type based on the content file's MIME type
-        let postType = null;
-        if (values.content instanceof File) {
-            const mimeType = values.content.type;
-            if (mimeType.startsWith('audio/')) {
-                postType = 'audio';
-            } else if (mimeType.startsWith('video/')) {
-                postType = 'video';
-            }
-        } else {
-            postType = 'default';
+        // Dynamically calculate aspect ratio
+        let aspectRatio = null;
+        if (values.image) {
+            const img = new Image();
+            const reader = new FileReader();
+
+            const aspectRatioPromise = new Promise((resolve) => {
+                reader.onload = (event) => {
+                    img.src = event.target.result;
+                };
+                img.onload = () => {
+                    resolve(img.width / img.height);
+                };
+            });
+
+            reader.readAsDataURL(values.image);
+            aspectRatio = await aspectRatioPromise;
         }
+
+        // Determine the post type based on the content file's MIME type
+        let postType = values.content?.type.startsWith('audio/') ? 'audio' : values.content?.type.startsWith('video/') ? 'video' : 'default';
 
         const updatedData = {}; //* Prune data of unchanged fields before updating
         if (values.title !== post.title) {
@@ -134,8 +133,8 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
         if (values.image) {
             updatedData.imageFile = values.image;
         }
-        if (values.aspectRatio !== post.aspectRatio) {
-            updatedData.aspectRatio = values.aspectRatio;
+        if (aspectRatio !== post.aspectRatio) {
+            updatedData.aspectRatio = aspectRatio;
         }
         if (postType !== post.postType) {
             updatedData.postType = postType;
@@ -171,16 +170,16 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full mt-2">
-                    <div className="flex gap-4 items-center">
-                    <FormLabel>Title</FormLabel>
-                    <FormDescription>
-                        Displayed when post is selected.
-                    </FormDescription>
-                    </div>
-                    <FormControl>
-                        <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
+                        <div className="flex gap-4 items-center">
+                            <FormLabel>Title</FormLabel>
+                            <FormDescription>
+                                Displayed when post is selected.
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
                 )}
                 />
@@ -188,16 +187,16 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                 control={form.control}
                 render={({ field }) => (
                     <FormItem className="w-full">
-                    <div className="flex gap-4 items-center">
-                    <FormLabel>Caption</FormLabel>
-                    <FormDescription>
-                        Can be left blank.
-                    </FormDescription>
-                    </div>
-                    <FormControl>
-                        <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
+                        <div className="flex gap-4 items-center">
+                            <FormLabel>Description</FormLabel>
+                            <FormDescription>
+                                Can be left blank.
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
                 )}
                 />
@@ -208,59 +207,107 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                         form.watch('image') ? 'opacity-100' : 'opacity-50'
                       } hover:opacity-100`}>
                         <div className="grid gap-1.5">
-                        <FormLabel className={`${error ? 'text-red-500' : ''}`}>
-                            New Image
-                        </FormLabel>
-                        <FormControl>
-                            <Input id="image"
-                            type="file"
-                            className={`file-input-ghost bg-input text-foreground ${
-                                error ? 'border-red-500' : ''
-                            }`}
-                            accept="image/*"
-                            onChange={(e) => {
-                                if (e.target.files.length > 0) {
-                                    onChange(e.target.files[0]); // store file
-                                }
-                            }}
-                            ref={ref}
-                            />
-                        </FormControl>
+                            <div className="flex gap-1.5 items-center">
+                                <FormLabel className={`${error ? 'text-red-500' : ''}`}>
+                                    New Image
+                                </FormLabel>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 101 101" id="info" width={22} height={22} >
+                                                <path fill='currentColor' d="M50.5 84.6c18.8 0 34.1-15.3 34.1-34.1S69.3 16.4 50.5 16.4 16.4 31.7 16.4 50.5s15.3 34.1 34.1 34.1zm0-63.4c16.1 0 29.3 13.1 29.3 29.3S66.6 79.8 50.5 79.8 21.2 66.6 21.2 50.5s13.2-29.3 29.3-29.3z"></path>
+                                                <path fill='currentColor' d="M44.8 65.5c-1.3 0-2.4 1.1-2.4 2.4 0 1.3 1.1 2.4 2.4 2.4h15.8c1.3 0 2.4-1.1 2.4-2.4 0-1.3-1.1-2.4-2.4-2.4h-5.5V44.3c0-1.3-1.1-2.4-2.4-2.4h-7.9c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4h5.5v18.8h-5.5z"></path>
+                                                <circle fill='currentColor' cx="49.4" cy="34" r="3.9"></circle>
+                                            </svg>
+                                        </TooltipTrigger>
+
+                                        <TooltipContent>
+                                            <p className="text-sm text-card-foreground">
+                                                Must be 1:1 or 16:9 aspect ratio.
+                                            </p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                            <FormControl>
+                                <Input id="image"
+                                type="file"
+                                className={`file-input-ghost bg-input text-foreground ${
+                                    error ? 'border-red-500' : ''
+                                }`}
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                    const reader = new FileReader();
+                                    const img = new Image();
+                    
+                                    reader.onload = (event) => {
+                                        img.src = event.target.result;
+                                    };
+                    
+                                    img.onload = () => {
+                                        const width = img.width;
+                                        const height = img.height;
+                                        const aspectRatio = width / height;
+                    
+                                        // Allowed aspect ratios
+                                        const allowedAspectRatios = [1, 16 / 9]; // 1:1, 16:9
+                    
+                                        if (!allowedAspectRatios.some((ratio) => Math.abs(ratio - aspectRatio) < 0.01)) {
+                                        form.setError("image", {
+                                            type: "manual",
+                                            message: "Invalid aspect ratio. Only 1:1 or 16:9 images are allowed.",
+                                        });
+                                        onChange(null); // Clear the field
+                                        } else {
+                                        form.clearErrors("image");
+                                        onChange(file); // Accept the file
+                                        }
+                                    };
+                    
+                                    reader.readAsDataURL(file);
+                                    } else {
+                                    onChange(null); // Clear the field if no file is selected
+                                    }
+                                }}
+                                ref={ref}
+                                />
+                            </FormControl>
                         </div>
                         <FormMessage>{error?.message}</FormMessage>
                     </FormItem>
                     )}
                 />
 
-                {/* replace with radio group? */}
-                <div className="flex w-full gap-4 my-4">
-                <FormField name="aspectRatio"
-                control={form.control}
-                render={({ field }) => (
-                    <FormItem className='w-[35%]'>
-                        <FormLabel>Aspect Ratio</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className="w-full bg-input text-foreground mt-2 font-semibold">
-                            <SelectValue placeholder="1:1" />
-                        </SelectTrigger>
-                        <SelectContent className="font-semibold">
-                            <SelectItem value="1:1">1:1</SelectItem>
-                            <SelectItem value="16:9">16:9</SelectItem>
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
                 <Controller name="content"
                 control={form.control}
                 render={({ field: { onChange, ref }, fieldState: { error } }) => (
                     <FormItem className={`${
-                        form.watch('content') ? 'opacity-100' : 'opacity-50'
-                      } hover:opacity-100 w-[65%]`}>
-                        <FormLabel>
-                            Additional Content
-                        </FormLabel>
+                        form.watch('content') ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+                      }`}>
+                        <div className="flex gap-1.5 items-center">
+                            <FormLabel>
+                                Additional Media
+                            </FormLabel>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 101 101" id="info" width={22} height={22}>
+                                        <path fill='currentColor' d="M50.5 84.6c18.8 0 34.1-15.3 34.1-34.1S69.3 16.4 50.5 16.4 16.4 31.7 16.4 50.5s15.3 34.1 34.1 34.1zm0-63.4c16.1 0 29.3 13.1 29.3 29.3S66.6 79.8 50.5 79.8 21.2 66.6 21.2 50.5s13.2-29.3 29.3-29.3z"></path>
+                                        <path fill='currentColor' d="M44.8 65.5c-1.3 0-2.4 1.1-2.4 2.4 0 1.3 1.1 2.4 2.4 2.4h15.8c1.3 0 2.4-1.1 2.4-2.4 0-1.3-1.1-2.4-2.4-2.4h-5.5V44.3c0-1.3-1.1-2.4-2.4-2.4h-7.9c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4h5.5v18.8h-5.5z"></path>
+                                        <circle fill='currentColor' cx="49.4" cy="34" r="3.9"></circle>
+                                    </svg>
+                                    </TooltipTrigger>
+                                    
+                                    <TooltipContent>
+                                        <p className="text-sm text-card-foreground">
+                                            Optional audio or video file. Video will be cropped <br/>if aspect ratio doesn't match the image.
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
                         <FormControl>
                             <Input id="content" 
                             type="file" 
@@ -269,18 +316,15 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
                             }`}
                             accept="audio/*,video/*"
                             onChange={(e) => {
-                                if (e.target.files.length > 0) {
-                                    onChange(e.target.files[0]); // Store the selected file
-                                }
-                                }}
+                                onChange(e.target.files[0]); 
+                            }}
                             ref={ref}
+                            disabled={!form.watch('image') && (!post.image)} // Disable if no image is selected
                             />
                         </FormControl>
                         <FormMessage>{error?.message}</FormMessage>
                     </FormItem>
-                )}
-                />
-                </div>
+                )} />
                 
                 <div className="w-full flex justify-between gap-20">
                     <Button type="button" className='mt-12 w-1/2 sm:w-min' onClick={()=> cancelEdit()}>Cancel</Button>

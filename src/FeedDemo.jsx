@@ -8,11 +8,11 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select";
-import Image1 from './media/Image1.jpg';
-import Image2 from './media/Image2.jpg';
-import Image3 from './media/Image3.jpg';
-import Image4 from './media/Image4.jpg';
-import Image5 from './media/Image5.jpg';
+import Image1 from './public_media/Image1.jpg';
+import Image2 from './public_media/Image2.jpg';
+import Image3 from './public_media/Image3.jpg';
+import Image4 from './public_media/Image4.jpg';
+import Image5 from './public_media/Image5.jpg';
 /*
 "https://images.unsplash.com/photo-1682686581854-5e71f58e7e3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80",
 "https://images.unsplash.com/photo-1554080353-a576cf803bda?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3387&q=80",
@@ -20,6 +20,8 @@ import Image5 from './media/Image5.jpg';
 "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80",
 "https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80",
 */
+
+//* Demo Collection Thumbnails
 const demoThumbnails = [
     Image1, 
     Image2, 
@@ -27,6 +29,8 @@ const demoThumbnails = [
     Image4, 
     Image5
 ];
+
+//* Demo Posts
 const demoPosts = [
     Image5, 
     Image4, 
@@ -34,9 +38,9 @@ const demoPosts = [
     Image2, 
     Image1
 ];
-//TODO: 
-// Make all demo images link to demo posts
-// Change demo images to example posts when selectedFeed changed
+// TODO: 
+//* Make all demo images link to demo posts
+//* Change demo images to example posts when selectedFeed changed
 
 export function ParallaxScrollDemo() {
     const [selectedFeed, setSelectedFeed] = useState("Following"); // Track selected feed

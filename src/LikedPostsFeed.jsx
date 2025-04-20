@@ -105,7 +105,7 @@ export function LikedPostsFeed({ currentUserId }) {
                 onClick={handleImageClick}
             />
         ) : (
-            <div className="flex w-full h-[50%] items-center justify-center">
+            <div className="flex w-full h-[57%] items-center justify-center">
                 <p className="w-[70%] text-xl font-bold font-mono text-center">Like some posts!</p>
             </div>
         )}

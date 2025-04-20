@@ -136,10 +136,10 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                         render={({ field }) => (
                             <FormItem className="w-full">
                                 <div className="flex gap-4 items-center">
-                                <FormLabel>Title</FormLabel>
-                                <FormDescription>
-                                    Displayed on image track.
-                                </FormDescription>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormDescription>
+                                        Displays next to posts.
+                                    </FormDescription>
                                 </div>
                                 <FormControl>
                                     <Input {...field} />
@@ -156,10 +156,10 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                         render={({ field }) => (
                             <FormItem className="w-full opacity-60 hover:opacity-100">
                                 <div className="flex gap-4 items-center">
-                                <FormLabel>Subtitle</FormLabel>
-                                <FormDescription>
-                                    Displayed under title. Can be left blank.
-                                </FormDescription>
+                                    <FormLabel>Subtitle</FormLabel>
+                                    <FormDescription>
+                                        Can be left blank.
+                                    </FormDescription>
                                 </div>
                                 <FormControl>
                                     <Input {...field} />
@@ -176,9 +176,14 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                 form.watch('thumbnail') ? 'opacity-100' : 'opacity-60'
                               } hover:opacity-100 w-full`}>
                                 <div className="grid gap-1.5">
-                                    <FormLabel>
-                                        Thumbnail
-                                    </FormLabel>
+                                    <div className="flex gap-4 items-center">
+                                        <FormLabel>
+                                            Thumbnail
+                                        </FormLabel>
+                                        <FormDescription>
+                                            First post image used if not provided.
+                                        </FormDescription>
+                                    </div>
                                     <FormControl>
                                     <Input type="file"
                                         onChange={(e) => {

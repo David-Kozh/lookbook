@@ -162,7 +162,7 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                         <div className="flex gap-4 items-center">
                         <FormLabel>Title</FormLabel>
                         <FormDescription>
-                            Displayed next to posts.
+                            Displays next to posts.
                         </FormDescription>
                         </div>
                         <FormControl>
@@ -178,11 +178,13 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
             <FormField name="subtitle"
                 control={form.control}
                 render={({ field }) => (
-                    <FormItem className="w-full opacity-60 hover:opacity-100">
+                    <FormItem className={`w-full ${
+                        !field.value ? 'opacity-60 hover:opacity-100' : ''
+                    }`}>
                         <div className="flex gap-4 items-center">
                         <FormLabel>Subtitle</FormLabel>
                         <FormDescription>
-                            Displayed under title. Can be left blank.
+                            Can be left blank.
                         </FormDescription>
                         </div>
                         <FormControl>
@@ -241,8 +243,8 @@ export default function CreateCollectionForm({ selectedButton, currentIndex, set
                     control={form.control}
                     render={({ field: { onChange, ref } }) => (
                         <FormItem className={`${
-                            form.watch('thumbnailFile') ? 'opacity-100' : 'opacity-60'
-                          } hover:opacity-100`}>
+                            form.watch('thumbnailFile') ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                          }`}>
                             <div className="grid gap-1.5">
                                 <FormLabel>
                                     Optional Thumbnail

@@ -26,9 +26,10 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
     ✅  User Feed
     -   Hosting
   * Current Tasks:
+    Test dynamic detection of aspect ratio (4 form components)
     Push to production
+
   * Functionalies to implement in Production:
-    Tooltips for 'additional content' field and feedback for disabled buttons
     ? Force col display for 1:1 images with short descriptions? --> Wasted whitespace (same for 16:9 in mobile view)
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients

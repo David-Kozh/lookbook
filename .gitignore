@@ -11,8 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-src/media/
+/media/
 src/data/
+src/public_media/
 
 # Environment variables
 .env

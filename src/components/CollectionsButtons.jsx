@@ -36,7 +36,7 @@ const ButtonGroup = ({
         <Tooltip>
           <TooltipTrigger asChild>
           <button onClick={() => handleClick('create')}
-            className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-12 
+            className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-12
             ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' :
               numSlides < 10 ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
             disabled={numSlides >= 10} // Disable the button if numSlides is 10 or more
