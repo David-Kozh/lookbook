@@ -12,8 +12,6 @@ dist
 dist-ssr
 *.local
 /media/
-src/data/
-src/public_media/
 
 # Editor directories and files
 .vscode/*
