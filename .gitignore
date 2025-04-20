@@ -15,9 +15,6 @@ dist-ssr
 src/data/
 src/public_media/
 
-# Environment variables
-.env
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
