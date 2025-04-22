@@ -197,7 +197,7 @@ export default function Root({ isLoggedIn, userProfile }) {
             </div>
             
             {/* All page content is rendered here, below the topbar */}
-            <Outlet className='body-h w-full'/>
+            <Outlet/>
 
             {/* Bottom navbar to display on small screens */}
             <BottomBar />

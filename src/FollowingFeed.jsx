@@ -117,18 +117,18 @@ export function FollowingFeed({ currentUserId }) {
 
   return (
     <div className="w-full h-[85.5%] flex flex-col items-center">
-      <div className="flex w-[92%] h-[5%] justify-between items-center bg-card rounded-xl">
-        <p className="text-card-foreground font-mono ml-4 text-lg select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
+      <div className="flex w-[92%] h-[7%] py-1 justify-between items-center bg-card rounded-xl">
+        <p className="text-card-foreground font-mono p-2 text-sm select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
         <Select 
           defaultValue="Following"
           onValueChange={(value) => setSelectedFeed(value)} // Update selected feed
         >
-          <SelectTrigger className="w-[24%] max-w-32 h-min bg-input text-card-foreground mr-2 sm:mr-4 font-mono text-xs md:text-sm">
+          <SelectTrigger className="w-min h-min bg-input text-card-foreground mr-2 sm:mr-4 font-mono text-xs/tight md:text-sm">
             <SelectValue placeholder="Following"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem className='text-xs font-mono' value="Following">Following</SelectItem>
-            <SelectItem className='text-xs font-mono' value="Liked Posts">Liked Posts</SelectItem>
+            <SelectItem className='text-xs font-mono' value="Liked">Liked Posts</SelectItem>
           </SelectContent>
         </Select>
       </div>
