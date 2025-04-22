@@ -5,7 +5,7 @@ import logoNew from './components/Firefly lookbook logo 2.png';
 //* LandingPage component for unauthenticated users
 function Home() {
   return (
-    <div className='w-full h-[85%] flex justify-center'>
+    <div className='w-full h-[85vh] flex justify-center'>
       <section className='h-full w-full'>
         <div className="h-full mx-auto max-w-screen-2xl px-4 py-4 md:py-16 sm:px-6 lg:px-8 font-sans flex flex-col justify-center">
           
@@ -20,7 +20,7 @@ function Home() {
               </div>
             </div>
 
-            <div id='elem2' className="h-[55vh] lg:h-full relative flex items-center bg-secondary shadow-xl shadow-black/30">
+            <div id='elem2' className="h-[50vh] lg:h-full relative flex items-center bg-secondary shadow-xl shadow-black/30">
               <span
                 className="hidden lg:absolute lg:inset-y-0 lg:-start-16 lg:block lg:w-16 lg:bg-secondary"
               ></span>

@@ -51,14 +51,13 @@ export function ParallaxScrollDemo() {
     };
 
     return (
-        <div className="w-full h-[85.5%] sm:h-[92%] flex flex-col items-center">
-            <div className="flex w-[92%] h-[7%] py-1 justify-between items-center bg-card rounded-xl">
-                <p className="text-card-foreground p-2 font-mono text-sm select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
+        <div className="w-full h-[85.5vh] sm:h-[92vh] flex flex-col items-center">
+            <div className="flex w-[92%] h-[7%] py-1 justify-start items-center bg-card rounded-xl">
                 <Select 
                     defaultValue="Following"
                     onValueChange={(value) => setSelectedFeed(value)} // Update selected feed
                 >
-                <SelectTrigger className="w-[33%] max-w-32 h-min bg-input text-card-foreground mr-2 sm:mr-4 font-mono text-xs/tight md:text-sm">
+                <SelectTrigger className="w-min h-min bg-input text-card-foreground ml-2 sm:ml-4 font-mono text-xs/tight md:text-sm">
                     <SelectValue placeholder="Following"/>
                 </SelectTrigger>
                 <SelectContent>
@@ -66,6 +65,7 @@ export function ParallaxScrollDemo() {
                     <SelectItem className='text-xs font-mono' value="Liked Posts">Liked Posts</SelectItem>
                 </SelectContent>
                 </Select>
+                <p className="text-card-foreground px-4 py-2 font-mono text-xs sm:text-sm select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
             </div>
             <ParallaxScroll 
                 className='h-[93%]' 

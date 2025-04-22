@@ -1,12 +1,12 @@
 /* App Structure */
   .body-h {
     height: 92vh;
-    height: 92dvh;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .nav-h {
     height: 8vh;
-    height: 8dvh;
+    padding-top: env(safe-area-inset-top);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,7 +14,7 @@
 
   .bottom-bar {
     height: 6vh;
-    height: 6dvh;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   #image-track {

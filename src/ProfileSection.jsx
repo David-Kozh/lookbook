@@ -200,7 +200,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     };
 
     return(
-        <div className="w-full h-[85%] sm:body-h flex justify-center">
+        <div className="w-full h-[85vh] sm:body-h flex justify-center">
             <div id="contact-bg" className='w-[90%] h-[97%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 flex flex-col bg-card text-card-foreground
             rounded-lg shadow-lg p-3 sm:p-4 mt-2 items-center'>
             {editSettings ? (
@@ -271,7 +271,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                                 {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
                                 (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
                             </div>
-                            <p className="text-base lg:text-lg xl:text-xl tracking-wider mb-1">
+                            <p className="text-sm sm:text-base lg:text-lg xl:text-xl tracking-wider mb-1">
                                 {
                                     mode == 'loading' ? 'Loading...' : (mode != 'example' ? userProfile.bio : 
                                     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates voluptas distinctio nesciunt quas non animi. Lorem ipsum dolor sit amet consectetur adipisicing elit.")
