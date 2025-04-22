@@ -52,23 +52,23 @@ export default function Login({isLoggedIn}) {
 return (
 <section className="relative flex flex-wrap h-[100%] items-center px-6 py-6 sm:px-8 lg:px-10 xl:px-28">
     
-    <a href="/" className="relative flex items-center h-[35%] lg:h-[65%] w-full lg:w-1/2 lg:pr-4">
+    <a href="/" className="relative flex items-center h-[25%] -mb-10 lg:-mb-0 lg:h-[65%] w-full lg:w-1/2 lg:pr-4">
         <img alt="logo"
             src={Logo}
             className="h-full w-full object-cover rounded-lg"
         />
     </a>
 
-    <div className="flex flex-col justify-evenly bg-card dark rounded-lg h-[60%] lg:h-[65%] w-full mb-8 lg:mb-0 px-4 py-12 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
+    <div className="flex flex-col justify-evenly bg-card dark rounded-lg h-[65%] w-full mb-8 lg:mb-0 px-4 py-6 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-lg text-center">
             <h1 className="text-zinc-300 text-3xl font-bold sm:text-4xl tracking-wide">LookBook</h1>
 
-            <p className="my-3 text-md text-zinc-300 font-mono px-1">
+            <p className="my-3 text-sm lg:text-base text-zinc-300 font-mono px-1">
                 Aesthetic and professional portfolios, <span className="font-semibold">no sign up needed</span>. Login to share your wonderful creative works with the world!
             </p>
         </div>
 
-        <div className='flex justify-evenly my-6 gap-2'>
+        <div className='flex justify-evenly gap-2'>
             <button className="flex gap-2 items-center rounded-lg bg-[#433e9f] px-4 py-4 font-medium text-white 
                 hover:bg-[#5e5d83] focus:outline-none focus:ring text-sm sm:text-base
                 hover:shadow-[2px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
