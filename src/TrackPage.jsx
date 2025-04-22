@@ -214,7 +214,7 @@ function TrackPage({ isLoggedIn, loggedInUser}) {
   }, [collectionInfo?.displaySettings?.theme]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-[85.5%] sm:h-[92%] ">
       {isLoading ? (
         <div className="w-full h-[60%] flex items-center justify-center text-mono text-2xl italic"> 
           Loading... 
