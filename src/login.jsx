@@ -52,14 +52,14 @@ export default function Login({isLoggedIn}) {
 return (
 <section className="relative flex flex-wrap h-[100%] items-center px-6 py-6 sm:px-8 lg:px-10 xl:px-28">
     
-    <a href="/" className="relative flex items-center h-[20%] lg:h-[75%] w-full lg:w-1/2 lg:pr-4">
+    <a href="/" className="relative flex items-center h-[20%] lg:h-[70%] w-full lg:w-1/2 lg:pr-4">
         <img alt="logo"
             src={Logo}
             className="h-full w-full object-cover rounded-lg"
         />
     </a>
 
-    <div className="flex flex-col justify-evenly bg-card dark rounded-lg h-[75%] w-full mb-8 lg:mb-0 px-4 py-6 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
+    <div className="flex flex-col justify-evenly bg-card dark rounded-lg h-[70%] w-full mb-8 lg:mb-0 px-4 py-6 sm:px-6 sm:py-14 lg:w-1/2 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-lg text-center">
             <h1 className="text-zinc-300 text-3xl font-bold sm:text-4xl tracking-wide">LookBook</h1>
 

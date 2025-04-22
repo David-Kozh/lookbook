@@ -11,8 +11,8 @@ function Home() {
           
           <div className="grid grid-cols-1 h-full lg:grid-cols-2">
             
-            <div id='elem1' className="h-[25vh] relative z-10 lg:h-full">
-              <div className="relative h-[25vh] lg:h-full">
+            <div id='elem1' className="h-[20vh] relative z-10 lg:h-full">
+              <div className="relative h-[20vh] lg:h-full">
                 <img alt="Logo"
                   src={logoNew}
                   className="absolute inset-0 h-full w-full object-cover shadow-lg lg:shadow-2xl shadow-black/10 lg:shadow-black/30 select-none"
@@ -20,32 +20,32 @@ function Home() {
               </div>
             </div>
 
-            <div id='elem2' className="h-[50vh] relative flex items-center bg-secondary shadow-xl shadow-black/30">
+            <div id='elem2' className="h-[55vh] lg:h-full relative flex items-center bg-secondary shadow-xl shadow-black/30">
               <span
                 className="hidden lg:absolute lg:inset-y-0 lg:-start-16 lg:block lg:w-16 lg:bg-secondary"
               ></span>
 
-              <div className="px-6 py-[2vh] sm:p-10 lg:py-0 lg:pl-12 h-full flex flex-col justify-evenly">
-                <div className='w-full flex justify-between items-center'>
+              <div className="px-6 py-[4vh] sm:p-10 lg:pl-12 h-full flex flex-col justify-evenly">
+                <div className='w-full flex flex-col justify-center'>
                   <h2 className="bg-gradient-to-r from-[#D5AE7E] to-[#D47E7A] dark:from-rose-500 dark:to-rose-700 bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl lg:text-5xl tracking-wide">
                     LookBook 
                   </h2>
+                  <span className="mt-2 lg:my-3 relative flex justify-center">
+                    <div
+                      className="absolute rounded-l-full inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-white via-white to-transparent opacity-75"
+                    ></div>
+                  </span>
                 </div>
                   
-                <span className="mt-2 lg:my-3 relative flex justify-center">
-                  <div
-                    className="absolute rounded-l-full inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-white via-white to-transparent opacity-75"
-                  ></div>
-                </span>
                 <div className="mt-4 ml-4 text-gray-300 text-xs sm:text-sm md:text-base xl:text-lg font-mono">
                 ➣ An elegant landing page platform for creatives. Showcase photos with optional descriptions, audio and video. Perfect for photographers, videographers, musicians and more.
                 <div className='mt-6 text-gray-300 font-mono flex text-xs sm:text-sm md:text-base xl:text-lg'>➣ Skip signing up and log in with Google or Github -- or explore our example profile and feed!</div>
                 </div>
                 
                 {/* Buttons for Sign Up and Log In (empty divs are for spacing) */}
-                <div className='w-full flex justify-between gap-6 items-center mb-8 lg:mb-2'>
+                <div className='w-full flex justify-between gap-6 items-center my-6 lg:mb-2'>
                   <a href="/login"
-                    className="mt-12 p-3 flex gap-2 items-center rounded-lg bg-[#604ee4] focus:outline-none focus:ring 
+                    className=" p-3 flex gap-2 items-center rounded-lg bg-[#604ee4] focus:outline-none focus:ring 
                      text-white transition hover:shadow-[2px_3px_0px_0px_rgba(0,0,0)]
                     duration-200 bg-gradient-to-r from-[#2950bcb0] to-[#984cdfb0] 
                     dark:from-rose-500 dark:to-rose-700 hover:opacity-80">
@@ -57,12 +57,12 @@ function Home() {
                     </svg>
                     <p className='text-xs sm:text-sm md:text-base lg:text-lg font-mono font-semibold text-center mr-0.5' >Login</p>
                   </a>
-                  <div className='mt-12'>
-                    <ContainerTextFlip
-                      words={["programmers", "animators", "illustrators", "actors", "designers"]}
-                      interval={3000}
-                    />
-                  </div>
+
+                  <ContainerTextFlip
+                    words={["programmers", "animators", "illustrators", "actors", "designers"]}
+                    interval={3000}
+                  />
+
                 </div>
 
               </div>
