@@ -116,7 +116,7 @@ export function FollowingFeed({ currentUserId }) {
   }, [hasMore, loading, fetchCollections]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    <div className="w-full h-[85.5%] flex flex-col items-center">
       <div className="flex w-[92%] h-[5%] justify-between items-center bg-card rounded-xl">
         <p className="text-card-foreground font-mono ml-4 text-lg select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
         <Select 
@@ -140,7 +140,7 @@ export function FollowingFeed({ currentUserId }) {
         ) : (
           <ParallaxScroll 
             ref={parallaxScrollRef}
-            className='h-[80.5%] sm:h-[87%]' 
+            className='h-[95%]' 
             images={thumbnails.map((thumb) => ({
               thumbnailUrl: thumb.thumbnailUrl,
               userId: thumb.userId,

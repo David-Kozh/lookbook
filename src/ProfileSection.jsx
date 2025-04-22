@@ -202,7 +202,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     return(
         <div className="w-full body-h flex justify-center">
             <div id="contact-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-card text-card-foreground
-            rounded-lg shadow-lg px-6 py-4 mt-8 items-center'>
+            rounded-lg shadow-lg px-6 py-4 mt-4 items-center'>
             {editSettings ? (
                 <EditUserSettings 
                     loggedInUserId={userProfile.id} 
@@ -213,8 +213,8 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
             <>
                 <div className="w-full h-min">
                     <div className='w-full h-min flex items-center justify-between'>
-                        <h1 className='text-3xl xl:text-4xl font-bold'>User Bio</h1>
-                        {(mode == 'self') && (<Button className='p-3 md:flex md:gap-1' onClick={() => setEditSettings(true)}>
+                        <h1 className='text-2xl sm:text-3xl xl:text-4xl font-bold'>User Bio</h1>
+                        {(mode == 'self') && (<Button className='h-min p-2 md:flex md:gap-1' onClick={() => setEditSettings(true)}>
                             <svg 
                                 xmlns="http://www.w3.org/2000/svg" 
                                 viewBox="0 0 24 24" id="settings" className='w-4 h-4'>
@@ -226,7 +226,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             <div className='hidden text-primary-foreground text-xs md:inline'>Settings</div>
                         </Button>)}
                         {(mode == 'user') && (
-                            <Button className='p-3 md:flex md:gap-1' onClick={() => {
+                            <Button className='h-min p-2 md:flex md:gap-1' onClick={() => {
                                 navigate('/bio');
                                 window.location.reload();
                             }}>
@@ -241,7 +241,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 <div id="contact-profile" className="w-full h-full lg:w-4/5 2xl:w-3/4 flex flex-col justify-evenly items-center mt-2 px-0">
             
                     {/* Username Section for Mobile Only */}
-                    <div className="flex flex-col w-[92%] md:hidden">
+                    <div className="flex flex-col w-full md:hidden">
                         {/* Display Name and Links */}
                         <div className='h-min flex items-center justify-between'>
                             <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
@@ -252,7 +252,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         </div>
                         {/* Handle and follow button */}
                         <div className='flex justify-between'>
-                            <h4 className="text-xl/tight xl:text-2xl/tight 2xl:text-3xl/tight 
+                            <h4 className="text-lg/tight xl:text-2xl/tight 2xl:text-3xl/tight 
                                 font-medium">{mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')} 
                             </h4>
                             {(mode == 'user') && (
