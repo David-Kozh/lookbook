@@ -100,7 +100,7 @@ export default function SignUp() {
 return (
 <section className="bg-card dark h-full">
   <div className="lg:grid min-h-screen lg:grid-cols-12">
-    <section className="relative flex h-56 items-end lg:col-span-5 lg:h-full xl:col-span-6">
+    <section className="relative flex h-32 items-end lg:col-span-5 lg:h-full xl:col-span-6">
 
       <img alt="Logo"
         src={Logo}
