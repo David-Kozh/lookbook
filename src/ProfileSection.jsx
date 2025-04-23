@@ -235,7 +235,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 </div>
 
                 {/* Profile */}
-                <div id="contact-profile" className="w-full h-full lg:w-4/5 2xl:w-3/4 flex flex-col justify-evenly items-center mt-1 sm:mt-2 px-0">
+                <div id="contact-profile" className="w-full h-full md:w-4/5 lg:w-3/4 flex flex-col justify-evenly items-center mt-1 sm:mt-2 px-0">
             
                     {/* Username Section for Mobile Only */}
                     <div className="flex flex-col w-full md:hidden">
@@ -278,7 +278,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     </div>
           
                     {/* User heading for larger screens */}
-                    <div className="w-full flex lg:w-5/6 2xl:w-4/5 gap-4 xl:gap-8 px-6 md:px-10 lg:px-0">
+                    <div className="w-full flex gap-4 xl:gap-8">
                         {/* Avatar */}
                         <div className="hidden md:inline w-20 md:w-[6rem] h-20 md:h-[6rem] rounded">
                             {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
@@ -306,7 +306,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     </div>
 
                     {/* Bio for larger screens */}
-                    <div className="hidden md:flex w-full lg:w-5/6 2xl:w-4/5 px-6 md:px-10 lg:px-0">
+                    <div className="hidden md:flex w-full">
                         <p className="tracking-wider text-base lg:text-lg w-full xl:text-xl my-2">
                             {
                                 mode == 'loading' ? 'Loading...' : (mode != 'example' ? userProfile.bio : 
