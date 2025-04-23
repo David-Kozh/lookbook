@@ -116,7 +116,7 @@ export function FollowingFeed({ currentUserId }) {
   }, [hasMore, loading, fetchCollections]);
 
   return (
-    <div className="w-full h-[85.5%] flex flex-col items-center">
+    <div className="w-full h-content flex flex-col items-center">
       <div className="flex w-[92%] h-[7%] py-1 justify-between items-center bg-card rounded-xl">
         <p className="text-card-foreground font-mono p-2 text-sm select-none">{selectedFeed == 'Following' ? 'Recent from Followed Users' : 'Liked Posts'}</p>
         <Select 

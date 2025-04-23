@@ -170,6 +170,14 @@
     height: 85dvh;
   }
 
+  .home-logo {
+    height: 20vh; /* Fallback for older browsers */
+    height: 20dvh; /* Overrides if supported */
+  } 
+  .home-body {
+    height: 55vh; /* Fallback for older browsers */
+    height: 55dvh; /* Overrides if supported */
+  }
 
 /* Image in Carousel */
   .carousel-img {

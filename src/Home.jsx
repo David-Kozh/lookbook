@@ -5,14 +5,14 @@ import logoNew from './components/Firefly lookbook logo 2.png';
 //* LandingPage component for unauthenticated users
 function Home() {
   return (
-    <div className='w-full h-[85vh] flex justify-center'>
+    <div className='w-full h-content flex justify-center'>
       <section className='h-full w-full'>
         <div className="h-full mx-auto max-w-screen-2xl px-4 py-4 md:py-16 sm:px-6 lg:px-8 font-sans flex flex-col justify-center">
           
           <div className="grid grid-cols-1 h-full lg:grid-cols-2">
             
-            <div id='elem1' className="h-[20vh] relative z-10 lg:h-full">
-              <div className="relative h-[20vh] lg:h-full">
+            <div id='elem1' className="home-logo relative z-10 lg:h-full">
+              <div className="relative home-logo lg:h-full">
                 <img alt="Logo"
                   src={logoNew}
                   className="absolute inset-0 h-full w-full object-cover shadow-lg lg:shadow-2xl shadow-black/10 lg:shadow-black/30 select-none"
@@ -20,7 +20,7 @@ function Home() {
               </div>
             </div>
 
-            <div id='elem2' className="h-[50vh] lg:h-full relative flex items-center bg-secondary shadow-xl shadow-black/30">
+            <div id='elem2' className="home-body lg:h-full relative flex items-center bg-secondary shadow-xl shadow-black/30">
               <span
                 className="hidden lg:absolute lg:inset-y-0 lg:-start-16 lg:block lg:w-16 lg:bg-secondary"
               ></span>

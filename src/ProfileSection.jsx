@@ -200,7 +200,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
     };
 
     return(
-        <div className="w-full h-[85vh] sm:body-h flex justify-center">
+        <div className="w-full h-content sm:body-h flex justify-center">
             <div id="contact-bg" className='w-[90%] h-[97%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 flex flex-col bg-card text-card-foreground
             rounded-lg shadow-lg p-3 sm:p-4 mt-2 items-center'>
             {editSettings ? (
