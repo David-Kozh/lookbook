@@ -25,7 +25,13 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
     if(selectedImage != null){
       return; // Don't allow dragging when an image is expanded
     }
-    mouseDownAtRef.current = e.clientX; // Set initial x position and reset the variables for dragging
+
+    if (e.type === 'mousedown') {
+      mouseDownAtRef.current = e.clientX; // Set initial x position and reset the variables for dragging
+    } else if (e.type === 'touchstart') {
+      mouseDownAtRef.current = e.touches[0].clientX; // Set initial x position for touch events
+    }
+    
     deltaPercentageRef.current = 0; 
     isDraggingRef.current = false;
     window.addEventListener('mousemove', handleMouseMove);
@@ -40,7 +46,13 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
     if(isPostOpenRef.current == true){ return; } // Don't allow dragging when an image is expanded //? Redundant check
 
     //* Calculate % track has been slid, and check if its been slid enough to be considered dragging
-    const mouseDelta = parseFloat(mouseDownAtRef.current) - e.clientX;
+    let mouseDelta;
+    if (e.type === 'mousemove') {
+      mouseDelta = parseFloat(mouseDownAtRef.current) - e.clientX;
+    } else if (e.type === 'touchmove') {
+      mouseDelta = parseFloat(mouseDownAtRef.current) - e.touches[0].clientX;
+    }
+
     const maxDelta = window.innerWidth / 2;
     deltaPercentageRef.current = ((mouseDelta / maxDelta) * -100);
     if(Math.abs(mouseDelta) > 5) {
@@ -52,7 +64,13 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
       console.log("slid all the way left", deltaPercentageRef.current + percentageRef.current); //* Track is slid all the way left
       deltaPercentageRef.current = 0;
       percentageRef.current = -100;
-      mouseDownAtRef.current = e.clientX; // update mouseDownAt to the current mouse position so the next move to the right can be accepted.
+      
+      if (e.type === 'mousemove') {
+        mouseDownAtRef.current = e.clientX; // update mouseDownAt to the current mouse position so the next move to the right can be accepted.
+      } else if (e.type === 'touchmove') {
+        mouseDownAtRef.current = e.touches[0].clientX; // update mouseDownAt to the current mouse position so the next move to the right can be accepted.
+      }
+
       return;
     }
     
@@ -60,7 +78,13 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
       console.log("slid all the way right", deltaPercentageRef.current + percentageRef.current); 
       deltaPercentageRef.current = 0;
       percentageRef.current = 0;
-      mouseDownAtRef.current = e.clientX; // update mouseDownAt to the current mouse position so the next move to the left can be accepted.
+
+      if (e.type === 'mousemove') {
+        mouseDownAtRef.current = e.clientX; // update mouseDownAt to the current mouse position so the next move to the left can be accepted.
+      } else if (e.type === 'touchmove') {
+        mouseDownAtRef.current = e.touches[0].clientX; // update mouseDownAt to the current mouse position so the next move to the left can be accepted.
+      }
+      
       return;
     }
 
