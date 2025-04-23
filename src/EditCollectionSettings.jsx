@@ -49,7 +49,6 @@ const formSchema = z.object({
     }),
 })
 
-//TODO Check use of image files in the thumbnail field
 //* ✅ Ready for testing with firebase db and storage
 export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings, userCollections }) {
     
@@ -192,6 +191,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
                                             }
                                         }}
                                         className="file-input-ghost"
+                                        accept="image/*"
                                         ref={ref}
                                     />
                                     </FormControl>

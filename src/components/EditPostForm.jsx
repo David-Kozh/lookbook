@@ -54,8 +54,6 @@ const formSchema = z.object({
 
 })
 
-//? TODO: Integrate with edit button in CreateCollection > CreateCollectionForm > LeftButtons
-//? TODO: When editing a post with additional content, must check post.content (line 70)
 export default function EditPostForm({ post, updatePost, dismiss }) {
 
   const form = useForm({

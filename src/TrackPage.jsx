@@ -9,16 +9,8 @@ import { addLike, getUserLikes, hasLiked, removeLike } from "./services/likeServ
 import { getUserIdFromHandle, fetchUserData } from "./services/userService.js";
 
 //* Component that fetches posts and manages their states for the ImageTrack component
-//TODO  Implement collectionInfo in Track.jsx
-/*
-  TODOs for <ImageTrack/>:
-  - Split down into some sub-components for readability
-  - Handle posts with no description (display title as a caption)
-    - Then use that structure to implement a way to hide the description (if present)
-    allowing for the image to be displayed in a larger space.
-*/
 function TrackPage({ isLoggedIn, loggedInUser}) {
-  const { handle, encodedCollectionName } = useParams(); //! Need to get collectionId from encoded collection title in url
+  const { handle, encodedCollectionName } = useParams();
 
   const [userToView, setUserToView] = useState(null);
   // The collection of posts to display

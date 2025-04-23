@@ -11,9 +11,6 @@ import MediaLinks from './components/SocialMediaLinks';
 // Data required:
 //  - User image, name, bio, and links
 //  - User's collections
-//? Display Profile and More Collections section in 2 columns on larger screens
-//?     > And then display caption/description of collection below it?
-
 //TODO Check for 'default' profile image url, if so, display skeleton avatar
 export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollections }) {
     const location = useLocation();
@@ -238,7 +235,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                 </div>
 
                 {/* Profile */}
-                <div id="contact-profile" className="w-full h-full lg:w-4/5 2xl:w-3/4 flex flex-col justify-evenly items-center mt-2 px-0">
+                <div id="contact-profile" className="w-full h-full lg:w-4/5 2xl:w-3/4 flex flex-col justify-evenly items-center mt-1 sm:mt-2 px-0">
             
                     {/* Username Section for Mobile Only */}
                     <div className="flex flex-col w-full md:hidden">
@@ -266,7 +263,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         </div>
                         
                         {/* Avatar and Bio */}
-                        <div className='mt-4'>
+                        <div className='mt-2 sm:mt-4'>
                             <div className="w-16 sm:w-20 h-16 sm:h-20 rounded float-left mr-4">
                                 {mode == 'loading' ? '' : (mode != 'example' ? (<img src={userProfile.photoURL} />) :
                                 (<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />))}
@@ -318,7 +315,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         </p>
                     </div>
                     
-                    <div id="more-collections" className="w-full h-full mb-6 flex flex-col justify-center items-center">
+                    <div id="more-collections" className="w-full h-full my-3 flex flex-col justify-center items-center">
                         <h1 className="w-full text-lg/tight sm:text-xl xl:text-2xl font-bold">{mode == 'loading' ? ' ' : (mode != 'example' ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections')}</h1>
                         <div className="min-h-0.5 w-full rounded-lg bg-card-foreground dark:opacity-50 my-1"></div>
 
@@ -327,11 +324,11 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                             <div className='flex w-full gap-2 items-center justify-between'>
                                 <div className='w-1/5'/> {/* Spacer for centering */}       
                                 
-                                <div className='mt-2 mb-3 text-lg lg:text-2xl font-mono font-bold underline underline-offset-4 select-none'>{collections[currentSlide].title}</div>
+                                <div className='my-2 text-lg lg:text-2xl font-mono font-bold underline underline-offset-4 select-none'>{collections[currentSlide].title}</div>
 
                                 <div className='flex w-1/5 justify-end'>
                                     <Button onClick={() =>  viewCollection(currentSlide)}
-                                        className='h-min inline-flex items-center gap-1.5 justify-around rounded-full px-3 mt-2 mb-3'
+                                        className='h-min inline-flex items-center gap-1.5 justify-around rounded-full px-3 my-2'
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             fill="none"

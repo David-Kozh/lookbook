@@ -24,13 +24,11 @@ import { ParallaxScrollDemo } from './FeedDemo.jsx';
       * Max-limits for number of collections & posts is enforced in CollectionButtons.jsx as well as service files
     ✅  Cloud Storage for images, audio & videos
     ✅  User Feed
-    -   Hosting
+    ✅   Hosting
   * Current Tasks:
     Test dynamic detection of aspect ratio (4 form components)
-    Push to production
-
-  * Functionalies to implement in Production:
     ? Force col display for 1:1 images with short descriptions? --> Wasted whitespace (same for 16:9 in mobile view)
+  
   svgs: https://iconscout.com/icons/settings-icon?price=free
   tailwind gradients: https://tailscan.com/gradients
 */
@@ -93,7 +91,6 @@ function App() {
           element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={userProfile} exampleCollections={exampleCollections} />,
         },
         { //* Displays profile of a seperate user
-          //TODO change to lookbook.com/userHandle
           path: "/bio/:handle",
           element: <ProfileSection isLoggedIn={isLoggedIn} loggedInUser={userProfile} exampleCollections={exampleCollections}/>,
         },
@@ -106,7 +103,6 @@ function App() {
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={userProfile} />,
         },
         { //* Displays a collection from DB.
-          //TODO change to lookbook.com/userHandle/collectionName
           path: "/:handle/:collectionId",
           element: <TrackPage isLoggedIn={isLoggedIn} loggedInUser={userProfile} />,
         }
