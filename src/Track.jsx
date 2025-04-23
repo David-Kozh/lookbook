@@ -29,7 +29,9 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
     deltaPercentageRef.current = 0; 
     isDraggingRef.current = false;
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleMouseMove); // Touch event for mobile devices
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchend', handleMouseUp); // Touch event for mobile devices
 
     console.log("Mouse down info: \nMax Delta: ", window.innerWidth / 2, "\nMouse Down At: ", mouseDownAtRef.current, "\nPercentage: ", percentageRef.current)
   };
@@ -532,8 +534,10 @@ function ImageTrack({ isLoggedIn, posts, collectionInfo, handleLike, userToView 
   useEffect(() => { //* Mount the mousedown event listener
     const track = document.getElementById("image-track");
     track.addEventListener('mousedown', handleMouseDown);
+    track.addEventListener('touchstart', handleMouseDown); // Touch event for mobile devices
     return () => {
       track.removeEventListener('mousedown', handleMouseDown);
+      track.removeEventListener('touchstart', handleMouseDown);
     };
   }, []);
 
