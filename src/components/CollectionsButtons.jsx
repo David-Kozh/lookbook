@@ -29,14 +29,14 @@ const ButtonGroup = ({
   };
 
   return (
-    <div className="h-min inline-flex rounded-lg border border-zinc-600 bg-zinc-600 
+    <div className="h-min w-full inline-flex rounded-lg border border-zinc-600 bg-zinc-600 
       p-1 sm:gap-2 text-xs sm:text-sm shadow-lg shadow-black/30 collections-btns-mobile">
       
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
           <button onClick={() => handleClick('create')}
-            className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-12
+            className={`w-1/4 inline-flex items-center justify-around sm:gap-2 rounded-l-lg sm:rounded-md px-3 sm:px-4 h-8 sm:h-12
             ${selectedButton === 'create' ? 'text-blue-500 bg-gray-200 shadow-sm' :
               numSlides < 10 ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
             disabled={numSlides >= 10} // Disable the button if numSlides is 10 or more
@@ -69,7 +69,7 @@ const ButtonGroup = ({
 
 
       <button onClick={() => handleClick('edit')}
-        className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-12 mr-2 sm:mr-0
+        className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-r-lg sm:rounded-md px-4 h-8 sm:h-12 mr-2 sm:mr-0
         ${selectedButton === 'edit' ? 'text-blue-500 bg-gray-200 shadow-sm' :
           !emptyFlag ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
         disabled={emptyFlag} // Disable the button if emptyFlag is true
@@ -91,13 +91,13 @@ const ButtonGroup = ({
         </p>
       </button>
 
-      {<div className="flex justify-between items-center rounded-r-lg rounded-l-lg bg-slate-700 gap-0.5 h-12">
-        <a href={`#slide${selectedIndex == 0 ? (numSlides - 1) : (selectedIndex - 1)}`} className="btn border-none h-12 min-h-10 rounded-none rounded-l-lg">❮</a> 
-        <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-12 min-h-10 border-none rounded-r-lg">❯</a>
+      {<div className="flex justify-between items-center rounded-r-lg rounded-l-lg bg-slate-700 gap-0.5 h-8 sm:h-12">
+        <a href={`#slide${selectedIndex == 0 ? (numSlides - 1) : (selectedIndex - 1)}`} className="btn border-none h-8 sm:h-12 min-h-8 sm:min-h-10 rounded-none rounded-l-lg">❮</a> 
+        <a href={`#slide${(selectedIndex + 1) % (numSlides)}`} className="btn rounded-none h-8 sm:h-12 min-h-8 sm:min-h-10 border-none rounded-r-lg">❯</a>
       </div>}
 
       <button onClick={() => handleClick('view')}
-        className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-l-lg sm:rounded-md px-4 h-12 ml-2 sm:ml-0
+        className={`w-1/4 inline-flex items-center sm:gap-2 justify-around rounded-l-lg sm:rounded-md px-4 h-8 sm:h-12 ml-2 sm:ml-0
         ${selectedButton === 'view' ? 'text-blue-500 bg-gray-200 shadow-sm' : 
           !emptyFlag ? 'text-white hover:bg-zinc-500 hover:text-blue-100' : 'text-white opacity-50'}`}
         disabled={emptyFlag} // Disable the button if emptyFlag is true

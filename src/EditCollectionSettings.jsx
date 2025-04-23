@@ -51,7 +51,7 @@ const formSchema = z.object({
 
 //TODO Check use of image files in the thumbnail field
 //* ✅ Ready for testing with firebase db and storage
-export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings }) {
+export default function EditCollectionSettings({ loggedInUserId, collection, cancelEditSettings, userCollections }) {
     
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -73,7 +73,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
     useEffect(() => {
         const checkTitle = async () => {
             const encodedTitle = encodeCollectionTitle(form.watch("title"));
-            const isUnique = !collections.some(
+            const isUnique = !userCollections.some(
                 (collection) => encodeCollectionTitle(collection.title) === encodedTitle
             );
             setIsTitleValid(isUnique);
@@ -126,7 +126,7 @@ export default function EditCollectionSettings({ loggedInUserId, collection, can
 
     return (
         <div id='edit-collection-settings' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-1 mb-2 text-3xl xl:text-4xl font-bold select-none">Collection Settings</div>
+            <div className="w-full mt-2 ml-1 mb-2 text-xl sm:text-2xl xl:text-4xl font-bold select-none">Collection Settings</div>
             <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="h-full mt-8 w-full md:w-5/6 lg:w-2/3 flex flex-col sm:items-center space-y-10">

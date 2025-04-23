@@ -130,8 +130,8 @@ export default function UserDashboard({ loggedInUserId, loggedInUser }) {
     }
  
     return (
-        <div className='w-full body-h flex justify-center'>
-            <div id="dash-bg" className='w-[90%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 h-5/6 flex flex-col bg-card text-card-foreground rounded-lg shadow-lg px-6 py-4 mt-8 space-y-1'>
+        <div className='w-full h-content sm:body-h flex justify-center'>
+            <div id="dash-bg" className='w-[95%] h-[97%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 flex flex-col bg-card text-card-foreground rounded-lg shadow-lg p-3 sm:p-4 mt-2 space-y-1'>
                     {dashTab === 'menu' && 
                         <CollectionsMenu loggedInUser={loggedInUser} showCreateCollection={showCreateCollection} showEditCollection={showEditCollection} />
                     }
@@ -146,7 +146,7 @@ export default function UserDashboard({ loggedInUserId, loggedInUser }) {
                     }
                     {dashTab === 'edit-collection-settings' &&
                         <EditCollectionSettings loggedInUserId={loggedInUserId} collection={userCollections[collectionIndexToEdit]}
-                            cancelEditSettings={cancelEditCollectionSettings} 
+                            cancelEditSettings={cancelEditCollectionSettings} userCollections={userCollections}
                         />
                     }
                     {dashTab === 'create-post' && //* Create a post while editing a collection

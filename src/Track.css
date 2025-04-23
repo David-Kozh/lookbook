@@ -184,6 +184,13 @@
     width: min(44vh, 75vw);
     height: min(44vh, 75vw);
   }
+  /* Use dvh if supported */
+  @supports (height: 1dvh) {
+    .carousel-img {
+        width: min(44dvh, 75vw);
+        height: min(44dvh, 75vw);
+    }
+  }
   .carousel-img-wide {
     width: 78vh;
     height: 44vh;

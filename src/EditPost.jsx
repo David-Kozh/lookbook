@@ -159,7 +159,7 @@ export default function EditPost({ loggedInUserId, collectionId, postIndex, canc
       
     return (
         <div id='edit-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 mb-2 text-3xl xl:text-4xl font-bold select-none">Edit Post</div>
+            <div className="w-full mt-2 ml-2 mb-2 text-xl sm:text-3xl xl:text-4xl font-bold select-none">Edit Post</div>
             <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <div className="w-full mt-1 ml-4 font-semibold text-sm text-card-foreground/70">
                 Update your work here. Click save when you're done.

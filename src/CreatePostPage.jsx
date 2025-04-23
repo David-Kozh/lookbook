@@ -114,7 +114,7 @@ export default function CreatePostPage({ cancelCreate, collectionId, loggedInUse
     
     return (
         <div id='create-post' className="w-full h-full flex flex-col items-center">
-            <div className="w-full mt-2 ml-2 mb-2 text-2xl font-bold select-none">New Post</div>
+            <div className="w-full mt-2 ml-2 mb-2 text-xl sm:text-2xl font-bold select-none">New Post</div>
             <div className="h-0.5 w-full rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
             <div className="w-full ml-4 mt-1 font-semibold text-sm text-card-foreground/70">
                 Upload your work here. Click save when you're done.

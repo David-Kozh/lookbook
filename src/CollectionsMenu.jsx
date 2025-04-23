@@ -136,13 +136,13 @@ export default function CollectionsMenu({ loggedInUser, showCreateCollection, sh
     }, []);
 
     return (
-    <div id="collections-menu" className='w-full h-full flex flex-col gap-2'>
-        <div className='w-full mt-2 ml-1 text-2xl xl:text-4xl font-bold select-none' style={{height: "5%"}}>Your Collections</div>
-        <div className="h-0.5 rounded-full bg-card-foreground dark:opacity-50"></div>
+    <div id="collections-menu" className='w-full h-full flex flex-col'>
+        <div className='w-full mt-2 ml-1 text-xl sm:text-2xl xl:text-4xl font-bold select-none ' style={{height: "5%"}}>Your Collections</div>
+        <div className="h-0.5 rounded-full bg-card-foreground dark:opacity-50 my-1"></div>
 
-        <div id="collections" className='w-full mt-1 flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
-            <div className='w-full flex flex-col gap-6 sm:gap-4 items-center'>
-                <div className='text-2xl lg:text-3xl mt-2 font-mono font-bold underline underline-offset-4 select-none'>{collections[currentIndex].title}</div>
+        <div id="collections" className='w-full flex flex-col gap-8 sm:gap-2 items-center justify-evenly sm:justify-between' style={{height: "90%"}}>
+            <div className='w-full flex flex-col gap-4 items-center'>
+                <div className='sm:mt-6 text-2xl lg:text-3xl font-mono font-bold underline underline-offset-4 select-none'>{collections[currentIndex].title}</div>
 
                 <div className={`carousel my-2 shadow-lg shadow-black/40 ${thumbnails[currentIndex].aspectRatio === '1:1' ? 'carousel-img' : 'carousel-img-wide'}`} 
                     style={{transition: 'width 0.3s 0.01s'}}>

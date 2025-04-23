@@ -63,7 +63,7 @@ return (
         <div className="mx-auto max-w-lg text-center">
             <h1 className="text-zinc-300 text-3xl font-bold sm:text-4xl tracking-wide">LookBook</h1>
 
-            <p className="my-3 text-xs lg:text-base text-zinc-300 font-mono px-1">
+            <p className="my-3 text-xs sm:text-sm lg:text-base text-zinc-300 font-mono px-1">
                 Aesthetic and professional portfolios, <span className="font-semibold">no sign up needed</span>. Login to share your wonderful creative works with the world!
             </p>
         </div>

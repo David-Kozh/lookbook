@@ -113,8 +113,8 @@ export default function EditCollection({ loggedInUser, collection, showCreatePos
             </div>
 
             <div className='flex gap-2'>
-                <Button onClick={cancelEdit}>❮</Button>
-                <Button className='px-3 md:flex md:gap-1' onClick={() => showSettings(collection)}>
+                <Button className='h-min px-3 py-1.5' onClick={cancelEdit}>❮</Button>
+                <Button className='h-min p-2 md:flex md:gap-1' onClick={() => showSettings(collection)}>
                     <svg 
                         xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 24 24" id="settings" className='w-4 h-4'>

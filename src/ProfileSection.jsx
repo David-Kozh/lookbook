@@ -201,7 +201,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
 
     return(
         <div className="w-full h-content sm:body-h flex justify-center">
-            <div id="contact-bg" className='w-[90%] h-[97%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 flex flex-col bg-card text-card-foreground
+            <div id="contact-bg" className='w-[95%] h-[97%] sm:w-4/5 lg:w-3/4 2xl:w-2/3 flex flex-col bg-card text-card-foreground
             rounded-lg shadow-lg p-3 sm:p-4 mt-2 items-center'>
             {editSettings ? (
                 <EditUserSettings 
@@ -213,7 +213,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
             <>
                 <div className="w-full h-min">
                     <div className='w-full h-min flex items-center justify-between'>
-                        <h1 className='text-2xl sm:text-3xl xl:text-4xl font-bold'>User Bio</h1>
+                        <h1 className='text-lg/tight sm:text-2xl md:text-3xl xl:text-4xl font-bold'>User Bio</h1>
                         {(mode == 'self') && (<Button className='h-min p-2 md:flex md:gap-1' onClick={() => setEditSettings(true)}>
                             <svg 
                                 xmlns="http://www.w3.org/2000/svg" 
@@ -244,7 +244,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     <div className="flex flex-col w-full md:hidden">
                         {/* Display Name and Links */}
                         <div className='h-min flex items-center justify-between'>
-                            <h3 className="text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
+                            <h3 className="text-lg/tight sm:text-2xl/tight xl:text-3xl/tight 2xl:text-4xl/tight 
                             font-bold">{mode == 'loading' ? '' : (mode != 'example' ? userProfile.displayName : 'Jane Doe')}</h3>
                             <div>
                                 {mode == 'loading' ? '' : (<MediaLinks mode={mode} mediaLinks={userProfile ? userProfile.socialMediaLinks : null} isMobile={true}/>)}
@@ -252,7 +252,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                         </div>
                         {/* Handle and follow button */}
                         <div className='flex justify-between'>
-                            <h4 className="text-lg/tight xl:text-2xl/tight 2xl:text-3xl/tight 
+                            <h4 className="text-base/tight sm:text-lg/tight xl:text-2xl/tight 2xl:text-3xl/tight 
                                 font-medium">{mode == 'loading' ? '' : (mode != 'example' ? '@' + userProfile.handle : '@user-handle')} 
                             </h4>
                             {(mode == 'user') && (
@@ -319,7 +319,7 @@ export default function ProfileSection({ isLoggedIn, loggedInUser, exampleCollec
                     </div>
                     
                     <div id="more-collections" className="w-full h-full mb-6 flex flex-col justify-center items-center">
-                        <h1 className="w-full text-xl xl:text-2xl font-bold">{mode == 'loading' ? ' ' : (mode != 'example' ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections')}</h1>
+                        <h1 className="w-full text-lg/tight sm:text-xl xl:text-2xl font-bold">{mode == 'loading' ? ' ' : (mode != 'example' ? userProfile.displayName+'\'s Collections' : 'Jane\'s Collections')}</h1>
                         <div className="min-h-0.5 w-full rounded-lg bg-card-foreground dark:opacity-50 my-1"></div>
 
                         <div className='w-full flex flex-col items-center'>
